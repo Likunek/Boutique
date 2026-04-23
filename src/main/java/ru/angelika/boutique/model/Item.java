@@ -1,0 +1,24 @@
+package ru.angelika.boutique.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+@Data
+@Entity
+@Table(schema = "public", name = "items")
+public class Item {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false, unique = true)
+    private Integer id;
+    @Column(name = "name", nullable = false)
+    private String name;
+    @Column(name = "costPrice", nullable = false)
+    private Double costPrice;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id")
+    private Seller seller;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "item_card_id")
+    private ItemCard itemCard;
+}
