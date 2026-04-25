@@ -12,7 +12,7 @@ public class PointReceipt {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false, unique = true)
-    private Integer id;
+    private Long id;
     @Column(name = "address")
     private String address;
     @Column(name = "description")

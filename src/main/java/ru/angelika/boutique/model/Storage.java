@@ -10,11 +10,11 @@ public class Storage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false, unique = true)
-    private Integer id;
+    private Long id;
     @Column(name = "address", length = 50)
     private String address;
     @Column(name = "city", length = 20)
     private String city;
     @Column(name = "max_capacity")
-    private Integer maxCapacity;
+    private Long maxCapacity;
 }
