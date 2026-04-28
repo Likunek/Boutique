@@ -6,20 +6,20 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(schema = "public", name = "buyers")
-public class Buyer {
+@Table(schema = "public", name = "users")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false, unique = true)
-    private Integer id;
+    private Long id;
     @Column(name = "name", nullable = false, unique = true)
     private String name;
-    @Column(name = "password", nullable = false, unique = true)
+    @Column(name = "password", nullable = false)
     private String password;
     @Column(name = "number", nullable = false, unique = true)
     private String number;
     @Column(name = "email", unique = true)
-    private String email;
+    private String email = null;
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -29,6 +29,6 @@ public class Buyer {
     @JoinColumn(name = "point_receipt_id")
     private PointReceipt pointReceipt;
     @Column(name = "balance")
-    @Min(1)
+    @Min(0)
     private Double balance = 0.0;
 }

@@ -12,7 +12,7 @@ public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false, unique = true)
-    private Integer id;
+    private Long id;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cart_item_card",
             inverseJoinColumns = @JoinColumn(name = "item_card_id"))
