@@ -1,17 +1,24 @@
 package ru.angelika.boutique.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.UserDto;
-import ru.angelika.boutique.dto.UserGetDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.UserMapper;
 import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.repository.UserRepository;
 
+import java.util.Collection;
+import java.util.List;
+
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
@@ -35,12 +42,11 @@ public class UserService {
         userRepository.save(userMapper.toUser(user));
     }
 
-    public UserGetDto getUserByName(String name) {
+    public User getUserByName(String name) {
         User user = userRepository.findByName(name);
         if (user == null) {
             throw new ResourceNotFoundException(User.class, name);
-        }
-        return userMapper.toGetUser(user);
+        }return user;
     }
 
     public void updateUser(UserDto userDto, Long id) {
@@ -69,5 +75,12 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(User.class, id));
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = getUserByName(username);
+        return new org.springframework.security.core.userdetails
+                .User(user.getName(), user.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole())));
     }
 }

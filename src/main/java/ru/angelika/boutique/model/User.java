@@ -19,7 +19,7 @@ public class User {
     @Column(name = "number", nullable = false, unique = true)
     private String number;
     @Column(name = "email", unique = true)
-    private String email = null;
+    private String email;
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

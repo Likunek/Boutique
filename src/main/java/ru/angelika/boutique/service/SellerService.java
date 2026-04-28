@@ -1,18 +1,25 @@
 package ru.angelika.boutique.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.SellerDto;
-import ru.angelika.boutique.dto.SellerGetDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.SellerMapper;
 import ru.angelika.boutique.model.Seller;
-import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.repository.SellerRepository;
 
+import java.util.Collection;
+import java.util.List;
+
 @Service
-public class SellerService {
+public class SellerService implements UserDetailsService {
     private final SellerRepository sellerRepository;
     private final SellerMapper sellerMapper;
 
@@ -24,23 +31,23 @@ public class SellerService {
 
     public void addSeller(SellerDto seller) {
         if (sellerRepository.findByName(seller.getName()) != null) {
-            throw new ResourceExistsException(User.class, seller.getName());
+            throw new ResourceExistsException(Seller.class, seller.getName());
         }
         if (sellerRepository.findByNumber(seller.getNumber()) != null) {
-            throw new ResourceExistsException(User.class, seller.getNumber());
+            throw new ResourceExistsException(Seller.class, seller.getNumber());
         }
         if (sellerRepository.findByEmail(seller.getEmail()) != null) {
-            throw new ResourceExistsException(User.class, seller.getEmail());
+            throw new ResourceExistsException(Seller.class, seller.getEmail());
         }
         sellerRepository.save(sellerMapper.toSeller(seller));
     }
 
-    public SellerGetDto getByName(String name) {
+    public Seller getBySellerName(String name) {
         Seller seller = sellerRepository.findByName(name);
         if (seller == null) {
             throw new ResourceNotFoundException(Seller.class, name);
         }
-        return sellerMapper.toSellerGetDto(seller);
+        return seller;
     }
 
     public void updateSeller(SellerDto sellerDto, Long id) {
@@ -69,5 +76,14 @@ public class SellerService {
     public void deleteSeller(Long id) {
         sellerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Seller.class, id));
         sellerRepository.deleteById(id);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Seller seller = getBySellerName(username);
+        return new User(seller.getName(), seller.getPassword(), extractRoles(seller));
+    }
+    private Collection<? extends GrantedAuthority> extractRoles(Seller seller) {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + seller.getRole()));
     }
 }

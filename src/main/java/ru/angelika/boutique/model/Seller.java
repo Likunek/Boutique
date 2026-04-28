@@ -20,4 +20,6 @@ public class Seller {
     private String number;
     @Column(name = "email", unique = true)
     private String email;
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.ADMIN;
 }
