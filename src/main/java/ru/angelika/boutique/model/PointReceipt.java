@@ -3,7 +3,6 @@ package ru.angelika.boutique.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
 
 @Entity
 @Data
@@ -19,9 +18,4 @@ public class PointReceipt {
     private String description;
     @Column(name = "rating")
     private Double rating;
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "point_receipt_storage",
-            joinColumns = @JoinColumn(name = "point_receipt_id"),
-            inverseJoinColumns = @JoinColumn(name = "storage_id"))
-    private List<Storage> storages;
 }
