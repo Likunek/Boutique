@@ -17,6 +17,8 @@ public class Item {
     private Double costPrice;
     @Column(name = "weight")
     private Double weight;
+    @Column(name = "square")
+    private Integer square = 1;
     @Column(name = "verify")
     private Boolean verify = false;
     @Column(name = "seller", nullable = false)

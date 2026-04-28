@@ -26,8 +26,10 @@ public class ItemService {
     }
 
     public void updateItem(ItemDto itemDto, Long id) {
-        Item item = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Item.class, id));
-        itemRepository.save(ItemMapper.toItem(itemDto));
+        itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Item.class, id));
+        Item item = ItemMapper.toItem(itemDto);
+        item.setId(id);
+        itemRepository.save(item);
     }
 
     public void deleteItem(Long id) {

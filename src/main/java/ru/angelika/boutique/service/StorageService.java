@@ -1,5 +1,6 @@
 package ru.angelika.boutique.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.StorageDto;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
@@ -11,6 +12,7 @@ import ru.angelika.boutique.repository.StorageRepository;
 public class StorageService {
     private final StorageRepository storageRepository;
 
+    @Autowired
     public StorageService(StorageRepository storageRepository) {
         this.storageRepository = storageRepository;
     }

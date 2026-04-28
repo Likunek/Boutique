@@ -20,3 +20,4 @@ public class ItemsAtStorage {
     @Column(name = "count")
     private Long count = 0L;
 }
+

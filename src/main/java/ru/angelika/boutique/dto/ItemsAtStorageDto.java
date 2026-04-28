@@ -5,18 +5,17 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
+
 @Data
 @Builder
-public class ItemDto {
-    @NotNull
-    private String name;
-    @NotNull
-    private Double costPrice;
+public class ItemsAtStorageDto {
     @NotNull
     @Min(1)
-    private Double weight;
+    private Long itemId;
     @NotNull
     @Min(1)
-    private Integer square;
-
+    private Long storageId;
+    @NotNull
+    @Min(1)
+    private Long count;
 }
