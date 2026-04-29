@@ -20,8 +20,6 @@ public class User {
     private String number;
     @Column(name = "email", unique = true)
     private String email;
-    @Enumerated(EnumType.STRING)
-    private Role role = Role.USER;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "cart_id")
     private Cart cart;

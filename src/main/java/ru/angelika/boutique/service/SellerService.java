@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Service
-public class SellerService implements UserDetailsService {
+public class SellerService {
     private final SellerRepository sellerRepository;
     private final SellerMapper sellerMapper;
 
@@ -78,12 +78,4 @@ public class SellerService implements UserDetailsService {
         sellerRepository.deleteById(id);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Seller seller = getBySellerName(username);
-        return new User(seller.getName(), seller.getPassword(), extractRoles(seller));
-    }
-    private Collection<? extends GrantedAuthority> extractRoles(Seller seller) {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + seller.getRole()));
-    }
 }

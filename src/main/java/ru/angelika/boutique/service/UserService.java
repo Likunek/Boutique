@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
@@ -75,12 +75,5 @@ public class UserService implements UserDetailsService {
     public void deleteUser(Long id) {
         userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(User.class, id));
         userRepository.deleteById(id);
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = getUserByName(username);
-        return new org.springframework.security.core.userdetails
-                .User(user.getName(), user.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole())));
     }
 }
