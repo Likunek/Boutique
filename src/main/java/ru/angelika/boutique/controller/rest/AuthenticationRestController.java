@@ -11,11 +11,11 @@ import ru.angelika.boutique.service.AuthenticationService;
 
 @RestController
 @RequestMapping("/authentications")
-public class AuthenticationController {
+public class AuthenticationRestController {
     private final AuthenticationService authenticationService;
 
     @Autowired
-    public AuthenticationController(AuthenticationService authenticationService) {
+    public AuthenticationRestController(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
     @PostMapping

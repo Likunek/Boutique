@@ -1,12 +1,6 @@
 package ru.angelika.boutique.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.SellerDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
@@ -15,21 +9,16 @@ import ru.angelika.boutique.mapper.SellerMapper;
 import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.repository.SellerRepository;
 
-import java.util.Collection;
-import java.util.List;
 
 @Service
 public class SellerService {
     private final SellerRepository sellerRepository;
-    private final SellerMapper sellerMapper;
-
     @Autowired
-    public SellerService(SellerRepository sellerRepository, SellerMapper sellerMapper) {
+    public SellerService(SellerRepository sellerRepository) {
         this.sellerRepository = sellerRepository;
-        this.sellerMapper = sellerMapper;
     }
 
-    public void addSeller(SellerDto seller) {
+    public void addSeller(Seller seller) {
         if (sellerRepository.findByName(seller.getName()) != null) {
             throw new ResourceExistsException(Seller.class, seller.getName());
         }
@@ -39,7 +28,7 @@ public class SellerService {
         if (sellerRepository.findByEmail(seller.getEmail()) != null) {
             throw new ResourceExistsException(Seller.class, seller.getEmail());
         }
-        sellerRepository.save(sellerMapper.toSeller(seller));
+        sellerRepository.save(seller);
     }
 
     public Seller getBySellerName(String name) {
@@ -70,7 +59,6 @@ public class SellerService {
             }
             seller.setEmail(sellerDto.getEmail());
         }
-        seller.setPassword(sellerDto.getPassword());
     }
 
     public void deleteSeller(Long id) {

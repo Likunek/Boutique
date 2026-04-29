@@ -7,14 +7,14 @@ import ru.angelika.boutique.model.Seller;
 
 @Component
 public class SellerMapper {
-    public Seller toSeller(SellerDto sellerDto) {
+    public static Seller toSeller(SellerDto sellerDto) {
         Seller seller = new Seller();
         seller.setName(sellerDto.getName());
         seller.setNumber(sellerDto.getNumber());
         seller.setEmail(sellerDto.getEmail());
         return seller;
     }
-    public SellerGetDto toSellerGetDto(Seller seller) {
+    public static SellerGetDto toSellerGetDto(Seller seller) {
         return SellerGetDto.builder()
                 .name(seller.getName())
                 .number(seller.getNumber())

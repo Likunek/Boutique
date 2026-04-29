@@ -28,6 +28,7 @@ public class SpringSecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
+                        .usernameParameter("number")
                         .defaultSuccessUrl("/welcome", true)
                         .permitAll())
                 .csrf(AbstractHttpConfigurer::disable);

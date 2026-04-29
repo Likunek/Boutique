@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sign In</title>
+    <title>Registration - Create Account</title>
     <style>
         * {
             margin: 0;
@@ -116,6 +116,13 @@
             font-size: 14px;
         }
 
+        .form-group label .optional {
+            font-weight: normal;
+            font-size: 12px;
+            color: #8aaE7a;
+            margin-left: 5px;
+        }
+
         .form-group label .required {
             color: #dc2626;
             margin-left: 3px;
@@ -141,7 +148,47 @@
             color: #adb5bd;
         }
 
-        .btn-login {
+        .role-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+
+        .role-buttons input[type="radio"] {
+            display: none;
+        }
+
+        .role-buttons .role-btn {
+            display: inline-block;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 40px;
+            padding: 10px 20px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #495057;
+            text-align: center;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .role-buttons .role-btn:hover {
+            background: #e9ecef;
+            border-color: #8aaE7a;
+            transform: translateY(-1px);
+        }
+
+        .role-buttons input[type="radio"]:checked + .role-btn {
+            background: #8aaE7a;
+            border-color: #6b8c5c;
+            color: white;
+            box-shadow: 0 4px 10px rgba(107, 140, 92, 0.3);
+        }
+
+        .btn-register {
             width: 100%;
             padding: 14px;
             background: #8aaE7a;
@@ -154,17 +201,17 @@
             transition: all 0.3s;
         }
 
-        .btn-login:hover {
+        .btn-register:hover {
             background: #6b8c5c;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(107, 140, 92, 0.3);
         }
 
-        .btn-login:active {
+        .btn-register:active {
             transform: translateY(0);
         }
 
-        .register-link {
+        .login-link {
             text-align: center;
             margin-top: 25px;
             padding-top: 20px;
@@ -173,14 +220,14 @@
             color: #6c757d;
         }
 
-        .register-link a {
+        .login-link a {
             color: #8aaE7a;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s;
         }
 
-        .register-link a:hover {
+        .login-link a:hover {
             color: #6b8c5c;
             text-decoration: underline;
         }
@@ -189,11 +236,9 @@
             .form-container {
                 padding: 30px 20px;
             }
-
             .header {
                 padding: 30px 20px;
             }
-
             .header h1 {
                 font-size: 24px;
             }
@@ -203,26 +248,25 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>🔐 Welcome Back</h1>
-        <p>Sign in to your account</p>
+        <h1>📝 Create Account</h1>
+        <p>Join us and start your journey</p>
     </div>
 
     <div class="form-container">
-        <div th:if="${param.error}" class="message">
-            Invalid username or password. Please try again.
+        <div th:if="${message}" class="message" th:text="${message}">
+            User exists
         </div>
 
-        <form th:action="@{/login}" method="post">
+        <form th:action="@{/registration}" method="post">
             <div class="form-group">
                 <label for="number">
-                    👤 Your number <span class="required">*</span>
+                    📞 Phone Number <span class="required">*</span>
                 </label>
-                <input type="text"
+                <input type="tel"
                        id="number"
                        name="number"
-                       placeholder="Enter your number"
-                       required
-                       autofocus>
+                       placeholder="Enter your phone number"
+                       required>
             </div>
 
             <div class="form-group">
@@ -236,14 +280,47 @@
                        required>
             </div>
 
-            <button type="submit" class="btn-login">
-                Sign In
+            <div class="form-group">
+                <label for="name">
+                    👤 Username <span class="required">*</span>
+                </label>
+                <input type="text"
+                       id="name"
+                       name="name"
+                       placeholder="Enter your username"
+                       required
+                       autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="email">
+                    ✉️ Email <span class="optional">(optional)</span>
+                </label>
+                <input type="email"
+                       id="email"
+                       name="email"
+                       placeholder="user@example.com">
+            </div>
+
+            <div class="form-group">
+                <label>Account Type <span class="required">*</span></label>
+                <div class="role-buttons">
+                    <input type="radio" name="role" id="roleUser" value="USER" required>
+                    <label for="roleUser" class="role-btn">👤 USER</label>
+
+                    <input type="radio" name="role" id="roleSeller" value="SELLER" required>
+                    <label for="roleSeller" class="role-btn">🏪 SELLER</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-register">
+                Register Now
             </button>
         </form>
 
-        <div class="register-link">
-            Don't have an account?
-            <a th:href="@{/registration}">Create one here</a>
+        <div class="login-link">
+            Already have an account?
+            <a th:href="@{/login}">Sign in here</a>
         </div>
     </div>
 </div>
