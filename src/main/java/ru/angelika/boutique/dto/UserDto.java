@@ -3,6 +3,7 @@ package ru.angelika.boutique.dto;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
+import ru.angelika.boutique.model.Role;
 
 @Data
 @Builder
@@ -17,4 +18,5 @@ public class UserDto {
     private String number;
     @Email
     private String email;
+    private Role role;
 }

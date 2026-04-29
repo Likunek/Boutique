@@ -14,14 +14,10 @@ public class User {
     private Long id;
     @Column(name = "name", nullable = false, unique = true)
     private String name;
-    @Column(name = "password", nullable = false)
-    private String password;
     @Column(name = "number", nullable = false, unique = true)
     private String number;
     @Column(name = "email", unique = true)
-    private String email = null;
-    @Enumerated(EnumType.STRING)
-    private Role role = Role.USER;
+    private String email;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "cart_id")
     private Cart cart;

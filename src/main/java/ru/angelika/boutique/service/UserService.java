@@ -1,6 +1,11 @@
 package ru.angelika.boutique.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.UserDto;
 import ru.angelika.boutique.dto.UserGetDto;
@@ -10,16 +15,17 @@ import ru.angelika.boutique.mapper.UserMapper;
 import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.repository.UserRepository;
 
+import java.util.Collection;
+import java.util.List;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
 
 
     @Autowired
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.userMapper = userMapper;
     }
 
     public void addUser(UserDto user) {
@@ -32,15 +38,14 @@ public class UserService {
         if (userRepository.findByEmail(user.getEmail()) != null) {
             throw new ResourceExistsException(User.class, user.getEmail());
         }
-        userRepository.save(userMapper.toUser(user));
+        userRepository.save(UserMapper.toUser(user));
     }
 
     public UserGetDto getUserByName(String name) {
         User user = userRepository.findByName(name);
         if (user == null) {
             throw new ResourceNotFoundException(User.class, name);
-        }
-        return userMapper.toGetUser(user);
+        }return UserMapper.toGetUser(user);
     }
 
     public void updateUser(UserDto userDto, Long id) {
@@ -63,7 +68,6 @@ public class UserService {
             }
             user.setEmail(userDto.getEmail());
         }
-        user.setPassword(userDto.getPassword());
     }
 
     public void deleteUser(Long id) {
