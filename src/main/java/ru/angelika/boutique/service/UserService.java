@@ -1,11 +1,6 @@
 package ru.angelika.boutique.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.UserDto;
 import ru.angelika.boutique.dto.UserGetDto;
@@ -15,8 +10,6 @@ import ru.angelika.boutique.mapper.UserMapper;
 import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.repository.UserRepository;
 
-import java.util.Collection;
-import java.util.List;
 
 @Service
 public class UserService {
@@ -39,6 +32,18 @@ public class UserService {
             throw new ResourceExistsException(User.class, user.getEmail());
         }
         userRepository.save(UserMapper.toUser(user));
+    }
+
+    public User getById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(User.class, id));
+    }
+
+    public User getByNumber(String number) {
+        User user = userRepository.findByNumber(number);
+        if (user == null) {
+           throw new ResourceNotFoundException(User.class, number);
+        }
+        return user;
     }
 
     public UserGetDto getUserByName(String name) {
