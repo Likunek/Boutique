@@ -100,7 +100,7 @@
   Welcome to Boutique
 </div>
 
-<a th:href="@{/users/{id}(id=${userId})}" class="my-account-btn">
+<a th:href="@{'/profile/' + ${userRole} + '/' + ${userId}}" class="my-account-btn">
   My account
 </a>
 </body>

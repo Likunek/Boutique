@@ -35,7 +35,8 @@ public class UserService {
     }
 
     public User getById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(User.class, id));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(User.class, id));
+        return user;
     }
 
     public User getByNumber(String number) {

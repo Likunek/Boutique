@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.angelika.boutique.dto.UserDto;
 import ru.angelika.boutique.mapper.UserMapper;
-import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.service.AuthenticationService;
 import ru.angelika.boutique.service.SellerService;
 import ru.angelika.boutique.service.UserService;
@@ -64,11 +63,18 @@ public class RegistrationController {
     public String welcome(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String phone = auth.getName();
+        String roleName = auth.getAuthorities().iterator().next().getAuthority();
+        switch (roleName) {
+            case "ROLE_USER" -> {
+                model.addAttribute("userId",userService.getByNumber(phone).getId());
+                model.addAttribute("userRole","users");
+            }
 
-        User user = userService.getByNumber(phone);
-
-        model.addAttribute("userId", user.getId());
-
+            case "ROLE_SELLER" -> {
+                model.addAttribute("userId",sellerService.getByNumber(phone).getId());
+                model.addAttribute("userRole","sellers");
+            }
+        }
         return "welcome";
     }
 
