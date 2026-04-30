@@ -1,6 +1,8 @@
 package ru.angelika.boutique.controller.view;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +25,13 @@ public class UserController {
     @GetMapping("{id}")
     public String userPage(@PathVariable Long id, Model model)
     {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String phone = auth.getName();
+        User currentUser = userService.getByNumber(phone);
+        if (!currentUser.getId().equals(id)) {
+            return "redirect:/welcome";
+        }
+
         User user = userService.getById(id);
         model.addAttribute("user", user);
         return "user";
