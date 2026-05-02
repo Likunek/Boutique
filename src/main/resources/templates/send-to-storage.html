@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add New Item</title>
+  <title>Send Item to Storage</title>
   <style>
     * {
       margin: 0;
@@ -277,13 +277,12 @@
   </style>
 </head>
 <body>
-
 <div class="back-nav">
   <a th:href="@{/seller/profile/{id}(id=${id})}" class="btn btn-text">← Back to Profile</a>
 </div>
 
 <div class="logout-container">
-  <form th:action="@{/logout}" method="post" style="display:inline;">
+  <form th:action="@{/logout}" method="post">
     <button type="submit" class="btn btn-logout">🚪 Logout</button>
   </form>
 </div>
@@ -291,8 +290,8 @@
 <div class="form-container">
   <div class="form-card">
     <div class="form-header">
-      <h1><span>➕</span> Add New Item</h1>
-      <p>Fill in the details for your new product</p>
+      <h1>📦 Send Item to Storage</h1>
+      <p>Select an item, storage and quantity</p>
     </div>
 
     <div class="form-body">
@@ -303,42 +302,41 @@
         <span>❌</span> <span th:text="${errorMessage}"></span>
       </div>
 
-      <form th:action="@{/seller/add-item}" method="post">
+      <form th:action="@{/seller/send-to-storage}" method="post">
         <div class="field-group">
-          <label class="field-label" for="name">Item Name</label>
-          <input type="text" id="name" name="name"
-                 class="field-input" required>
+          <label class="field-label" for="itemId">📋 Choose Item</label>
+          <select id="itemId" name="itemId" class="field-input" required>
+            <option value="">-- Select an item --</option>
+            <option th:each="item : ${items}"
+                    th:value="${item.id}"
+                    th:text="${item.name} + ' (ID: ' + ${item.id} + ')'"></option>
+          </select>
         </div>
 
         <div class="field-group">
-          <label class="field-label" for="costPrice">Cost Price</label>
-          <input type="number" id="costPrice" name="costPrice"
-                 class="field-input" placeholder="0.00" step="0.01" min="0" required>
-          <div class="field-hint">Enter price in $</div>
+          <label class="field-label" for="storageId">🏭 Choose Storage</label>
+          <select id="storageId" name="storageId" class="field-input" required>
+            <option value="">-- Select a storage --</option>
+            <option th:each="storage : ${storages}"
+                    th:value="${storage.id}"
+                    th:text="${storage.name}"></option>
+          </select>
         </div>
 
         <div class="field-group">
-          <label class="field-label" for="weight">Weight</label>
-          <input type="number" id="weight" name="weight"
-                 class="field-input" placeholder="0.0" step="0.1" min="0">
-          <div class="field-hint">Optional weight in kg</div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label" for="square">Square</label>
-          <input type="number" id="square" name="square"
-                 class="field-input" placeholder="0.01" value="0.01" min="0.01" step="0.01">
-          <div class="field-hint">Enter squares in m^2</div>
+          <label class="field-label" for="count">🔢 Quantity</label>
+          <input type="number" id="count" name="count" class="field-input"
+                  min="1" step="1" required>
+          <div class="field-hint">How many units to send</div>
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary">✓ Save Item</button>
+          <button type="submit" class="btn btn-primary">✓ Send</button>
           <a href="/seller/profile" class="btn btn-secondary">Cancel</a>
         </div>
       </form>
     </div>
   </div>
 </div>
-
 </body>
 </html>

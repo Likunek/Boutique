@@ -11,6 +11,8 @@ import ru.angelika.boutique.model.Item;
 import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.repository.ItemRepository;
 
+import java.util.List;
+
 @Service
 public class ItemService {
     private final ItemRepository itemRepository;
@@ -27,6 +29,11 @@ public class ItemService {
         String phone = auth.getName();
         Seller seller = sellerService.getByNumber(phone);
         itemRepository.save(ItemMapper.toItem(itemDto, seller));
+    }
+
+    public List<Item> getItemBySellerId(Long id) {
+        Seller seller = sellerService.getById(id);
+        return itemRepository.findBySellerId(id);
     }
 
     public Item getItemById(Long id) {

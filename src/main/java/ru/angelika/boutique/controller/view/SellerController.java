@@ -12,7 +12,7 @@ import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.service.SellerService;
 
 @Controller
-@RequestMapping("profile/sellers")
+@RequestMapping("/seller/profile")
 public class SellerController {
 
     private final SellerService sellerService;

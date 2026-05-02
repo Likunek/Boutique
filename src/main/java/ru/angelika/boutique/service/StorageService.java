@@ -8,6 +8,8 @@ import ru.angelika.boutique.mapper.StorageMapper;
 import ru.angelika.boutique.model.Storage;
 import ru.angelika.boutique.repository.StorageRepository;
 
+import java.util.List;
+
 @Service
 public class StorageService {
     private final StorageRepository storageRepository;
@@ -23,6 +25,10 @@ public class StorageService {
 
     public Storage getStorage(Long id) {
         return storageRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Storage.class, id));
+    }
+
+    public List<Storage> getAllStorages() {
+        return storageRepository.findAll();
     }
 
     public void updateStorage(StorageDto storageDto, Long id) {

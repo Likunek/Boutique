@@ -79,12 +79,12 @@ public class RegistrationController {
         switch (roleName) {
             case "ROLE_USER" -> {
                 model.addAttribute("userId",userService.getByNumber(phone).getId());
-                model.addAttribute("userRole","users");
+                model.addAttribute("userRole","user");
             }
 
             case "ROLE_SELLER" -> {
                 model.addAttribute("userId",sellerService.getByNumber(phone).getId());
-                model.addAttribute("userRole","sellers");
+                model.addAttribute("userRole","seller");
             }
         }
         return "welcome";
