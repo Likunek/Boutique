@@ -1,11 +1,14 @@
 package ru.angelika.boutique.controller.view;
 
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +17,8 @@ import ru.angelika.boutique.mapper.UserMapper;
 import ru.angelika.boutique.service.AuthenticationService;
 import ru.angelika.boutique.service.SellerService;
 import ru.angelika.boutique.service.UserService;
+
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping()
@@ -42,8 +47,15 @@ public class RegistrationController {
     }
 
     @PostMapping("/registration")
-    public String adduser(UserDto user, Model model)
+    public String adduser(@Valid UserDto user, BindingResult result,  Model model)
     {
+        if (result.hasErrors()) {
+            model.addAttribute("errorMessage", "Please correct the errors: " +
+                    result.getAllErrors().stream()
+                            .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                            .collect(Collectors.joining(", ")));
+            return "registration";
+        }
         try
         {
             switch (user.getRole()) {
