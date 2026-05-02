@@ -18,11 +18,12 @@ public class Item {
     @Column(name = "weight")
     private Double weight;
     @Column(name = "square")
-    private Integer square = 1;
+    private Double square = 0.01;
     @Column(name = "verify")
     private Boolean verify = false;
-    @Column(name = "seller", nullable = false)
-    private String seller;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id")
+    private Seller seller;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "item_card_id")
     private ItemCard itemCard;

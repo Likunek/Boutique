@@ -15,7 +15,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(to top, #ff9f7c 0%, #ffe5d9 50%, #ffffff 100%);
             min-height: 100vh;
-            padding: 40px 20px;
+            padding: 80px 20px 40px;
             position: relative;
         }
 
@@ -31,11 +31,46 @@
             z-index: 0;
         }
 
+        /* Logout button – fixed top right */
+        .logout-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .btn-logout {
+            background: #fff;
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            padding: 10px 22px;
+            border-radius: 60px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout:hover {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.2);
+        }
+
+        /* Main flex container */
         .account-container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 30px;
+            flex-wrap: wrap;
             animation: fadeInUp 0.6s ease-out;
         }
 
@@ -48,6 +83,11 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        .profile-wrapper {
+            flex: 1 1 500px;
+            max-width: 700px;
         }
 
         .profile-card {
@@ -155,14 +195,56 @@
             font-weight: normal;
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-            justify-content: center;
+        /* Footer inside the profile card */
+        .footer-nav {
+            margin-top: 0;
+            text-align: center;
+            padding: 20px 30px 25px;
+            border-top: 1px solid #e9ecef;
+            background: white;
         }
 
+        .seller-id {
+            font-size: 12px;
+            color: #adb5bd;
+            margin-top: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        /* Side panel */
+        .side-panel {
+            flex: 0 0 280px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.06);
+            padding: 25px;
+            align-self: flex-start;
+            position: sticky;
+            top: 100px;
+        }
+
+        .side-panel h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e2f;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .side-btn {
+            width: 100%;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            font-size: 15px;
+        }
+
+        /* General button styles (used both in card and side panel) */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -178,6 +260,7 @@
             color: #495057;
             text-decoration: none;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            white-space: nowrap;
         }
 
         .btn-primary {
@@ -205,30 +288,42 @@
             transform: translateY(-2px);
         }
 
-        .footer-nav {
-            margin-top: 30px;
-            text-align: center;
-            padding: 20px 30px 25px;
-            border-top: 1px solid #e9ecef;
-            background: white;
+        .btn-text {
+            background: transparent;
+            border: none;
+            color: #6b8c5c;
+            padding: 5px 10px;
+            font-size: 14px;
+            text-decoration: none;
+            box-shadow: none;
         }
 
-        .seller-id {
-            font-size: 12px;
-            color: #adb5bd;
-            margin-top: 12px;
-            letter-spacing: 0.3px;
+        .btn-text:hover {
+            text-decoration: underline;
+            transform: none;
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 800px) {
+            .account-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .profile-wrapper {
+                max-width: 100%;
+                flex: 1 1 auto;
+            }
+
+            .side-panel {
+                width: 100%;
+                max-width: 400px;
+                position: static;
+                margin-top: 20px;
+            }
+
             .info-grid {
                 grid-template-columns: 1fr;
                 gap: 15px;
-            }
-
-            .btn {
-                padding: 10px 20px;
-                font-size: 13px;
             }
 
             .profile-header {
@@ -244,47 +339,55 @@
     </style>
 </head>
 <body>
+<div class="logout-container">
+  <form th:action="@{/logout}" method="post" style="display:inline;">
+    <button type="submit" class="btn btn-logout">🚪 Logout</button>
+  </form>
+</div>
+
 <div class="account-container">
-  <div class="profile-card">
-    <div class="profile-header">
-      <div class="avatar">
-        <span th:text="${seller.name != null ? seller.name.substring(0,1) : '?'}">👤</span>
-      </div>
-      <h1>
-        <span th:text="${seller.name}">Seller Name</span>
-        <span class="role-badge">SELLER</span>
-      </h1>
-      <div class="member-since">Seller account</div>
-    </div>
-
-    <div class="info-section">
-      <div class="info-grid">
-        <div class="info-card">
-          <div class="info-icon">📞</div>
-          <div class="info-title">PHONE NUMBER</div>
-          <div class="info-value" th:text="${seller.number}">+7 999 123-45-67</div>
+  <div class="profile-wrapper">
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="avatar">
+          <span th:text="${seller.name != null ? seller.name.substring(0,1) : '?'}">👤</span>
         </div>
-        <div class="info-card">
-          <div class="info-icon">✉️</div>
-          <div class="info-title">EMAIL ADDRESS</div>
-          <div class="info-value small" th:text="${seller.email != null ? seller.email : 'not specified'}">seller@example.com</div>
+        <h1>
+          <span th:text="${seller.name}">Seller Name</span>
+          <span class="role-badge">SELLER</span>
+        </h1>
+        <div class="member-since">Seller account</div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-icon">📞</div>
+            <div class="info-title">PHONE NUMBER</div>
+            <div class="info-value" th:text="${seller.number}"></div>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">✉️</div>
+            <div class="info-title">EMAIL ADDRESS</div>
+            <div class="info-value small" th:text="${seller.email != null ? seller.email : 'not specified'}"></div>
+          </div>
         </div>
       </div>
 
-      <div class="action-buttons">
-        <a href="/welcome" class="btn btn-secondary">
-          🏠 Back to Home
-        </a>
-        <a href="#" class="btn btn-primary">
-          📦 My products
-        </a>
+      <div class="footer-nav">
+        <a href="/welcome" class="btn-text">🏠 Back to Home</a>
+        <div class="seller-id" th:text="'Seller ID: ' + ${seller.id}">Seller ID: </div>
       </div>
-    </div>
-
-    <div class="footer-nav">
-      <div class="seller-id" th:text="'Seller ID: ' + ${seller.id}">Seller ID: 12345</div>
     </div>
   </div>
+
+  <div class="side-panel">
+    <h3>🛠️ Actions</h3>
+    <a th:href="@{/seller/add-item}" class="btn btn-primary side-btn">➕ Add Item</a>
+    <a th:href="@{/seller/items}" class="btn btn-primary side-btn">📋 List Items</a>
+    <a th:href="@{/seller/items/verify}" class="btn btn-primary side-btn">New Items</a>
+  </div>
 </div>
+
 </body>
 </html>
