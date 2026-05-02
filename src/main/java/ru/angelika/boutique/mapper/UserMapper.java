@@ -40,6 +40,7 @@ public class UserMapper {
     }
     public static UserGetDto toGetUser(User user) {
         return UserGetDto.builder()
+                .id(user.getId())
                 .name(user.getName())
                 .number(user.getNumber())
                 .email(user.getEmail())

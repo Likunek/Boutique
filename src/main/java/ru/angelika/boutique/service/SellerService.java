@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.SellerDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
-import ru.angelika.boutique.mapper.SellerMapper;
 import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.repository.SellerRepository;
 
@@ -29,6 +28,18 @@ public class SellerService {
             throw new ResourceExistsException(Seller.class, seller.getEmail());
         }
         sellerRepository.save(seller);
+    }
+
+    public Seller getById(Long id) {
+        return sellerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Seller.class, id));
+    }
+
+    public Seller getByNumber(String number) {
+        Seller seller = sellerRepository.findByNumber(number);
+        if (seller == null) {
+            throw  new ResourceNotFoundException(Seller.class, number);
+        }
+        return seller;
     }
 
     public Seller getBySellerName(String name) {

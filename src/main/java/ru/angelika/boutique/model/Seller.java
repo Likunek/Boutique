@@ -3,7 +3,6 @@ package ru.angelika.boutique.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-
 @Data
 @Entity
 @Table(schema = "public", name = "sellers")

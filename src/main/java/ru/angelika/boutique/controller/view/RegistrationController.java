@@ -2,6 +2,8 @@ package ru.angelika.boutique.controller.view;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,6 +58,24 @@ public class RegistrationController {
             model.addAttribute("message", "User exists");
             return "registration";
         }
+    }
+    @GetMapping("/welcome")
+    public String welcome(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String phone = auth.getName();
+        String roleName = auth.getAuthorities().iterator().next().getAuthority();
+        switch (roleName) {
+            case "ROLE_USER" -> {
+                model.addAttribute("userId",userService.getByNumber(phone).getId());
+                model.addAttribute("userRole","users");
+            }
+
+            case "ROLE_SELLER" -> {
+                model.addAttribute("userId",sellerService.getByNumber(phone).getId());
+                model.addAttribute("userRole","sellers");
+            }
+        }
+        return "welcome";
     }
 
 }

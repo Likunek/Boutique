@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.angelika.boutique.dto.UserDto;
+import ru.angelika.boutique.dto.UserGetDto;
+import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.service.UserService;
 
 @RestController
@@ -19,6 +21,11 @@ public class UserRestController {
     @PostMapping
     public void addUser(@Valid @RequestBody UserDto user) {
         userService.addUser(user);
+    }
+
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable Long id) {
+        return userService.getById(id);
     }
 
 }
