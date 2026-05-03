@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.angelika.boutique.dto.ItemDto;
@@ -65,8 +66,13 @@ public class ItemController {
         model.addAttribute("items", items);
         return "seller-items";
     }
-
-
+    @GetMapping("/seller/items/{id}")
+    public String getItemById(@PathVariable Long id, Model model) {
+        addData(model);
+        Item item = itemService.getItemById(id);
+        model.addAttribute("item", item);
+        return "item";
+    }
 
     private Seller addData(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

@@ -13,4 +13,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findBySellerIdAndVerifyTrue(Long sellerId);
     @Query("SELECT DISTINCT i FROM Item i LEFT JOIN FETCH i.itemsAtStorages WHERE i.seller = :seller")
     List<Item> findBySellerWithStorages(@Param("seller") Seller seller);
+
+
 }
