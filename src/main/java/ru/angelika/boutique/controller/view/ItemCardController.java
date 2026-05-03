@@ -6,10 +6,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import ru.angelika.boutique.dto.ItemCardDto;
+import ru.angelika.boutique.dto.ItemCardUpdateDto;
 import ru.angelika.boutique.model.Item;
 import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.service.ItemCardService;
@@ -42,11 +41,23 @@ public class ItemCardController {
     public String addItemCard(@Valid ItemCardDto itemCardDto, Model model) {
         try {
             itemCardService.addItemCard(itemCardDto, addData(model));
-            model.addAttribute("successMessage", "Item successfully sent to storage!");
+            model.addAttribute("successMessage", "Card successfully add!");
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Error: " + e.getMessage());
         }
         return "add-card";
+    }
+
+    @PutMapping("/seller/add-card/{id}")
+    public String updateCard(@PathVariable Long id, @Valid ItemCardUpdateDto itemCardUpdateDto, Model model) {
+        addData(model);
+        try {
+            itemCardService.updateItemCard(itemCardUpdateDto, id);
+            model.addAttribute("successMessage", "Card successfully update!");
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Error: " + e.getMessage());
+        }
+        return "redirect:/seller/items/" + id;
     }
 
     private String addData(Model model) {

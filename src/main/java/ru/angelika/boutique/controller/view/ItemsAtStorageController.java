@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.angelika.boutique.dto.ItemsAtStorageDto;
 import ru.angelika.boutique.model.Item;
@@ -53,6 +54,13 @@ public class ItemsAtStorageController {
             model.addAttribute("errorMessage", "Error: " + e.getMessage());
         }
         return "send-to-storage";
+    }
+
+    @PutMapping
+    public String updateFormItemsAtStorage(Long id, Long count, Model model) {
+        addData(model);
+        itemsAtStorageService.updateItemsAtStorage(id, count);
+        return "redirect:/seller/items/" + id;
     }
 
     private void addData(Model model) {

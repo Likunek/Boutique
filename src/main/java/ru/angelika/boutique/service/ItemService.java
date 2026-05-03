@@ -8,7 +8,9 @@ import ru.angelika.boutique.dto.ItemDto;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.ItemMapper;
 import ru.angelika.boutique.model.Item;
+import ru.angelika.boutique.model.ItemCard;
 import ru.angelika.boutique.model.Seller;
+import ru.angelika.boutique.repository.ItemCardRepository;
 import ru.angelika.boutique.repository.ItemRepository;
 
 import java.util.List;
@@ -16,18 +18,15 @@ import java.util.List;
 @Service
 public class ItemService {
     private final ItemRepository itemRepository;
-    private final SellerService sellerService;
+    private final ItemCardRepository itemCardRepository;
 
     @Autowired
-    public ItemService(ItemRepository itemRepository, SellerService sellerService) {
+    public ItemService(ItemRepository itemRepository, ItemCardRepository itemCardRepository) {
         this.itemRepository = itemRepository;
-        this.sellerService = sellerService;
+        this.itemCardRepository = itemCardRepository;
     }
 
-    public void addItem(ItemDto itemDto) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String phone = auth.getName();
-        Seller seller = sellerService.getByNumber(phone);
+    public void addItem(ItemDto itemDto, Seller seller) {
         itemRepository.save(ItemMapper.toItem(itemDto, seller));
     }
 
@@ -47,12 +46,14 @@ public class ItemService {
     }
 
     public void updateItem(ItemDto itemDto, Long id) {
-        itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Item.class, id));
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String phone = auth.getName();
-        Seller seller = sellerService.getByNumber(phone);
-        Item item = ItemMapper.toItem(itemDto, seller);
-        item.setId(id);
+        Item item =itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Item.class, id));
+        ItemMapper.toItemUpdate(itemDto, item);
+        if (item.getItemCard() != null) {
+            ItemCard itemCard = itemCardRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException(ItemCard.class, id));
+            itemCard.setPrice(itemDto.getCostPrice()*1.2);
+            itemCardRepository.save(itemCard);
+        }
         itemRepository.save(item);
     }
 

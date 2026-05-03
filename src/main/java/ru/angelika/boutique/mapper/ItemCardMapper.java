@@ -2,6 +2,7 @@ package ru.angelika.boutique.mapper;
 
 
 import ru.angelika.boutique.dto.ItemCardDto;
+import ru.angelika.boutique.dto.ItemCardUpdateDto;
 import ru.angelika.boutique.model.ItemCard;
 
 public class ItemCardMapper {
@@ -12,5 +13,10 @@ public class ItemCardMapper {
         itemCard.setPrice(price*1.2);
         itemCard.setSeller(sellerName);
         return itemCard;
+    }
+
+    public static void toItemCardUpdate(ItemCardUpdateDto itemCardUpdateDto , ItemCard itemCard) {
+        itemCard.setName(itemCardUpdateDto.getName());
+        itemCard.setDescription(itemCardUpdateDto.getDescription());
     }
 }

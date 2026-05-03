@@ -10,7 +10,15 @@ public class ItemMapper {
         item.setName(itemDto.getName());
         item.setCostPrice(itemDto.getCostPrice());
         item.setWeight(itemDto.getWeight());
+        item.setSquare(itemDto.getSquare());
         item.setSeller(seller);
         return item;
     }
+    public static void toItemUpdate(ItemDto itemDto, Item item) {
+        item.setName(itemDto.getName());
+        item.setCostPrice(itemDto.getCostPrice());
+        item.setWeight(itemDto.getWeight());
+        item.setSquare(itemDto.getSquare());
+    }
+
 }

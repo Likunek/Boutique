@@ -47,8 +47,8 @@ public class ItemController {
             return "add-item";
         }
         try {
-            addData(model);
-            itemService.addItem(itemDto);
+            Seller seller = addData(model);
+            itemService.addItem(itemDto, seller);
             model.addAttribute("successMessage", "Item '" + itemDto.getName() + "' added successfully!");
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Error saving item: " + e.getMessage());
@@ -69,6 +69,17 @@ public class ItemController {
         Item item = itemService.getItemById(id);
         model.addAttribute("item", item);
         return "item";
+    }
+    @PutMapping("/seller/items/{id}")
+    public String updateItem(@PathVariable Long id, @Valid ItemDto itemDto, Model model) {
+        addData(model);
+        try {
+            itemService.updateItem(itemDto, id);
+            model.addAttribute("successMessage", "Item successfully update!");
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Error: " + e.getMessage());
+        }
+        return "redirect:/seller/items/" + id;
     }
     @DeleteMapping("/seller/items/{id}")
     public String deleteItem(@PathVariable Long id) {

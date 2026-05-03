@@ -3,6 +3,7 @@ package ru.angelika.boutique.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.ItemCardDto;
+import ru.angelika.boutique.dto.ItemCardUpdateDto;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.ItemCardMapper;
 import ru.angelika.boutique.model.Item;
@@ -32,10 +33,10 @@ public class ItemCardService {
         return itemCardRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ItemCard.class, id));
     }
 
-    public void updateItemCard(ItemCardDto itemCardDto, Long id, String seller) {
-        itemCardRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ItemCard.class, id));
-        Item item = itemService.getItemById(itemCardDto.getItemId());
-        itemCardRepository.save(ItemCardMapper.toItemCard(itemCardDto, item.getCostPrice(), seller));
+    public void updateItemCard(ItemCardUpdateDto itemCardDto, Long id) {
+        ItemCard itemCard = itemCardRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ItemCard.class, id));
+        ItemCardMapper.toItemCardUpdate(itemCardDto, itemCard);
+        itemCardRepository.save(itemCard);
     }
     public void deleteItemCard(Long id) {
         itemCardRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ItemCard.class, id));
