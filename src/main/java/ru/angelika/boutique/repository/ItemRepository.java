@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
     Item findByName(String name);
-    List<Item> findBySellerId(Long id);
+    List<Item> findBySellerIdAndVerifyTrue(Long sellerId);
 }

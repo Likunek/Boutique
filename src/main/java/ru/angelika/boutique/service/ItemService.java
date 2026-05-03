@@ -33,11 +33,15 @@ public class ItemService {
 
     public List<Item> getItemBySellerId(Long id) {
         Seller seller = sellerService.getById(id);
-        return itemRepository.findBySellerId(id);
+        return itemRepository.findBySellerIdAndVerifyTrue(id);
     }
 
     public Item getItemById(Long id) {
        return itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Item.class, id));
+    }
+
+    public void addCardItem(Item item) {
+        itemRepository.save(item);
     }
 
     public void updateItem(ItemDto itemDto, Long id) {

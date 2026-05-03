@@ -9,61 +9,53 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.angelika.boutique.dto.ItemsAtStorageDto;
+import ru.angelika.boutique.dto.ItemCardDto;
 import ru.angelika.boutique.model.Item;
 import ru.angelika.boutique.model.Seller;
-import ru.angelika.boutique.model.Storage;
+import ru.angelika.boutique.service.ItemCardService;
 import ru.angelika.boutique.service.ItemService;
-import ru.angelika.boutique.service.ItemsAtStorageService;
 import ru.angelika.boutique.service.SellerService;
-import ru.angelika.boutique.service.StorageService;
 
 import java.util.List;
 
 @Controller
-@RequestMapping("/seller/send-to-storage")
-public class ItemsAtStorageController {
+@RequestMapping
+public class ItemCardController {
     private final ItemService itemService;
     private final SellerService sellerService;
-    private final StorageService storageService;
-    private final ItemsAtStorageService itemsAtStorageService;
+    private final ItemCardService itemCardService;
 
     @Autowired
-    public ItemsAtStorageController(ItemService itemService, SellerService sellerService,
-                                    StorageService storageService, ItemsAtStorageService itemsAtStorageService) {
+    public ItemCardController(ItemService itemService, SellerService sellerService, ItemCardService itemCardService) {
         this.itemService = itemService;
         this.sellerService = sellerService;
-        this.storageService = storageService;
-        this.itemsAtStorageService = itemsAtStorageService;
+        this.itemCardService = itemCardService;
     }
 
-    @GetMapping
-    public String getFormItemsAtStorage(Model model) {
+    @GetMapping("/seller/add-card")
+    public String getFormNewCard(Model model) {
         addData(model);
-        return "send-to-storage";
+        return "add-card";
     }
 
-    @PostMapping
-    public String addItemsAtStorage(@Valid ItemsAtStorageDto itemsAtStorageDto, Model model) {
-        addData(model);
+    @PostMapping("/seller/add-card")
+    public String addItemCard(@Valid ItemCardDto itemCardDto, Model model) {
         try {
-            itemsAtStorageService.addItemsAtStorage(itemsAtStorageDto);
+            itemCardService.addItemCard(itemCardDto, addData(model));
             model.addAttribute("successMessage", "Item successfully sent to storage!");
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Error: " + e.getMessage());
         }
-        return "send-to-storage";
+        return "add-card";
     }
 
-    private void addData(Model model) {
+    private String addData(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Seller seller = sellerService.getByNumber(auth.getName());
-
         List<Item> items = itemService.getItemBySellerId(seller.getId());
-        List<Storage> storages = storageService.getAllStorages();
-
         model.addAttribute("items", items);
-        model.addAttribute("storages", storages);
         model.addAttribute("id", seller.getId());
+        return seller.getName();
     }
+
 }

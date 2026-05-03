@@ -32,7 +32,7 @@ public class ItemController {
 
     @GetMapping("/seller/add-item")
     public String getFormNewItem(Model model) {
-        addIdAtForm(model);
+        addData(model);
         return "add-item";
     }
 
@@ -47,7 +47,7 @@ public class ItemController {
             return "add-item";
         }
         try {
-            addIdAtForm(model);
+            addData(model);
             itemService.addItem(itemDto);
             model.addAttribute("successMessage", "Item '" + itemDto.getName() + "' added successfully!");
         } catch (Exception e) {
@@ -56,7 +56,9 @@ public class ItemController {
         return "add-item";
     }
 
-    private void addIdAtForm(Model model) {
+
+
+    private void addData(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Seller seller = sellerService.getByNumber(auth.getName());
         model.addAttribute("id", seller.getId());
