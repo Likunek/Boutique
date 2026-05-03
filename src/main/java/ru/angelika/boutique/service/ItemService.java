@@ -32,8 +32,10 @@ public class ItemService {
     }
 
     public List<Item> getItemBySellerId(Long id) {
-        Seller seller = sellerService.getById(id);
         return itemRepository.findBySellerIdAndVerifyTrue(id);
+    }
+    public List<Item> getAllItemBySeller( Seller seller) {
+        return itemRepository.findBySellerWithStorages(seller);
     }
 
     public Item getItemById(Long id) {

@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.angelika.boutique.dto.ItemDto;
+import ru.angelika.boutique.model.Item;
 import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.service.ItemService;
 import ru.angelika.boutique.service.SellerService;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -56,11 +58,20 @@ public class ItemController {
         return "add-item";
     }
 
+    @GetMapping("/seller/items")
+    public String getAllItemsSeller(Model model) {
+        Seller seller = addData(model);
+        List<Item> items = itemService.getAllItemBySeller(seller);
+        model.addAttribute("items", items);
+        return "seller-items";
+    }
 
 
-    private void addData(Model model) {
+
+    private Seller addData(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Seller seller = sellerService.getByNumber(auth.getName());
         model.addAttribute("id", seller.getId());
+        return seller;
     }
 }

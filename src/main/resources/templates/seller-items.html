@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add New Item</title>
-  <style>
-    * {
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Items</title>
+    <style>
+        * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
@@ -274,71 +274,129 @@
         font-size: 22px;
       }
     }
-  </style>
+        .table-container {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.06);
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        th {
+            color: #4a5b3c;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+        td {
+            color: #2c3e2f;
+        }
+        .item-link {
+             color: #4a5b3c;
+             text-decoration: none;
+             font-weight: 500;
+             transition: all 0.2s ease;
+             display: inline-block;
+        }
+        .item-link:hover {
+            color: #8aaE7a;
+            text-decoration: underline;
+             transform: translateX(4px);
+        }
+        .storage-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .storage-list li {
+            font-size: 14px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-verified { background: #e6f3e0; color: #2d5a27; }
+        .status-pending { background: #fff3cd; color: #856404; }
+    </style>
 </head>
 <body>
-
 <div class="back-nav">
-  <a th:href="@{/seller/profile/{id}(id=${id})}" class="btn btn-text">← Back to Profile</a>
+    <a th:href="@{/seller/profile/{id}(id=${id})}" class="btn btn-text">← Back to Profile</a>
 </div>
 
 <div class="logout-container">
-  <form th:action="@{/logout}" method="post" style="display:inline;">
-    <button type="submit" class="btn btn-logout">🚪 Logout</button>
-  </form>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-logout">🚪 Logout</button>
+    </form>
 </div>
 
-<div class="form-container">
-  <div class="form-card">
-    <div class="form-header">
-      <h1><span>➕</span> Add New Item</h1>
-      <p>Fill in the details for your new product</p>
+<div class="form-container" style="max-width: 1000px;">
+    <div class="form-card">
+        <div class="form-header">
+            <h1>📋 My Items</h1>
+            <p>All your items and their storage distribution</p>
+        </div>
+
+        <div class="form-body">
+            <div th:if="${#lists.isEmpty(items)}" style="text-align: center; padding: 30px; color: #6c757d;">
+                No items yet. <a href="/seller/add-item">Add your first item</a>
+            </div>
+
+            <div th:if="${not #lists.isEmpty(items)}" class="table-container">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Weight</th>
+                        <th>Square</th>
+                        <th>Status</th>
+                        <th>Storages</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${items}">
+                        <td>
+                            <a th:href="@{/seller/items/{id}(id=${item.id})}"
+                               th:text="${item.name}"
+                               class="item-link">
+                                Item Name
+                            </a>
+                        </td>
+                        <td th:text="${item.costPrice} + ' ₽'">0.00</td>
+                        <td th:text="${item.weight != null ? item.weight + ' kg' : '—'}">—</td>
+                        <td th:text="${item.square} + ' m²'">1</td>
+                        <td>
+                            <span th:if="${item.verify}" class="status-badge status-verified">✓ Verified</span>
+                            <span th:unless="${item.verify}" class="status-badge status-pending">Rejected</span>
+                        </td>
+                        <td>
+                            <ul class="storage-list">
+                                <li th:each="storageEntry : ${item.itemsAtStorages}"
+                                    th:text="${storageEntry.storage.name} + ': ' + storageEntry.count">
+                                    Storage: 0
+                                </li>
+                                <li th:if="${#lists.isEmpty(item.itemsAtStorages)}" style="color: #adb5bd;">Not on storage</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-
-    <div class="form-body">
-      <div th:if="${successMessage}" class="alert alert-success">
-        <span>✅</span> <span th:text="${successMessage}"></span>
-      </div>
-      <div th:if="${errorMessage}" class="alert alert-error">
-        <span>❌</span> <span th:text="${errorMessage}"></span>
-      </div>
-
-      <form th:action="@{/seller/add-item}" method="post">
-        <div class="field-group">
-          <label class="field-label" for="name">Item Name</label>
-          <input type="text" id="name" name="name"
-                 class="field-input" required>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label" for="costPrice">Cost Price</label>
-          <input type="number" id="costPrice" name="costPrice"
-                 class="field-input" placeholder="0.00" step="0.01" min="0" required>
-          <div class="field-hint">Enter price in ₽</div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label" for="weight">Weight</label>
-          <input type="number" id="weight" name="weight"
-                 class="field-input" placeholder="0.0" step="0.1" min="0">
-          <div class="field-hint">Optional weight in kg</div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label" for="square">Square</label>
-          <input type="number" id="square" name="square"
-                 class="field-input" placeholder="0.01" value="0.01" min="0.01" step="0.01">
-          <div class="field-hint">Enter squares in m²</div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary">✓ Save Item</button>
-          <a href="/seller/profile" class="btn btn-secondary">Cancel</a>
-        </div>
-      </form>
-    </div>
-  </div>
 </div>
-
 </body>
 </html>

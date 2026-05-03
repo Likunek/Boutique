@@ -3,6 +3,9 @@ package ru.angelika.boutique.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Entity
 @Table(schema = "public", name = "items")
@@ -27,4 +30,6 @@ public class Item {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "item_card_id")
     private ItemCard itemCard;
+    @OneToMany(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ItemsAtStorage> itemsAtStorages = new ArrayList<>();
 }
