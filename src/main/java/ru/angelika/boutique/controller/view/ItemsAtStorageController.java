@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.angelika.boutique.dto.ItemsAtStorageDto;
 import ru.angelika.boutique.model.Item;
 import ru.angelika.boutique.model.Seller;
@@ -57,9 +58,13 @@ public class ItemsAtStorageController {
     }
 
     @PutMapping
-    public String updateFormItemsAtStorage(Long id, Long count, Model model) {
-        addData(model);
-        itemsAtStorageService.updateItemsAtStorage(id, count);
+    public String updateFormItemsAtStorage(Long id, Long count, RedirectAttributes redirectAttributes) {
+        try {
+            itemsAtStorageService.updateItemsAtStorage(id, count);
+            redirectAttributes.addFlashAttribute("successMessage", "Item successfully sent to storage!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
+        }
         return "redirect:/seller/items/" + id;
     }
 

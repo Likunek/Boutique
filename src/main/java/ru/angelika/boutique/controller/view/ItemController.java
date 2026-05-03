@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.angelika.boutique.dto.ItemDto;
 import ru.angelika.boutique.model.Item;
 import ru.angelika.boutique.model.Seller;
@@ -71,13 +72,12 @@ public class ItemController {
         return "item";
     }
     @PutMapping("/seller/items/{id}")
-    public String updateItem(@PathVariable Long id, @Valid ItemDto itemDto, Model model) {
-        addData(model);
+    public String updateItem(@PathVariable Long id, @Valid ItemDto itemDto, RedirectAttributes redirectAttributes) {
         try {
             itemService.updateItem(itemDto, id);
-            model.addAttribute("successMessage", "Item successfully update!");
+            redirectAttributes.addFlashAttribute("successMessage", "Item successfully update!");
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Error: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
         return "redirect:/seller/items/" + id;
     }

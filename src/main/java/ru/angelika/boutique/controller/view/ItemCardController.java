@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.angelika.boutique.dto.ItemCardDto;
 import ru.angelika.boutique.dto.ItemCardUpdateDto;
 import ru.angelika.boutique.model.Item;
@@ -49,13 +50,12 @@ public class ItemCardController {
     }
 
     @PutMapping("/seller/add-card/{id}")
-    public String updateCard(@PathVariable Long id, @Valid ItemCardUpdateDto itemCardUpdateDto, Model model) {
-        addData(model);
+    public String updateCard(@PathVariable Long id, @Valid ItemCardUpdateDto itemCardUpdateDto, RedirectAttributes redirectAttributes) {
         try {
             itemCardService.updateItemCard(itemCardUpdateDto, id);
-            model.addAttribute("successMessage", "Card successfully update!");
+            redirectAttributes.addFlashAttribute("successMessage", "Card successfully update!");
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Error: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
         return "redirect:/seller/items/" + id;
     }
