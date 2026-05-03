@@ -8,10 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import ru.angelika.boutique.dto.ItemDto;
 import ru.angelika.boutique.model.Item;
 import ru.angelika.boutique.model.Seller;
@@ -72,6 +69,11 @@ public class ItemController {
         Item item = itemService.getItemById(id);
         model.addAttribute("item", item);
         return "item";
+    }
+    @DeleteMapping("/seller/items/{id}")
+    public String deleteItem(@PathVariable Long id) {
+        itemService.deleteItem(id);
+        return "redirect:/seller/items";
     }
 
     private Seller addData(Model model) {
