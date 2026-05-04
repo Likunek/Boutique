@@ -1,16 +1,14 @@
 package ru.angelika.boutique.controller.view;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.angelika.boutique.dto.ItemsAtStorageDto;
 import ru.angelika.boutique.model.Item;
@@ -60,8 +58,9 @@ public class ItemsAtStorageController {
         return "send-to-storage";
     }
 
-    @PutMapping
-    public String updateFormItemsAtStorage(Long id, Long count, RedirectAttributes redirectAttributes) {
+    @PutMapping("{id}")
+    public String updateFormItemsAtStorage(@PathVariable Long id, @RequestParam Long itemId,
+                                           @Min(0) Long count, RedirectAttributes redirectAttributes) {
         try {
             itemsAtStorageService.updateItemsAtStorage(id, count);
             redirectAttributes.addFlashAttribute("successMessage", "Item successfully sent to storage!");
@@ -69,7 +68,7 @@ public class ItemsAtStorageController {
             log.error("Error update itemsAtStorage id={}: {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
-        return "redirect:/seller/items/" + id;
+        return "redirect:/seller/items/" + itemId;
     }
 
     private void addData(Model model) {

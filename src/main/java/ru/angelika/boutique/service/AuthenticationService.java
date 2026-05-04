@@ -44,6 +44,12 @@ public class AuthenticationService implements UserDetailsService {
         }
         return authentication;
     }
+
+    public void deleteAuthentication(String number) {
+        Authentication authentication = authenticationRepository.findByNumber(number);
+        authenticationRepository.deleteById(authentication.getId());
+        log.info("Delete authentication by id={}, number={}", authentication.getId(), number);
+    }
     @Override
     public UserDetails loadUserByUsername(String number) throws UsernameNotFoundException {
         Authentication authentication = authenticationRepository.findByNumber(number);

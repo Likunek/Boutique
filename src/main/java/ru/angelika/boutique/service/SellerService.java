@@ -12,10 +12,16 @@ import ru.angelika.boutique.repository.SellerRepository;
 @Slf4j
 @Service
 public class SellerService {
+    private final ItemService itemService;
     private final SellerRepository sellerRepository;
+    private final AuthenticationService authenticationService;
+
     @Autowired
-    public SellerService(SellerRepository sellerRepository) {
+    public SellerService(ItemService itemService, SellerRepository sellerRepository,
+                         AuthenticationService authenticationService) {
+        this.itemService = itemService;
         this.sellerRepository = sellerRepository;
+        this.authenticationService = authenticationService;
     }
 
     public void addSeller(Seller seller) {
@@ -95,10 +101,12 @@ public class SellerService {
     }
 
     public void deleteSeller(Long id) {
-        sellerRepository.findById(id).orElseThrow(() -> {
+        Seller seller = sellerRepository.findById(id).orElseThrow(() -> {
             log.error("Seller not found for delete, id={}", id);
             return new ResourceNotFoundException(Seller.class, id);
         });
+        authenticationService.deleteAuthentication(seller.getNumber());
+        itemService.deleteBySellerId(seller.getId());
         sellerRepository.deleteById(id);
         log.info("Delete seller by id={}", id);
     }

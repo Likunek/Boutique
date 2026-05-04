@@ -24,11 +24,10 @@ public class ItemCardService {
 
     public void addItemCard(ItemCardDto itemCardDto, String seller) {
         Item item = itemService.getItemById(itemCardDto.getItemId());
-        ItemCard itemCard = ItemCardMapper.toItemCard(itemCardDto, item.getCostPrice(), seller);
+        ItemCard itemCard = itemCardRepository.save(ItemCardMapper.toItemCard(itemCardDto, item.getCostPrice(), seller));
         item.setItemCard(itemCard);
         itemService.addCardItem(item);
-        itemCardRepository.save(itemCard);
-        log.info("Add new ItemCard: name={}, price={}, itemId={}",
+        log.info("Add new ItemCard: name={}, description={}, itemId={}",
                 itemCardDto.getName(), itemCardDto.getDescription(), itemCardDto.getItemId());
     }
 

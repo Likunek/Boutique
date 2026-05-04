@@ -13,6 +13,7 @@ import ru.angelika.boutique.repository.ItemCardRepository;
 import ru.angelika.boutique.repository.ItemRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -83,5 +84,9 @@ public class ItemService {
         });
         itemRepository.deleteById(id);
         log.info("Delete item by id={}", id);
+    }
+
+    public void deleteBySellerId(Long id) {
+        itemRepository.findBySellerId(id).forEach(item -> deleteItem(item.getId()));
     }
 }

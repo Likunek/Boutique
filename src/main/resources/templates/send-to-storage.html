@@ -319,7 +319,7 @@
             <option value="">-- Select a storage --</option>
             <option th:each="storage : ${storages}"
                     th:value="${storage.id}"
-                    th:text="${storage.name}"></option>
+                    th:text="${storage.city} + ', ' + ${storage.address}"></option>
           </select>
         </div>
 

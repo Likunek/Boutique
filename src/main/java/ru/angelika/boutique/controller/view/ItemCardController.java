@@ -52,7 +52,8 @@ public class ItemCardController {
     }
 
     @PutMapping("/seller/add-card/{id}")
-    public String updateCard(@PathVariable Long id, @Valid ItemCardUpdateDto itemCardUpdateDto, RedirectAttributes redirectAttributes) {
+    public String updateCard(@PathVariable Long id,  @RequestParam Long itemId,
+                             @Valid ItemCardUpdateDto itemCardUpdateDto, RedirectAttributes redirectAttributes) {
         try {
             itemCardService.updateItemCard(itemCardUpdateDto, id);
             redirectAttributes.addFlashAttribute("successMessage", "Card successfully update!");
@@ -60,7 +61,7 @@ public class ItemCardController {
             log.error("Error update itemCard id {} : {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
-        return "redirect:/seller/items/" + id;
+        return "redirect:/seller/items/" + itemId;
     }
 
     private String addData(Model model) {

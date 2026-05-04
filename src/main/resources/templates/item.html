@@ -509,12 +509,13 @@
                     </thead>
                     <tbody>
                     <tr th:each="storageEntry : ${item.itemsAtStorages}">
-                        <td th:text="${storageEntry.storage.name}">Storage Name</td>
+                        <td th:text="${storageEntry.storage.city} + ', ' + ${storageEntry.storage.address}">Storage address</td>
                         <td>
                             <span th:id="'countView-' + ${storageEntry.id}" th:text="${storageEntry.count}">0</span>
                             <form th:id="'countForm-' + ${storageEntry.id}" style="display: none;"
                                   th:action="@{/seller/send-to-storage/{entryId}(entryId=${storageEntry.id})}" method="post">
                                 <input type="hidden" name="_method" value="put"/>
+                                <input type="hidden" name="itemId" th:value="${item.id}" />
                                 <input type="number" name="count" class="field-input" style="width: 80px;" th:value="${storageEntry.count}" min="0">
                                 <button type="submit" class="btn btn-primary" style="padding: 8px 16px;">Update</button>
                                 <button type="button" class="btn btn-secondary" style="padding: 8px 16px;"
@@ -557,6 +558,7 @@
                     <div class="preview-card-body">
                         <form th:action="@{/seller/add-card/{cardId}(cardId=${item.itemCard.id})}" method="post">
                             <input type="hidden" name="_method" value="put"/>
+                            <input type="hidden" name="itemId" th:value="${item.id}" />
                             <div style="text-align: left; margin-bottom: 15px;">
                                 <label class="info-title">CARD NAME</label>
                                 <input type="text" name="name" class="field-input" th:value="${item.itemCard.name}" required>
