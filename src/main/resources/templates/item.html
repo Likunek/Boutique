@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Item - ' + ${item.name}">Item Detail</title>
+    <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(to top, #ff9f7c 0%, #ffe5d9 50%, #ffffff 100%);
+      min-height: 100vh;
+      padding: 80px 20px 40px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: radial-gradient(circle at 10% 20%, rgba(107, 140, 92, 0.08) 0%, rgba(107, 140, 92, 0.02) 90%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .back-nav {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+    }
+
+    .back-nav a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      padding: 10px 22px;
+      border-radius: 60px;
+      color: #4a5b3c;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      transition: all 0.2s ease;
+      border: 1px solid #dee2e6;
+    }
+
+    .back-nav a:hover {
+      background: #f8f9fa;
+      transform: translateY(-2px);
+    }
+
+    .logout-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .btn-logout {
+      background: #fff;
+      border: 1px solid #dc3545;
+      color: #dc3545;
+      padding: 10px 22px;
+      border-radius: 60px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      transition: all 0.2s ease;
+    }
+
+    .btn-logout:hover {
+      background: #dc3545;
+      color: white;
+      border-color: #dc3545;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(220, 53, 69, 0.2);
+    }
+
+    .delete-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .form-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile-card {
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 8px 20px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+      flex: 1 1 400px;
+      min-width: 280px;
+    }
+
+    .form-header {
+      background: linear-gradient(135deg, #6b8c5c 0%, #8aaE7a 100%);
+      padding: 35px 30px 25px;
+      text-align: center;
+      color: white;
+    }
+
+    .form-header h1 {
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    .form-header p {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-top: 6px;
+    }
+
+    .form-body {
+      padding: 35px 30px 25px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+    }
+
+    .info-card {
+      background: #f8f9fa;
+      border-radius: 24px;
+      padding: 20px;
+      transition: all 0.2s;
+      border: 1px solid #e9ecef;
+    }
+
+    .info-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      border-color: #d4e0d0;
+    }
+
+    .info-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6c757d;
+      margin-bottom: 8px;
+    }
+
+    .info-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2c3e2f;
+      word-break: break-word;
+    }
+
+    .info-value.small {
+      font-size: 15px;
+      font-weight: normal;
+    }
+
+    .storage-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .storage-table th {
+      background: #f8f9fa;
+      color: #4a5b3c;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      padding: 12px 16px;
+      text-align: left;
+    }
+
+    .storage-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e9ecef;
+      color: #2c3e2f;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-verified {
+      background: #e6f3e0;
+      color: #2d5a27;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .detail-layout {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    .alert {
+    border-radius: 18px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.alert-success {
+    background: #e6f3e0;
+    color: #2d5a27;
+    border: 1px solid #b7d7a8;
+}
+.alert-error {
+    background: #ffe8e8;
+    color: #a12b2b;
+    border: 1px solid #f5c6c6;
+}
+
+    .detail-side {
+      flex: 0 0 320px;
+    }
+
+    .preview-card {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      position: sticky;
+      top: 100px;
+    }
+
+    .preview-card-header {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .preview-card-body {
+      padding: 25px;
+      text-align: center;
+    }
+
+    .preview-price {
+      font-size: 28px;
+      font-weight: 700;
+      color: #2c3e2f;
+      margin: 15px 0;
+    }
+
+    .preview-description {
+      color: #6c757d;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .preview-badge {
+      display: inline-block;
+      background: #e6f3e0;
+      color: #2d5a27;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 60px;
+      padding: 12px 28px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #495057;
+      text-decoration: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: #8aaE7a;
+      border-color: #8aaE7a;
+      color: white;
+      box-shadow: 0 4px 12px rgba(138, 174, 122, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: #6b8c5c;
+      border-color: #6b8c5c;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(107, 140, 92, 0.25);
+    }
+
+    .btn-secondary {
+      background: #f8f9fa;
+      border-color: #dee2e6;
+      color: #4a5b3c;
+    }
+
+    .btn-secondary:hover {
+      background: #e9ecef;
+      transform: translateY(-2px);
+    }
+
+    .btn-text {
+      background: transparent;
+      border: none;
+      color: #6b8c5c;
+      padding: 5px 10px;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .btn-text:hover {
+      text-decoration: underline;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      border-color: #dc3545;
+      color: white;
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+    }
+
+    .btn-danger:hover {
+      background: #b02a37;
+      border-color: #b02a37;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #dee2e6;
+      border-radius: 16px;
+      font-size: 16px;
+      background: white;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .field-input:focus {
+      border-color: #8aaE7a;
+      box-shadow: 0 0 0 3px rgba(138,174,122,0.2);
+    }
+
+    .inline-edit-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .inline-edit-group .field-input {
+      width: 80px;
+      padding: 8px 12px;
+    }
+
+    @media (max-width: 800px) {
+      .detail-side {
+        flex: 1 1 100%;
+      }
+      .detail-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      .profile-card {
+        min-width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="back-nav">
+    <a th:href="@{/seller/profile/{id}(id=${id})}" class="btn btn-text">← Back to Profile</a>
+</div>
+
+<div class="logout-container">
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-logout">🚪 Logout</button>
+    </form>
+</div>
+
+<div class="delete-container">
+    <form th:action="@{/seller/items/{id}(id=${item.id})}" method="post"
+          onsubmit="return confirm('Are you sure you want to delete this item? This action cannot be undone.');">
+        <input type="hidden" name="_method" value="delete"/>
+        <button type="submit" class="btn btn-danger">🗑️ Delete Item</button>
+    </form>
+</div>
+
+<div class="form-container">
+    <div class="form-body">
+        <div th:if="${successMessage}" class="alert alert-success">
+            <span>✅</span> <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-error">
+            <span>❌</span> <span th:text="${errorMessage}"></span>
+        </div>
+    </div>
+    <div class="detail-layout">
+        <div class="profile-card">
+            <div class="form-header">
+                <span th:text="'ID:' + ${item.id}">ID: 1</span>
+                <h1><span th:text="${item.name}">Item Name</span></h1>
+                <p>Information about your item</p>
+            </div>
+            <div class="form-body">
+                <div id="itemViewMode">
+                    <div class="detail-grid">
+                        <div class="info-card">
+                            <div class="info-title">PRICE</div>
+                            <div class="info-value" th:text="${item.costPrice} + ' ₽'"></div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-title">WEIGHT</div>
+                            <div class="info-value" th:text="${item.weight != null ? item.weight + ' kg' : '—'}"></div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-title">SQUARE</div>
+                            <div class="info-value" th:text="${item.square} + ' m²'"></div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-title">STATUS</div>
+                            <div class="info-value">
+                                <span th:if="${item.verify}" class="status-badge status-verified">✓ Verified</span>
+                                <span th:unless="${item.verify}" class="status-badge status-pending">Rejected</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="itemEditMode" style="display: none;">
+                    <form th:action="@{/seller/items/{id}(id=${item.id})}" method="post">
+                        <input type="hidden" name="_method" value="put"/>
+                        <div class="detail-grid">
+                            <div class="info-card">
+                                <div class="info-title">NAME</div>
+                                <input type="text" name="name" class="field-input" th:value="${item.name}" required>
+                            </div>
+                            <div class="info-card">
+                                <div class="info-title">PRICE</div>
+                                <input type="number" name="costPrice" step="0.01" min="0" class="field-input" th:value="${item.costPrice}" required>
+                            </div>
+                            <div class="info-card">
+                                <div class="info-title">WEIGHT</div>
+                                <input type="number" name="weight" step="0.1" min="0" class="field-input" th:value="${item.weight}">
+                            </div>
+                            <div class="info-card">
+                                <div class="info-title">SQUARE</div>
+                                <input type="number" name="square" step="0.01" min="0.01" class="field-input" th:value="${item.square}" required>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; text-align: right;">
+                            <button type="button" class="btn btn-secondary" onclick="cancelItemEdit()">Cancel</button>
+                            <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+
+                <h3 style="margin-top: 20px;">🏭 Storage Distribution</h3>
+                <div th:if="${#lists.isEmpty(item.itemsAtStorages)}" style="color: #adb5bd; padding: 10px;">
+                    This item is not currently stored anywhere.
+                </div>
+                <table th:if="${not #lists.isEmpty(item.itemsAtStorages)}" class="storage-table">
+                    <thead>
+                    <tr>
+                        <th>Storage</th>
+                        <th>Quantity</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="storageEntry : ${item.itemsAtStorages}">
+                        <td th:text="${storageEntry.storage.city} + ', ' + ${storageEntry.storage.address}">Storage address</td>
+                        <td>
+                            <span th:id="'countView-' + ${storageEntry.id}" th:text="${storageEntry.count}">0</span>
+                            <form th:id="'countForm-' + ${storageEntry.id}" style="display: none;"
+                                  th:action="@{/seller/send-to-storage/{entryId}(entryId=${storageEntry.id})}" method="post">
+                                <input type="hidden" name="_method" value="put"/>
+                                <input type="hidden" name="itemId" th:value="${item.id}" />
+                                <input type="number" name="count" class="field-input" style="width: 80px;" th:value="${storageEntry.count}" min="0">
+                                <button type="submit" class="btn btn-primary" style="padding: 8px 16px;">Update</button>
+                                <button type="button" class="btn btn-secondary" style="padding: 8px 16px;"
+                                        th:onclick="'cancelCountEdit(' + ${storageEntry.id} + ')'">Cancel</button>
+                            </form>
+                        </td>
+                        <td>
+                            <button class="btn btn-text" th:onclick="'enableCountEdit(' + ${storageEntry.id} + ')'">✏️ Edit</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="detail-side">
+            <div th:if="${item.itemCard != null}">
+                <div id="cardViewMode" class="preview-card">
+                    <div class="preview-card-header">
+                        <span class="preview-badge">🃏 Card Preview</span>
+                        <h3 th:text="${item.itemCard.name}" style="margin-top: 10px;">Card Name</h3>
+                        <p style="font-size: 12px; color: #6c757d; margin-top: 4px;">
+                            ID: #<span th:text="${item.itemCard.id}"></span>
+                        </p>
+                    </div>
+                    <div class="preview-card-body">
+                        <div th:if="${item.itemCard.description}" class="preview-description" th:text="${item.itemCard.description}"></div>
+                        <div th:unless="${item.itemCard.description}" class="preview-description" style="font-style: italic;">No description provided</div>
+                        <div class="preview-price" th:text="${item.itemCard.price} + ' ₽'">0 ₽</div>
+                        <button class="btn btn-primary" style="margin-top: 10px;" disabled>🛒 Add to Cart</button>
+                        <p style="font-size: 11px; color: #adb5bd; margin-top: 8px;">This is how buyers see your card</p>
+                    </div>
+                </div>
+
+                <div id="cardEditMode" class="preview-card" style="display: none;">
+                    <div class="preview-card-header">
+                        <span class="preview-badge">🃏 Edit Card</span>
+                        <h3 style="margin-top: 10px;">Edit Card Details</h3>
+                    </div>
+                    <div class="preview-card-body">
+                        <form th:action="@{/seller/add-card/{cardId}(cardId=${item.itemCard.id})}" method="post">
+                            <input type="hidden" name="_method" value="put"/>
+                            <input type="hidden" name="itemId" th:value="${item.id}" />
+                            <div style="text-align: left; margin-bottom: 15px;">
+                                <label class="info-title">CARD NAME</label>
+                                <input type="text" name="name" class="field-input" th:value="${item.itemCard.name}" required>
+                            </div>
+                            <div style="text-align: left; margin-bottom: 15px;">
+                                <label class="info-title">DESCRIPTION</label>
+                                <textarea name="description" class="field-input" rows="3" th:text="${item.itemCard.description}"></textarea>
+                            </div>
+                            <div style="text-align: right; margin-top: 15px;">
+                                <button type="button" class="btn btn-secondary" onclick="cancelCardEdit()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">💾 Save Card</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div th:unless="${item.itemCard != null}" class="preview-card" style="text-align: center; padding: 25px;">
+                <p>No card created yet.</p>
+                <a href="/seller/add-card" class="btn btn-primary" style="margin-top: 10px;">+ Create Card</a>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px;">
+                <button type="button" class="btn btn-secondary" onclick="enableItemEdit()">✏️ Edit Item</button>
+                <button th:if="${item.itemCard != null}" type="button" class="btn btn-secondary" onclick="enableCardEdit()">🃏 Edit Card</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  function enableItemEdit() {
+    document.getElementById('itemViewMode').style.display = 'none';
+    document.getElementById('itemEditMode').style.display = 'block';
+  }
+  function cancelItemEdit() {
+    document.getElementById('itemEditMode').style.display = 'none';
+    document.getElementById('itemViewMode').style.display = 'block';
+  }
+
+  function enableCardEdit() {
+    document.getElementById('cardViewMode').style.display = 'none';
+    document.getElementById('cardEditMode').style.display = 'block';
+  }
+  function cancelCardEdit() {
+    document.getElementById('cardEditMode').style.display = 'none';
+    document.getElementById('cardViewMode').style.display = 'block';
+  }
+
+  function enableCountEdit(entryId) {
+    document.getElementById('countView-' + entryId).style.display = 'none';
+    document.getElementById('countForm-' + entryId).style.display = 'inline-flex';
+  }
+  function cancelCountEdit(entryId) {
+    document.getElementById('countForm-' + entryId).style.display = 'none';
+    document.getElementById('countView-' + entryId).style.display = 'inline';
+  }
+</script>
+</body>
+</html>

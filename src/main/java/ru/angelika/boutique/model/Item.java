@@ -3,6 +3,9 @@ package ru.angelika.boutique.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Entity
 @Table(schema = "public", name = "items")
@@ -18,12 +21,15 @@ public class Item {
     @Column(name = "weight")
     private Double weight;
     @Column(name = "square")
-    private Integer square = 1;
+    private Double square = 0.01;
     @Column(name = "verify")
     private Boolean verify = false;
-    @Column(name = "seller", nullable = false)
-    private String seller;
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id")
+    private Seller seller;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "item_card_id")
     private ItemCard itemCard;
+    @OneToMany(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ItemsAtStorage> itemsAtStorages = new ArrayList<>();
 }

@@ -5,6 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +13,7 @@ import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.service.SellerService;
 
 @Controller
-@RequestMapping("profile/sellers")
+@RequestMapping("/seller/profile")
 public class SellerController {
 
     private final SellerService sellerService;
@@ -34,4 +35,10 @@ public class SellerController {
         model.addAttribute("seller", seller);
         return "seller";
     }
+    @DeleteMapping("{id}")
+    public String deleteSeller(@PathVariable Long id) {
+        sellerService.deleteSeller(id);
+        return "redirect:/registration";
+    }
+
 }

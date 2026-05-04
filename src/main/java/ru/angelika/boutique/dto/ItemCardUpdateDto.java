@@ -6,9 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ItemCardDto {
-    @NotNull
-    private Long itemId;
+public class ItemCardUpdateDto {
     @NotNull
     private String name;
     private String description;

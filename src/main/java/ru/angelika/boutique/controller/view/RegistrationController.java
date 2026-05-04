@@ -1,11 +1,15 @@
 package ru.angelika.boutique.controller.view;
 
 
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +19,8 @@ import ru.angelika.boutique.service.AuthenticationService;
 import ru.angelika.boutique.service.SellerService;
 import ru.angelika.boutique.service.UserService;
 
+import java.util.stream.Collectors;
+@Slf4j
 @Controller
 @RequestMapping()
 public class RegistrationController {
@@ -42,8 +48,15 @@ public class RegistrationController {
     }
 
     @PostMapping("/registration")
-    public String adduser(UserDto user, Model model)
+    public String adduser(@Valid UserDto user, BindingResult result,  Model model)
     {
+        if (result.hasErrors()) {
+            model.addAttribute("errorMessage", "Please correct the errors: " +
+                    result.getAllErrors().stream()
+                            .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                            .collect(Collectors.joining(", ")));
+            return "registration";
+        }
         try
         {
             switch (user.getRole()) {
@@ -53,8 +66,9 @@ public class RegistrationController {
             authenticationService.addAuthentication(UserMapper.toAuthentication(user));
             return "redirect:/login";
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
+            log.error("Error add account '{}': {}", user.getName(), e.getMessage(), e);
             model.addAttribute("message", "User exists");
             return "registration";
         }
@@ -67,12 +81,12 @@ public class RegistrationController {
         switch (roleName) {
             case "ROLE_USER" -> {
                 model.addAttribute("userId",userService.getByNumber(phone).getId());
-                model.addAttribute("userRole","users");
+                model.addAttribute("userRole","user");
             }
 
             case "ROLE_SELLER" -> {
                 model.addAttribute("userId",sellerService.getByNumber(phone).getId());
-                model.addAttribute("userRole","sellers");
+                model.addAttribute("userRole","seller");
             }
         }
         return "welcome";

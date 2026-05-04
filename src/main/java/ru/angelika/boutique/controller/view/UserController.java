@@ -12,7 +12,7 @@ import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.service.UserService;
 
 @Controller
-@RequestMapping("profile/users")
+@RequestMapping("/user/profile")
 public class UserController {
 
     private final UserService userService;
