@@ -1,6 +1,7 @@
 package ru.angelika.boutique.controller.view;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,7 @@ import ru.angelika.boutique.service.SellerService;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Controller
 @RequestMapping()
 public class ItemController {
@@ -52,6 +54,7 @@ public class ItemController {
             itemService.addItem(itemDto, seller);
             model.addAttribute("successMessage", "Item '" + itemDto.getName() + "' added successfully!");
         } catch (Exception e) {
+            log.error("Error add item '{}': {}", itemDto.getName(), e.getMessage(), e);
             model.addAttribute("errorMessage", "Error saving item: " + e.getMessage());
         }
         return "add-item";
@@ -77,6 +80,7 @@ public class ItemController {
             itemService.updateItem(itemDto, id);
             redirectAttributes.addFlashAttribute("successMessage", "Item successfully update!");
         } catch (Exception e) {
+            log.error("Error update item id={}: {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
         return "redirect:/seller/items/" + id;

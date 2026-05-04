@@ -1,6 +1,7 @@
 package ru.angelika.boutique.controller.view;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,7 +22,7 @@ import ru.angelika.boutique.service.SellerService;
 import ru.angelika.boutique.service.StorageService;
 
 import java.util.List;
-
+@Slf4j
 @Controller
 @RequestMapping("/seller/send-to-storage")
 public class ItemsAtStorageController {
@@ -52,6 +53,8 @@ public class ItemsAtStorageController {
             itemsAtStorageService.addItemsAtStorage(itemsAtStorageDto);
             model.addAttribute("successMessage", "Item successfully sent to storage!");
         } catch (Exception e) {
+            log.error("Error add itemAtStorage: itemId={}, storageId={}: {}",
+                    itemsAtStorageDto.getItemId(), itemsAtStorageDto.getStorageId(), e.getMessage(), e);
             model.addAttribute("errorMessage", "Error: " + e.getMessage());
         }
         return "send-to-storage";
@@ -63,6 +66,7 @@ public class ItemsAtStorageController {
             itemsAtStorageService.updateItemsAtStorage(id, count);
             redirectAttributes.addFlashAttribute("successMessage", "Item successfully sent to storage!");
         } catch (Exception e) {
+            log.error("Error update itemsAtStorage id={}: {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
         return "redirect:/seller/items/" + id;

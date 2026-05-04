@@ -2,6 +2,7 @@ package ru.angelika.boutique.controller.view;
 
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.core.Authentication;
@@ -19,7 +20,7 @@ import ru.angelika.boutique.service.SellerService;
 import ru.angelika.boutique.service.UserService;
 
 import java.util.stream.Collectors;
-
+@Slf4j
 @Controller
 @RequestMapping()
 public class RegistrationController {
@@ -65,8 +66,9 @@ public class RegistrationController {
             authenticationService.addAuthentication(UserMapper.toAuthentication(user));
             return "redirect:/login";
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
+            log.error("Error add account '{}': {}", user.getName(), e.getMessage(), e);
             model.addAttribute("message", "User exists");
             return "registration";
         }

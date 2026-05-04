@@ -1,6 +1,7 @@
 package ru.angelika.boutique.controller.view;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,7 +18,7 @@ import ru.angelika.boutique.service.ItemService;
 import ru.angelika.boutique.service.SellerService;
 
 import java.util.List;
-
+@Slf4j
 @Controller
 @RequestMapping
 public class ItemCardController {
@@ -44,6 +45,7 @@ public class ItemCardController {
             itemCardService.addItemCard(itemCardDto, addData(model));
             model.addAttribute("successMessage", "Card successfully add!");
         } catch (Exception e) {
+            log.error("Error add itemCard '{}': {}", itemCardDto.getName(), e.getMessage(), e);
             model.addAttribute("errorMessage", "Error: " + e.getMessage());
         }
         return "add-card";
@@ -55,6 +57,7 @@ public class ItemCardController {
             itemCardService.updateItemCard(itemCardUpdateDto, id);
             redirectAttributes.addFlashAttribute("successMessage", "Card successfully update!");
         } catch (Exception e) {
+            log.error("Error update itemCard id {} : {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
         return "redirect:/seller/items/" + id;
