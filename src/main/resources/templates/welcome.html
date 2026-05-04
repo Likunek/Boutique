@@ -16,6 +16,7 @@
             background: linear-gradient(to top, #ff9f7c 0%, #ffe5d9 50%, #ffffff 100%);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 40px 20px;
@@ -25,6 +26,7 @@
         .welcome-title {
             font-size: 100px;
             font-weight: 700;
+            margin: 300px auto 0 auto;
             background: linear-gradient(135deg, #6b8c5c 0%, #8aaE7a 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -34,16 +36,40 @@
             animation: fadeIn 0.8s ease-out;
         }
 
+        .view-items-btn {
+            display: block;
+            width: 100%;
+            max-width: 600px;
+            margin: 300px auto 0 auto;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #6b8c5c 0%, #8aaE7a 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 22px;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(107, 140, 92, 0.4);
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .view-items-btn:hover {
+            background: linear-gradient(135deg, #8aaE7a 0%, #6b8c5c 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(107, 140, 92, 0.5);
+        }
+
         .my-account-btn {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            padding: 12px 24px;
+            bottom: 70px;
+            right: 50px;
+            padding: 20px 24px;
             background: linear-gradient(135deg, #6b8c5c 0%, #8aaE7a 100%);
             color: white;
             text-decoration: none;
             border-radius: 10px;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 500;
             transition: all 0.3s;
             box-shadow: 0 2px 10px rgba(107, 140, 92, 0.3);
@@ -72,6 +98,12 @@
             .welcome-title {
                 font-size: 48px;
             }
+            .view-items-btn {
+                max-width: 90%;
+                font-size: 18px;
+                padding: 16px 30px;
+                margin-top: 30px;
+            }
             .my-account-btn {
                 bottom: 20px;
                 right: 20px;
@@ -84,6 +116,10 @@
         @media (max-width: 480px) {
             .welcome-title {
                 font-size: 36px;
+            }
+            .view-items-btn {
+                font-size: 16px;
+                padding: 14px 24px;
             }
             .my-account-btn {
                 bottom: 15px;
@@ -99,7 +135,9 @@
 <div class="welcome-title">
   Welcome to Boutique
 </div>
-
+<a href="/item-card" class="view-items-btn">
+  🛍️ View items
+</a>
 <a th:href="@{'/' + ${userRole} + '/profile/'+ ${userId}}" class="my-account-btn">
   My account
 </a>

@@ -3,6 +3,7 @@ package ru.angelika.boutique.controller.view;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.angelika.boutique.dto.ItemCardDto;
 import ru.angelika.boutique.dto.ItemCardUpdateDto;
 import ru.angelika.boutique.model.Item;
+import ru.angelika.boutique.model.ItemCard;
 import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.service.ItemCardService;
 import ru.angelika.boutique.service.ItemService;
@@ -62,6 +64,14 @@ public class ItemCardController {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
         return "redirect:/seller/items/" + itemId;
+    }
+
+    @GetMapping("/item-card")
+    public String getAllItemCard(@RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(defaultValue = "12") int size, Model model) {
+        Page<ItemCard> itemCards = itemCardService.getAllItemCard(page, size);
+        model.addAttribute("itemCardsPage", itemCards);
+        return "cards";
     }
 
     private String addData(Model model) {

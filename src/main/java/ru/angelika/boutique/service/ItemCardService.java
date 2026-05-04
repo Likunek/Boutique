@@ -2,6 +2,10 @@ package ru.angelika.boutique.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.ItemCardDto;
 import ru.angelika.boutique.dto.ItemCardUpdateDto;
@@ -10,6 +14,9 @@ import ru.angelika.boutique.mapper.ItemCardMapper;
 import ru.angelika.boutique.model.Item;
 import ru.angelika.boutique.model.ItemCard;
 import ru.angelika.boutique.repository.ItemCardRepository;
+
+import java.util.List;
+
 @Slf4j
 @Service
 public class ItemCardService {
@@ -37,6 +44,10 @@ public class ItemCardService {
             log.error("ItemCard not found for get, id={}", id);
             return new ResourceNotFoundException(ItemCard.class, id);
         });
+    }
+
+    public Page<ItemCard> getAllItemCard(int page, int size) {
+        return itemCardRepository.findAll(PageRequest.of(page, size));
     }
 
     public void updateItemCard(ItemCardUpdateDto itemCardDto, Long id) {
