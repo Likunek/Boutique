@@ -300,7 +300,7 @@
 </head>
 <body>
 <div class="back-nav">
-  <a th:href="@{/item-card(itemId=${itemId}, role=${role})}">← Back to Cards</a>
+  <a th:href="@{/item-card (role=${role})}">← Back to Cards</a>
 </div>
 
 <div class="logout-container">
@@ -337,7 +337,7 @@
       </div>
 
       <div class="bottom-row">
-        <a th:href="@{/seller/{id}(id=${itemCard.sellerId})}" class="seller-link" th:text="${itemCard.seller}">
+        <a th:href="@{/public-seller/{id}(id=${sellerId})}" class="seller-link" th:text="${itemCard.seller}">
           Seller name
         </a>
         <a th:href="@{/user/cart/add-card/{id}(id=${itemCard.id})}" class="btn-cart">

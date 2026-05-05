@@ -84,7 +84,7 @@ public class ItemCardController {
         Page<ItemCard> itemCards = itemCardService.getAllItemCard(page, size);
         model.addAttribute("itemCardsPage", itemCards);
         model.addAttribute("role", role);
-        return "cards";
+        return "all-cards";
     }
 
     @GetMapping("/item-card/{id}")
@@ -92,8 +92,10 @@ public class ItemCardController {
         String sellerName = getAuthSeller().getName();
         ItemCard itemCard = itemCardService.getItemCard(id);
         boolean isOwner = role.equals("ROLE_SELLER") && sellerName.equals(itemCard.getSeller());
+        Long sellerId = sellerService.getBySellerName(itemCard.getSeller()).getId();
         model.addAttribute("isOwner", isOwner);
         model.addAttribute("itemCard", itemCard);
+        model.addAttribute("sellerId", sellerId);
         return "item-card";
     }
 
