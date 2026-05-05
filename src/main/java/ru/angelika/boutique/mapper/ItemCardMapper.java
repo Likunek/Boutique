@@ -15,7 +15,7 @@ public class ItemCardMapper {
         return itemCard;
     }
 
-    public static void toItemCardUpdate(ItemCardUpdateDto itemCardUpdateDto , ItemCard itemCard) {
+    public static void toItemCardUpdate(ItemCardUpdateDto itemCardUpdateDto, ItemCard itemCard) {
         itemCard.setName(itemCardUpdateDto.getName());
         itemCard.setDescription(itemCardUpdateDto.getDescription());
     }

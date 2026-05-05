@@ -78,6 +78,7 @@ public class RegistrationController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String phone = auth.getName();
         String roleName = auth.getAuthorities().iterator().next().getAuthority();
+        model.addAttribute("role", roleName);
         switch (roleName) {
             case "ROLE_USER" -> {
                 model.addAttribute("userId",userService.getByNumber(phone).getId());

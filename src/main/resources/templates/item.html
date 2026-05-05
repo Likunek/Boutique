@@ -55,12 +55,12 @@
     }
 
     .back-nav a:hover {
-    background: #8aaE7a;
-    color: white;
-    border-color: #8aaE7a;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(138, 174, 122, 0.3);
-}
+      background: #8aaE7a;
+      color: white;
+      border-color: #8aaE7a;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(138, 174, 122, 0.3);
+    }
 
     .logout-container {
       position: fixed;
@@ -70,34 +70,34 @@
     }
 
     .btn-logout {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: white;
-    padding: 10px 22px;
-    border-radius: 60px;
-    color: #dc3545;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 14px;
-    border: 1px solid #dc3545;
-    box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      padding: 10px 22px;
+      border-radius: 60px;
+      color: #dc3545;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      border: 1px solid #dc3545;
+      box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
 
-.btn-logout:hover {
-    background: #dc3545;
-    color: white;
-    border-color: #dc3545;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
-}
+    .btn-logout:hover {
+      background: #dc3545;
+      color: white;
+      border-color: #dc3545;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+    }
 
     .delete-container {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
+      bottom: 40px;
+      right: 50px;
       z-index: 1000;
     }
 
@@ -236,28 +236,130 @@
       flex-wrap: wrap;
     }
     .alert {
-    border-radius: 18px;
-    padding: 14px 18px;
-    margin-bottom: 20px;
-    font-weight: 500;
-    font-size: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.alert-success {
-    background: #e6f3e0;
-    color: #2d5a27;
-    border: 1px solid #b7d7a8;
-}
-.alert-error {
-    background: #ffe8e8;
-    color: #a12b2b;
-    border: 1px solid #f5c6c6;
-}
+      border-radius: 18px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      font-weight: 500;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .alert-success {
+      background: #e6f3e0;
+      color: #2d5a27;
+      border: 1px solid #b7d7a8;
+    }
+    .alert-error {
+      background: #ffe8e8;
+      color: #a12b2b;
+      border: 1px solid #f5c6c6;
+    }
 
     .detail-side {
       flex: 0 0 320px;
+    }
+
+    .mini-card {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      position: sticky;
+      top: 100px;
+    }
+
+    .mini-card-image {
+      height: 160px;
+      background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #adb5bd;
+      font-size: 56px;
+    }
+
+    .mini-card-body {
+      padding: 16px;
+    }
+
+    .mini-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .mini-item-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 2px;
+      line-height: 1.2;
+    }
+
+    .mini-item-category {
+      font-size: 13px;
+      color: #5a6b7a;
+      font-weight: 400;
+    }
+
+    .mini-price-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: #8aaE7a;
+      white-space: nowrap;
+    }
+
+    .mini-description-box {
+      background: #f8f9fa;
+      border-radius: 16px;
+      padding: 12px;
+      border: 1px solid #e9ecef;
+      margin-bottom: 12px;
+    }
+
+    .mini-description-box .info-title {
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .mini-description-value {
+      font-size: 13px;
+      line-height: 1.4;
+      color: #495057;
+    }
+
+    .mini-bottom-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .mini-seller-info {
+      font-size: 13px;
+      color: #495057;
+      font-weight: 500;
+    }
+
+    .mini-btn-cart {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ff7f50;
+      border: 1px solid #ff7f50;
+      color: white;
+      border-radius: 60px;
+      padding: 7px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(255,127,80,0.25);
+      transition: all 0.2s ease;
+      cursor: pointer;
     }
 
     .preview-card {
@@ -536,20 +638,28 @@
 
         <div class="detail-side">
             <div th:if="${item.itemCard != null}">
-                <div id="cardViewMode" class="preview-card">
-                    <div class="preview-card-header">
-                        <span class="preview-badge">🃏 Card Preview</span>
-                        <h3 th:text="${item.itemCard.name}" style="margin-top: 10px;">Card Name</h3>
-                        <p style="font-size: 12px; color: #6c757d; margin-top: 4px;">
-                            ID: #<span th:text="${item.itemCard.id}"></span>
-                        </p>
-                    </div>
-                    <div class="preview-card-body">
-                        <div th:if="${item.itemCard.description}" class="preview-description" th:text="${item.itemCard.description}"></div>
-                        <div th:unless="${item.itemCard.description}" class="preview-description" style="font-style: italic;">No description provided</div>
-                        <div class="preview-price" th:text="${item.itemCard.price} + ' ₽'">0 ₽</div>
-                        <button class="btn btn-primary" style="margin-top: 10px;" disabled>🛒 Add to Cart</button>
-                        <p style="font-size: 11px; color: #adb5bd; margin-top: 8px;">This is how buyers see your card</p>
+                <div id="cardViewMode" class="mini-card">
+                    <div class="mini-card-image">📦</div>
+                    <div class="mini-card-body">
+                        <div class="mini-top-row">
+                            <div>
+                                <div class="mini-item-name" th:text="${item.itemCard.name}">Card Name</div>
+                                <div class="mini-item-category">Category placeholder</div>
+                            </div>
+                            <div>
+                                <div class="mini-price-value" th:text="${item.itemCard.price} + ' ₽'">0 ₽</div>
+                            </div>
+                        </div>
+                        <div class="mini-description-box">
+                            <div class="info-title">📝 Description</div>
+                            <div class="mini-description-value" th:text="${item.itemCard.description ?: 'No description provided'}"></div>
+                        </div>
+                        <div class="mini-bottom-row">
+                            <div class="mini-seller-info">
+                                🏪 <span th:text="${item.itemCard.seller}">Seller name</span>
+                            </div>
+                            <a class="mini-btn-cart">🛒 Add to Cart</a>
+                        </div>
                     </div>
                 </div>
 

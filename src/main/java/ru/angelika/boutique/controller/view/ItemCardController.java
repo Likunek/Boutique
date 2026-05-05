@@ -37,14 +37,21 @@ public class ItemCardController {
 
     @GetMapping("/seller/add-card")
     public String getFormNewCard(Model model) {
-        addData(model);
+        Seller seller = getAuthSeller();
+        List<Item> items = itemService.getItemBySellerId(seller.getId());
+        model.addAttribute("items", items);
+        model.addAttribute("id", seller.getId());
         return "add-card";
     }
 
     @PostMapping("/seller/add-card")
     public String addItemCard(@Valid ItemCardDto itemCardDto, Model model) {
         try {
-            itemCardService.addItemCard(itemCardDto, addData(model));
+            Seller seller = getAuthSeller();
+            itemCardService.addItemCard(itemCardDto, seller.getName());
+            List<Item> items = itemService.getItemBySellerId(seller.getId());
+            model.addAttribute("items", items);
+            model.addAttribute("id", seller.getId());
             model.addAttribute("successMessage", "Card successfully add!");
         } catch (Exception e) {
             log.error("Error add itemCard '{}': {}", itemCardDto.getName(), e.getMessage(), e);
@@ -54,10 +61,11 @@ public class ItemCardController {
     }
 
     @PutMapping("/seller/add-card/{id}")
-    public String updateCard(@PathVariable Long id,  @RequestParam Long itemId,
+    public String updateCard(@PathVariable Long id, @RequestParam Long itemId,
                              @Valid ItemCardUpdateDto itemCardUpdateDto, RedirectAttributes redirectAttributes) {
         try {
-            itemCardService.updateItemCard(itemCardUpdateDto, id);
+            String sellerName = getAuthSeller().getName();
+            itemCardService.updateItemCard(itemCardUpdateDto, id, sellerName);
             redirectAttributes.addFlashAttribute("successMessage", "Card successfully update!");
         } catch (Exception e) {
             log.error("Error update itemCard id {} : {}", id, e.getMessage(), e);
@@ -67,20 +75,16 @@ public class ItemCardController {
     }
 
     @GetMapping("/item-card")
-    public String getAllItemCard(@RequestParam(defaultValue = "0") int page,
-                                 @RequestParam(defaultValue = "12") int size, Model model) {
+    public String getAllItemCard(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size,
+                                 @RequestParam String role, Model model) {
         Page<ItemCard> itemCards = itemCardService.getAllItemCard(page, size);
         model.addAttribute("itemCardsPage", itemCards);
+        model.addAttribute("role", role);
         return "cards";
     }
 
-    private String addData(Model model) {
+    private Seller getAuthSeller() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Seller seller = sellerService.getByNumber(auth.getName());
-        List<Item> items = itemService.getItemBySellerId(seller.getId());
-        model.addAttribute("items", items);
-        model.addAttribute("id", seller.getId());
-        return seller.getName();
+        return sellerService.getByNumber(auth.getName());
     }
-
 }

@@ -135,7 +135,7 @@
 <div class="welcome-title">
   Welcome to Boutique
 </div>
-<a href="/item-card" class="view-items-btn">
+<a th:href="@{/item-card(itemId=${itemId}, role=${role})}" class="view-items-btn">
   🛍️ View items
 </a>
 <a th:href="@{'/' + ${userRole} + '/profile/'+ ${userId}}" class="my-account-btn">
