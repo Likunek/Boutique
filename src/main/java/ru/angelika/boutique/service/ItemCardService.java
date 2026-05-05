@@ -49,6 +49,10 @@ public class ItemCardService {
         return itemCardRepository.findAll(PageRequest.of(page, size));
     }
 
+    public Page<ItemCard> getAllItemCardBySeller(int page, int size, String seller) {
+        return itemCardRepository.findBySeller(seller, PageRequest.of(page, size));
+    }
+
     public void updateItemCard(ItemCardUpdateDto itemCardDto, Long id, String seller) {
         ItemCard itemCard = itemCardRepository.findById(id).orElseThrow(() -> {
             log.error("ItemCard not found for update, id={}", id);

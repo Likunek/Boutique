@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Item Cards</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(to top, #ff9f7c 0%, #ffe5d9 50%, #ffffff 100%);
+      min-height: 100vh;
+      padding: 60px 20px 30px;
+      position: relative;
+    }
+
+    .back-nav {
+      position: fixed;
+      top: 40px;
+      left: 50px;
+      z-index: 1000;
+    }
+
+    .back-nav a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      padding: 10px 22px;
+      border-radius: 60px;
+      color: #4a5b3c;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+      border: 1px solid #adb5bd;
+      transition: all 0.2s ease;
+    }
+
+    .back-nav a:hover {
+      background: #8aaE7a;
+      color: white;
+      border-color: #8aaE7a;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(138, 174, 122, 0.3);
+    }
+
+    .logout-container {
+      position: fixed;
+      top: 40px;
+      right: 50px;
+      z-index: 1000;
+    }
+
+    .btn-logout {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      padding: 10px 22px;
+      border-radius: 60px;
+      color: #dc3545;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      border: 1px solid #dc3545;
+      box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-logout:hover {
+      background: #dc3545;
+      color: white;
+      border-color: #dc3545;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 10px;
+    }
+
+    .page-title {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6b8c5c 0%, #8aaE7a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 30px;
+      margin-top: 5px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+    }
+
+    .card-image {
+      height: 200px;
+      background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #adb5bd;
+      font-size: 64px;
+    }
+
+    .card-content {
+      padding: 14px 18px 18px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .card-info {
+      flex: 1;
+      margin-right: 10px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2c3e2f;
+      margin-bottom: 4px;
+    }
+
+    .card-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: #8aaE7a;
+    }
+
+    .card-seller {
+      font-size: 12px;
+      color: #adb5bd;
+      margin-top: auto;
+    }
+
+    .cart-btn {
+      width: 50px;
+      height: 50px;
+      background: #ff7f50;
+      border: 1px solid #ff7f50;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      flex-shrink: 0;
+      box-shadow: 0 4px 8px rgba(255,127,80,0.3);
+    }
+
+    .cart-btn:hover {
+      background: #e66a3e;
+      border-color: #e66a3e;
+      transform: scale(1.1);
+      box-shadow: 0 6px 12px rgba(230,106,62,0.4);
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin: 20px 0 10px;
+    }
+
+    .pagination a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 50%;
+      color: #495057;
+      text-decoration: none;
+      font-size: 18px;
+      transition: all 0.2s;
+    }
+
+    .pagination a:hover {
+      background: #f8f9fa;
+      border-color: #adb5bd;
+    }
+
+    .pagination .disabled {
+      color: #ced4da;
+      pointer-events: none;
+      background: #f8f9fa;
+      border-color: #e9ecef;
+    }
+
+    @media (max-width: 768px) {
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+      .page-title {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="back-nav">
+  <a href="/welcome">← Back to Home</a>
+</div>
+
+<div class="logout-container">
+  <form th:action="@{/logout}" method="post">
+    <button type="submit" class="btn-logout">🚪 Logout</button>
+  </form>
+</div>
+
+<div class="container">
+  <h1 class="page-title">🛍️ Item Cards By <span th:text="${sellerName}"> Seller</span></h1>
+
+  <div class="cards-grid">
+    <div th:each="card : ${itemCardsPage.content}"
+         class="card"
+         th:attr="data-id=${card.id}, data-role=${role}"
+         onclick="window.location.href='/item-card/' + this.dataset.id + '?role=' + this.dataset.role">
+      <div class="card-image">📦</div>
+      <div class="card-content">
+        <div class="card-top">
+          <div class="card-info">
+            <h3 class="card-title" th:text="${card.name}">Card Name</h3>
+            <div class="card-price" th:text="${card.price} + ' ₽'">0 ₽</div>
+          </div>
+          <a th:href="@{/user/cart/add-card/{id}(id=${card.id})}"
+             class="cart-btn"
+             onclick="event.stopPropagation();"
+             title="Add to cart">🛒</a>
+        </div>
+        <div class="card-seller" th:text="'Seller: ' + ${card.seller}">Seller</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagination" th:if="${itemCardsPage.totalPages > 1}">
+    <a th:href="@{/item-card(page=${itemCardsPage.number - 1}, size=${itemCardsPage.size})}"
+       th:classappend="${itemCardsPage.number == 0 ? 'disabled' : ''}">←</a>
+    <a th:href="@{/item-card(page=${itemCardsPage.number + 1}, size=${itemCardsPage.size})}"
+       th:classappend="${itemCardsPage.number + 1 >= itemCardsPage.totalPages ? 'disabled' : ''}">→</a>
+  </div>
+</div>
+</body>
+</html>

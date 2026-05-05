@@ -79,12 +79,22 @@ public class ItemCardController {
     }
 
     @GetMapping("/item-card")
-    public String getAllItemCard(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size,
-                                 @RequestParam String role, Model model) {
+    public String getAllItemCard(@RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(defaultValue = "12") int size, @RequestParam String role, Model model) {
         Page<ItemCard> itemCards = itemCardService.getAllItemCard(page, size);
         model.addAttribute("itemCardsPage", itemCards);
         model.addAttribute("role", role);
         return "all-cards";
+    }
+
+    @GetMapping("/item-card/by-seller/{id}")
+    public String getAllItemCardBySeller(@PathVariable Long id, @RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "12") int size, Model model) {
+        String sellerName = sellerService.getById(id).getName();
+        Page<ItemCard> itemCards = itemCardService.getAllItemCardBySeller(page, size, sellerName);
+        model.addAttribute("itemCardsPage", itemCards);
+        model.addAttribute("sellerName", sellerName);
+        return "all-cards-seller";
     }
 
     @GetMapping("/item-card/{id}")
