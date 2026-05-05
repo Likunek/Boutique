@@ -65,7 +65,7 @@ public class ItemCardController {
                              @Valid ItemCardUpdateDto itemCardUpdateDto, RedirectAttributes redirectAttributes) {
         try {
             String sellerName = getAuthSeller().getName();
-            itemCardService.updateItemCard(itemCardUpdateDto, id, sellerName);
+            itemCardService.updateItemCard(itemCardUpdateDto, id);
             redirectAttributes.addFlashAttribute("successMessage", "Card successfully update!");
         } catch (Exception e) {
             log.error("Error update itemCard id {} : {}", id, e.getMessage(), e);
@@ -81,6 +81,16 @@ public class ItemCardController {
         model.addAttribute("itemCardsPage", itemCards);
         model.addAttribute("role", role);
         return "cards";
+    }
+
+    @GetMapping("/item-card/{id}")
+    public String getItemCardById(@PathVariable Long id, @RequestParam String role, Model model) {
+        String sellerName = getAuthSeller().getName();
+        ItemCard itemCard = itemCardService.getItemCard(id);
+        boolean isOwner = role.equals("ROLE_SELLER") && sellerName.equals(itemCard.getSeller());
+        model.addAttribute("isOwner", isOwner);
+        model.addAttribute("itemCard", itemCard);
+        return "item-card";
     }
 
     private Seller getAuthSeller() {
