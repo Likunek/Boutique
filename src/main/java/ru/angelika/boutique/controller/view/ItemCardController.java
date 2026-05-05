@@ -65,7 +65,11 @@ public class ItemCardController {
                              @Valid ItemCardUpdateDto itemCardUpdateDto, RedirectAttributes redirectAttributes) {
         try {
             String sellerName = getAuthSeller().getName();
-            itemCardService.updateItemCard(itemCardUpdateDto, id);
+            ItemCard itemCard = itemCardService.getItemCard(id);
+            if (!sellerName.equals(itemCard.getSeller())) {
+                return "redirect:/welcome";
+            }
+            itemCardService.updateItemCard(itemCardUpdateDto, id, sellerName);
             redirectAttributes.addFlashAttribute("successMessage", "Card successfully update!");
         } catch (Exception e) {
             log.error("Error update itemCard id {} : {}", id, e.getMessage(), e);
