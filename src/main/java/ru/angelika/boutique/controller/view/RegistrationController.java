@@ -90,6 +90,7 @@ public class RegistrationController {
                 model.addAttribute("userId", 1);
                 model.addAttribute("userRole", "admin");
             }
+            default -> log.error("Error authentication account");
         }
         return "welcome";
     }

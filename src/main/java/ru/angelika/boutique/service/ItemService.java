@@ -38,6 +38,9 @@ public class ItemService {
         return itemRepository.findAll();
     }
 
+    public List<Item> getAllItemVerifyFalse() {
+        return itemRepository.findByVerifyFalse();
+    }
 
     public List<Item> getItemBySellerId(Long id) {
         return itemRepository.findBySellerIdAndVerifyTrue(id);
@@ -60,6 +63,14 @@ public class ItemService {
         log.info("Update Item's ItemCard field: itemId={}, itemCardId={}",
                 item.getId(), item.getItemCard().getId());
         itemRepository.save(item);
+    }
+
+    public void updateVerify(Long id, boolean verify) {
+        Item item = getItemById(id);
+        item.setVerify(verify);
+        itemRepository.save(item);
+        log.info("Update verify Item: itemId={}, verify={}",
+                item.getId(), verify);
     }
 
     public void updateItem(ItemDto itemDto, Long id) {
@@ -100,5 +111,6 @@ public class ItemService {
         Item item = itemRepository.findByItemCardId(itemCardId);
         item.setItemCard(null);
         itemRepository.save(item);
+        log.info("Delete item's itemCard. itemId={}", item.getId());
     }
 }

@@ -9,11 +9,12 @@ import ru.angelika.boutique.model.Seller;
 import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
-    Item findByName(String name);
 
     Item findByItemCardId(Long itemCardId);
 
     List<Item> findBySellerId(Long sellerId);
+
+    List<Item> findByVerifyFalse();
 
     List<Item> findBySellerIdAndVerifyTrue(Long sellerId);
 

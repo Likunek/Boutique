@@ -80,9 +80,18 @@ public class ItemController {
         return "item";
     }
     @GetMapping("/admin/items")
-    public String getAllItems(Model model) {
-        model.addAttribute("items", itemService.getAllItems());
+    public String getAllItems(@RequestParam(defaultValue = "true") boolean unverified, Model model) {
+        if (unverified) {
+            model.addAttribute("items", itemService.getAllItems());
+        } else {
+            model.addAttribute("items", itemService.getAllItemVerifyFalse());
+        }
         return "admin-items";
+    }
+    @PutMapping("/admin/items/{id}")
+    public String updateVerify(@PathVariable Long id, @RequestParam(defaultValue = "true") boolean verify) {
+        itemService.updateVerify(id, verify);
+        return "redirect:/admin/items";
     }
 
     @PutMapping("/seller/items/{id}")
