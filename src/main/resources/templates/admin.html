@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard</title>
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -71,65 +71,67 @@
         }
 
         .back-nav {
-      position: fixed;
-      top: 40px;
-      left: 50px;
-      z-index: 1000;
-    }
+            position: fixed;
+            top: 40px;
+            left: 50px;
+            z-index: 1000;
+        }
 
-    .back-nav a {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: white;
-      padding: 10px 22px;
-      border-radius: 60px;
-      color: #4a5b3c;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 14px;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
-      border: 1px solid #adb5bd;
-      transition: all 0.2s ease;
-    }
+        .back-nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 22px;
+            border-radius: 60px;
+            color: #4a5b3c;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+            border: 1px solid #adb5bd;
+            transition: all 0.2s ease;
+        }
 
-    .back-nav a:hover {
-      background: #8aaE7a;
-      color: white;
-      border-color: #8aaE7a;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 18px rgba(138, 174, 122, 0.3);
-    }
+        .back-nav a:hover {
+            background: #8aaE7a;
+            color: white;
+            border-color: #8aaE7a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(138, 174, 122, 0.3);
+        }
+
         .logout-container {
-      position: fixed;
-      top: 40px;
-      right: 50px;
-      z-index: 1000;
-    }
-        .btn-logout {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: white;
-      padding: 10px 22px;
-      border-radius: 60px;
-      color: #dc3545;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 14px;
-      border: 1px solid #dc3545;
-      box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
+            position: fixed;
+            top: 40px;
+            right: 50px;
+            z-index: 1000;
+        }
 
-    .btn-logout:hover {
-      background: #dc3545;
-      color: white;
-      border-color: #dc3545;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
-    }
+        .btn-logout {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 22px;
+            border-radius: 60px;
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            border: 1px solid #dc3545;
+            box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-logout:hover {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+        }
 
         .buttons-grid {
             display: grid;
@@ -138,19 +140,21 @@
             margin-bottom: 40px;
         }
 
-        .admin-card {
+        .admin-card-link {
+            display: block;
             background: white;
             border-radius: 28px;
             padding: 24px 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             transition: all 0.3s ease;
-            border: 1px solid #e9ecef;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+             border: 3px solid #ffe5d9;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            height: 100%;
         }
 
-        .admin-card:hover {
+        .admin-card-link:hover {
             transform: translateY(-5px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
             border-color: #d4e0d0;
@@ -175,30 +179,6 @@
             line-height: 1.4;
         }
 
-        .btn-admin {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 40px;
-            padding: 8px 20px;
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            color: #495057;
-            transition: all 0.2s;
-            margin-top: auto;
-        }
-
-        .btn-admin:hover {
-            background: #8aaE7a;
-            border-color: #8aaE7a;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-
 
         @media (max-width: 768px) {
             .buttons-grid {
@@ -212,97 +192,87 @@
 </head>
 <body>
 <div class="back-nav">
-  <a href="/welcome">← Back to Home</a>
+    <a href="/welcome">← Back to Home</a>
 </div>
 
 <div class="logout-container">
-  <form th:action="@{/logout}" method="post">
-    <button type="submit" class="btn-logout">🚪 Logout</button>
-  </form>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn-logout">🚪 Logout</button>
+    </form>
 </div>
 
 <div class="container">
-  <div class="header">
-    <h1>Admin Dashboard</h1>
-  </div>
-
-  <div class="buttons-grid">
-    <div class="admin-card">
-      <div class="card-icon">📦</div>
-      <div class="card-title">All items</div>
-      <div class="card-desc">View and manage all items in the catalog</div>
-      <a href="/admin/items" class="btn-admin">View items →</a>
+    <div class="header">
+        <h1>Admin Dashboard</h1>
     </div>
 
-    <div class="admin-card">
-      <div class="card-icon">🔍</div>
-      <div class="card-title">Unverified items</div>
-      <div class="card-desc">Items pending verification</div>
-      <a href="/admin/items/verify" class="btn-admin">Show unverified →</a>
-    </div>
+    <div class="buttons-grid">
+        <a href="/admin/items" class="admin-card-link">
+            <div class="card-icon">📦</div>
+            <div class="card-title">All items</div>
+            <div class="card-desc">View and manage all items in the catalog</div>
+        </a>
 
-    <div class="admin-card">
-      <div class="card-icon">👥</div>
-      <div class="card-title">All users</div>
-      <div class="card-desc">View and manage registered users</div>
-      <a href="/admin/users" class="btn-admin">View users →</a>
-    </div>
+        <a href="/admin/items/verify" class="admin-card-link">
+            <div class="card-icon">🔍</div>
+            <div class="card-title">Unverified items</div>
+            <div class="card-desc">Items pending verification</div>
+        </a>
 
-    <div class="admin-card">
-      <div class="card-icon">🏪</div>
-      <div class="card-title">All sellers</div>
-      <div class="card-desc">View and manage all sellers</div>
-      <a href="/admin/seller" class="btn-admin">View sellers →</a>
-    </div>
+        <a href="/admin/users" class="admin-card-link">
+            <div class="card-icon">👥</div>
+            <div class="card-title">All users</div>
+            <div class="card-desc">View and manage registered users</div>
+        </a>
 
-    <div class="admin-card">
-      <div class="card-icon">🏭</div>
-      <div class="card-title">Storages</div>
-      <div class="card-desc">View all storage locations</div>
-      <a href="/admin/storages" class="btn-admin">View storages →</a>
-    </div>
+        <a href="/admin/seller" class="admin-card-link">
+            <div class="card-icon">🏪</div>
+            <div class="card-title">All sellers</div>
+            <div class="card-desc">View and manage all sellers</div>
+        </a>
 
-    <div class="admin-card">
-      <div class="card-icon">📍</div>
-      <div class="card-title">Pickup points</div>
-      <div class="card-desc">View all point of receipt</div>
-      <a href="/admin/points" class="btn-admin">View points →</a>
-    </div>
+        <a href="/admin/storages" class="admin-card-link">
+            <div class="card-icon">🏭</div>
+            <div class="card-title">Storages</div>
+            <div class="card-desc">View all storage locations</div>
+        </a>
 
-    <div class="admin-card">
-      <div class="card-icon">📋</div>
-      <div class="card-title">Orders</div>
-      <div class="card-desc">View all customer orders</div>
-      <a href="/admin/orders" class="btn-admin">View orders →</a>
-    </div>
+        <a href="/admin/points" class="admin-card-link">
+            <div class="card-icon">📍</div>
+            <div class="card-title">Pickup points</div>
+            <div class="card-desc">View all point of receipt</div>
+        </a>
 
-    <div class="admin-card">
-      <div class="card-icon">🚚</div>
-      <div class="card-title">Supplies</div>
-      <div class="card-desc">View all supplies</div>
-      <a href="/admin/supply" class="btn-admin">View supplies →</a>
-    </div>
-    <div class="admin-card">
-      <div class="card-icon">➕</div>
-      <div class="card-title">Add storage</div>
-      <div class="card-desc">Create a new storage location</div>
-      <a href="/admin/storages/add" class="btn-admin">Add storage →</a>
-    </div>
+        <a href="/admin/orders" class="admin-card-link">
+            <div class="card-icon">📋</div>
+            <div class="card-title">Orders</div>
+            <div class="card-desc">View all customer orders</div>
+        </a>
 
-    <div class="admin-card">
-      <div class="card-icon">➕</div>
-      <div class="card-title">Add pickup point</div>
-      <div class="card-desc">Create a new pickup point</div>
-      <a href="/admin/points/add" class="btn-admin">Add point →</a>
-    </div>
+        <a href="/admin/supply" class="admin-card-link">
+            <div class="card-icon">🚚</div>
+            <div class="card-title">Supplies</div>
+            <div class="card-desc">View all supplies</div>
+        </a>
 
-    <div class="admin-card">
-      <div class="card-icon">📊</div>
-      <div class="card-title">Items in storage</div>
-      <div class="card-desc">Inventory of all items at storages</div>
-      <a href="/admin/item-at-storage" class="btn-admin">View inventory →</a>
+        <a href="/admin/storages/add" class="admin-card-link">
+            <div class="card-icon">➕</div>
+            <div class="card-title">Add storage</div>
+            <div class="card-desc">Create a new storage location</div>
+        </a>
+
+        <a href="/admin/points/add" class="admin-card-link">
+            <div class="card-icon">➕</div>
+            <div class="card-title">Add pickup point</div>
+            <div class="card-desc">Create a new pickup point</div>
+        </a>
+
+        <a href="/admin/item-at-storage" class="admin-card-link">
+            <div class="card-icon">📊</div>
+            <div class="card-title">Items in storage</div>
+            <div class="card-desc">Inventory of all items at storages</div>
+        </a>
     </div>
-  </div>
 </div>
 </body>
 </html>

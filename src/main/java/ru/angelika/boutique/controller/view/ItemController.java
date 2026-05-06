@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 public class ItemController {
     private final ItemService itemService;
     private final SellerService sellerService;
+    private boolean isAdmin = true;
 
     @Autowired
     public ItemController(ItemService itemService, SellerService sellerService) {
@@ -75,7 +76,13 @@ public class ItemController {
             return "redirect:/welcome";
         }
         model.addAttribute("item", item);
+        model.addAttribute("isAdmin", isAdmin);
         return "item";
+    }
+    @GetMapping("/admin/items")
+    public String getAllItems(Model model) {
+        model.addAttribute("items", itemService.getAllItems());
+        return "admin-items";
     }
 
     @PutMapping("/seller/items/{id}")
@@ -109,6 +116,7 @@ public class ItemController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String roleName = auth.getAuthorities().iterator().next().getAuthority();
         if (roleName.equals("ROLE_SELLER")) {
+            isAdmin = false;
             return !sellerService.getByNumber(auth.getName()).getId().equals(id);
         }
         return false;

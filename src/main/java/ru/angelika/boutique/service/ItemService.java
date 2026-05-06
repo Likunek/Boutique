@@ -34,6 +34,11 @@ public class ItemService {
                 itemDto.getName(), itemDto.getCostPrice(), itemDto.getWeight(), itemDto.getSquare(), seller.getId());
     }
 
+    public List<Item> getAllItems() {
+        return itemRepository.findAll();
+    }
+
+
     public List<Item> getItemBySellerId(Long id) {
         return itemRepository.findBySellerIdAndVerifyTrue(id);
     }
