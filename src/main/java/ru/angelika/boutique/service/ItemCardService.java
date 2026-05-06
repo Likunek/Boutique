@@ -75,6 +75,7 @@ public class ItemCardService {
             log.error("ItemCard not found for delete, id={}", id);
             return new ResourceNotFoundException(ItemCard.class, id);
         });
+        itemService.deleteItemCard(id);
         itemCardRepository.deleteById(id);
         log.info("Delete itemCard by id={}", id);
     }

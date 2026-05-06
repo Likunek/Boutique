@@ -107,9 +107,18 @@ public class ItemCardController {
         }
         Long sellerId = sellerService.getBySellerName(itemCard.getSeller()).getId();
         model.addAttribute("isOwner", isOwner);
+        model.addAttribute("role", role);
         model.addAttribute("itemCard", itemCard);
         model.addAttribute("sellerId", sellerId);
         return "item-card";
+    }
+    @DeleteMapping("/item-card/{id}")
+    public String deleteItemCardById(@PathVariable Long id, @RequestParam String role, Model model) {
+         ItemCard itemCard = itemCardService.getItemCard(id);
+         if (role.equals("ROLE_ADMIN") || (role.equals("ROLE_SELLER") && getAuthSeller().getName().equals(itemCard.getSeller()))) {
+             itemCardService.deleteItemCard(id);
+         }
+        return "redirect:/welcome";
     }
 
     private Seller getAuthSeller() {

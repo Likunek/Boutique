@@ -89,4 +89,10 @@ public class ItemService {
     public void deleteBySellerId(Long id) {
         itemRepository.findBySellerId(id).forEach(item -> deleteItem(item.getId()));
     }
+
+    public void deleteItemCard(Long itemCardId) {
+        Item item = itemRepository.findByItemCardId(itemCardId);
+        item.setItemCard(null);
+        itemRepository.save(item);
+    }
 }
