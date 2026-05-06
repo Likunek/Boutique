@@ -25,9 +25,7 @@ public class SellerController {
 
     @GetMapping("/seller/profile/{id}")
     public String sellerPage(@PathVariable Long id, Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String phone = auth.getName();
-        Seller currentSeller = sellerService.getByNumber(phone);
+        Seller currentSeller = getAuthSeller();
         if (!currentSeller.getId().equals(id)) {
             return "redirect:/welcome";
         }
@@ -43,8 +41,15 @@ public class SellerController {
     }
     @DeleteMapping("/seller/profile/{id}")
     public String deleteSeller(@PathVariable Long id) {
+        Seller seller = getAuthSeller();
+        if (!seller.getId().equals(id)) {
+            return "redirect:/welcome";
+        }
         sellerService.deleteSeller(id);
         return "redirect:/registration";
     }
-
+    private Seller getAuthSeller() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return sellerService.getByNumber(auth.getName());
+    }
 }
