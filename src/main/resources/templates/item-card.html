@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="'Card - ' + ${itemCard.name}">Card Detail</title>
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Card - ' + ${itemCard.name}">Card Detail</title>
+    <style>
     * {
       margin: 0;
       padding: 0;
@@ -296,56 +296,60 @@
         text-align: left;
       }
     }
-  </style>
+
+
+
+
+    </style>
 </head>
 <body>
 <div class="back-nav">
-  <a th:href="@{/item-card (role=${role})}">← Back to Cards</a>
+    <a th:href="@{/item-card (role=${role})}">← Back to Cards</a>
 </div>
 
 <div class="logout-container">
-  <form th:action="@{/logout}" method="post">
-    <button type="submit" class="btn-logout">🚪 Logout</button>
-  </form>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn-logout">🚪 Logout</button>
+    </form>
 </div>
 <div th:if="${isOwner}" class="delete-container">
-  <form th:action="@{/item-card/{id}(id=${itemCard.id}, role=${role})}" method="post"
-        onsubmit="return confirm('Are you sure you want to delete this item? This action cannot be undone.');">
-    <input type="hidden" name="_method" value="delete"/>
-    <button type="submit" class="btn btn-danger">🗑️ Delete Item</button>
-  </form>
+    <form th:action="@{/item-card/{id}(id=${itemCard.id}, role=${role})}" method="post"
+          onsubmit="return confirm('Are you sure you want to delete this item? This action cannot be undone.');">
+        <input type="hidden" name="_method" value="delete"/>
+        <button type="submit" class="btn btn-danger">🗑️ Delete Item</button>
+    </form>
 </div>
 <div class="form-container">
-  <div class="profile-card">
-    <div class="card-image">📦</div>
-    <div class="form-body">
-      <div class="top-row">
-        <div>
-          <div class="item-name" th:text="${itemCard.name}">Item Name</div>
-          <div class="item-category">Category placeholder</div>
-        </div>
-        <div class="price-block">
-          <div class="price-value" th:text="${itemCard.price} + ' ₽'">0 ₽</div>
-        </div>
-      </div>
+    <div class="profile-card">
+        <div class="card-image">📦</div>
+        <div class="form-body">
+            <div class="top-row">
+                <div>
+                    <div class="item-name" th:text="${itemCard.name}">Item Name</div>
+                    <div class="item-category">Category placeholder</div>
+                </div>
+                <div class="price-block">
+                    <div class="price-value" th:text="${itemCard.price} + ' ₽'">0 ₽</div>
+                </div>
+            </div>
 
-      <div class="description-box">
-        <div class="info-title">📝 Description</div>
-        <div class="description-value" th:text="${itemCard.description ?: 'No description provided'}">
-          Description text
-        </div>
-      </div>
+            <div class="description-box">
+                <div class="info-title">📝 Description</div>
+                <div class="description-value" th:text="${itemCard.description ?: 'No description provided'}">
+                    Description text
+                </div>
+            </div>
 
-      <div class="bottom-row">
-        <a th:href="@{/public-seller/{id}(id=${sellerId})}" class="seller-link" th:text="${itemCard.seller}">
-          Seller name
-        </a>
-        <a th:href="@{/user/cart/add-card/{id}(id=${itemCard.id})}" class="btn-cart">
-          🛒 Add to Cart
-        </a>
-      </div>
+            <div class="bottom-row">
+                <a th:href="@{/public-seller/{id}(id=${sellerId})}" class="seller-link" th:text="${itemCard.seller}">
+                    Seller name
+                </a>
+                <a th:href="@{/user/cart/add-card/{id}(id=${itemCard.id})}" class="btn-cart">
+                    🛒 Add to Cart
+                </a>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 </body>
 </html>

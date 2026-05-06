@@ -14,6 +14,7 @@ public class ItemMapper {
         item.setSeller(seller);
         return item;
     }
+
     public static void toItemUpdate(ItemDto itemDto, Item item) {
         item.setName(itemDto.getName());
         item.setCostPrice(itemDto.getCostPrice());

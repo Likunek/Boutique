@@ -335,6 +335,7 @@
         }
         .status-verified { background: #e6f3e0; color: #2d5a27; }
         .status-pending { background: #fff3cd; color: #856404; }
+
     </style>
 </head>
 <body>
@@ -396,7 +397,9 @@
                                     th:text="${storageEntry.storage.city} + ', ' + ${storageEntry.storage.address} + ': ' + ${storageEntry.count}">
                                     Storage: 0
                                 </li>
-                                <li th:if="${#lists.isEmpty(item.itemsAtStorages)}" style="color: #adb5bd;">Not on storage</li>
+                                <li th:if="${#lists.isEmpty(item.itemsAtStorages)}" style="color: #adb5bd;">Not on
+                                    storage
+                                </li>
                             </ul>
                         </td>
                     </tr>

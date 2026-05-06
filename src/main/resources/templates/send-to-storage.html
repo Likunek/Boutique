@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Send Item to Storage</title>
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Item to Storage</title>
+    <style>
     * {
       margin: 0;
       padding: 0;
@@ -277,69 +277,70 @@
         font-size: 22px;
       }
     }
-  </style>
+
+    </style>
 </head>
 <body>
 <div class="back-nav">
-  <a th:href="@{/seller/profile/{id}(id=${id})}" class="btn btn-text">← Back to Profile</a>
+    <a th:href="@{/seller/profile/{id}(id=${id})}" class="btn btn-text">← Back to Profile</a>
 </div>
 
 <div class="logout-container">
-  <form th:action="@{/logout}" method="post">
-    <button type="submit" class="btn-logout">🚪 Logout</button>
-  </form>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn-logout">🚪 Logout</button>
+    </form>
 </div>
 
 <div class="form-container">
-  <div class="form-card">
-    <div class="form-header">
-      <h1>📦 Send Item to Storage</h1>
-      <p>Select an item, storage and quantity</p>
+    <div class="form-card">
+        <div class="form-header">
+            <h1>📦 Send Item to Storage</h1>
+            <p>Select an item, storage and quantity</p>
+        </div>
+
+        <div class="form-body">
+            <div th:if="${successMessage}" class="alert alert-success">
+                <span>✅</span> <span th:text="${successMessage}"></span>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-error">
+                <span>❌</span> <span th:text="${errorMessage}"></span>
+            </div>
+
+            <form th:action="@{/seller/send-to-storage}" method="post">
+                <div class="field-group">
+                    <label class="field-label" for="itemId">📋 Choose Item</label>
+                    <select id="itemId" name="itemId" class="field-input" required>
+                        <option value="">-- Select an item --</option>
+                        <option th:each="item : ${items}"
+                                th:value="${item.id}"
+                                th:text="${item.name} + ' (ID: ' + ${item.id} + ')'"></option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label" for="storageId">🏭 Choose Storage</label>
+                    <select id="storageId" name="storageId" class="field-input" required>
+                        <option value="">-- Select a storage --</option>
+                        <option th:each="storage : ${storages}"
+                                th:value="${storage.id}"
+                                th:text="${storage.city} + ', ' + ${storage.address}"></option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label" for="count">🔢 Quantity</label>
+                    <input type="number" id="count" name="count" class="field-input"
+                           min="1" step="1" required>
+                    <div class="field-hint">How many units to send</div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">✓ Send</button>
+                    <a href="/seller/profile" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="form-body">
-      <div th:if="${successMessage}" class="alert alert-success">
-        <span>✅</span> <span th:text="${successMessage}"></span>
-      </div>
-      <div th:if="${errorMessage}" class="alert alert-error">
-        <span>❌</span> <span th:text="${errorMessage}"></span>
-      </div>
-
-      <form th:action="@{/seller/send-to-storage}" method="post">
-        <div class="field-group">
-          <label class="field-label" for="itemId">📋 Choose Item</label>
-          <select id="itemId" name="itemId" class="field-input" required>
-            <option value="">-- Select an item --</option>
-            <option th:each="item : ${items}"
-                    th:value="${item.id}"
-                    th:text="${item.name} + ' (ID: ' + ${item.id} + ')'"></option>
-          </select>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label" for="storageId">🏭 Choose Storage</label>
-          <select id="storageId" name="storageId" class="field-input" required>
-            <option value="">-- Select a storage --</option>
-            <option th:each="storage : ${storages}"
-                    th:value="${storage.id}"
-                    th:text="${storage.city} + ', ' + ${storage.address}"></option>
-          </select>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label" for="count">🔢 Quantity</label>
-          <input type="number" id="count" name="count" class="field-input"
-                  min="1" step="1" required>
-          <div class="field-hint">How many units to send</div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary">✓ Send</button>
-          <a href="/seller/profile" class="btn btn-secondary">Cancel</a>
-        </div>
-      </form>
-    </div>
-  </div>
 </div>
 </body>
 </html>

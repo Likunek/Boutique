@@ -16,6 +16,7 @@ import ru.angelika.boutique.repository.AuthenticationRepository;
 
 import java.util.Collection;
 import java.util.List;
+
 @Slf4j
 @Service
 public class AuthenticationService implements UserDetailsService {
@@ -33,14 +34,14 @@ public class AuthenticationService implements UserDetailsService {
         authentication.setPassword(passwordEncoder.encode(authentication.getPassword()));
         authenticationRepository.save(authentication);
         log.info("Add new profile authentication: number={}, role={}",
-                authentication.getNumber(),authentication.getRole());
+                authentication.getNumber(), authentication.getRole());
     }
 
     public Authentication findByNumber(String number) {
         Authentication authentication = authenticationRepository.findByNumber(number);
         if (authentication == null) {
             log.error("Authentication not found by number ={}", number);
-            throw  new ResourceNotFoundException(Authentication.class, number);
+            throw new ResourceNotFoundException(Authentication.class, number);
         }
         return authentication;
     }
@@ -50,12 +51,14 @@ public class AuthenticationService implements UserDetailsService {
         authenticationRepository.deleteById(authentication.getId());
         log.info("Delete authentication by id={}, number={}", authentication.getId(), number);
     }
+
     @Override
     public UserDetails loadUserByUsername(String number) throws UsernameNotFoundException {
         Authentication authentication = authenticationRepository.findByNumber(number);
-        log.debug("Authorized profile: number={}, role={}", authentication.getNumber(),authentication.getRole());
+        log.debug("Authorized profile: number={}, role={}", authentication.getNumber(), authentication.getRole());
         return new User(authentication.getNumber(), authentication.getPassword(), extractRoles(authentication));
     }
+
     private Collection<? extends GrantedAuthority> extractRoles(Authentication authentication) {
         return List.of(new SimpleGrantedAuthority("ROLE_" + authentication.getRole()));
     }

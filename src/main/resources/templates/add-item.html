@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add New Item</title>
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Item</title>
+    <style>
     * {
       margin: 0;
       padding: 0;
@@ -279,70 +279,71 @@
         font-size: 22px;
       }
     }
-  </style>
+
+    </style>
 </head>
 <body>
 
 <div class="back-nav">
-  <a th:href="@{/seller/profile/{id}(id=${id})}" class="btn btn-text">← Back to Profile</a>
+    <a th:href="@{/seller/profile/{id}(id=${id})}" class="btn btn-text">← Back to Profile</a>
 </div>
 
 <div class="logout-container">
-  <form th:action="@{/logout}" method="post" style="display:inline;">
-    <button type="submit" class="btn-logout">🚪 Logout</button>
-  </form>
+    <form th:action="@{/logout}" method="post" style="display:inline;">
+        <button type="submit" class="btn-logout">🚪 Logout</button>
+    </form>
 </div>
 
 <div class="form-container">
-  <div class="form-card">
-    <div class="form-header">
-      <h1><span>➕</span> Add New Item</h1>
-      <p>Fill in the details for your new product</p>
+    <div class="form-card">
+        <div class="form-header">
+            <h1><span>➕</span> Add New Item</h1>
+            <p>Fill in the details for your new product</p>
+        </div>
+
+        <div class="form-body">
+            <div th:if="${successMessage}" class="alert alert-success">
+                <span>✅</span> <span th:text="${successMessage}"></span>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-error">
+                <span>❌</span> <span th:text="${errorMessage}"></span>
+            </div>
+
+            <form th:action="@{/seller/add-item}" method="post">
+                <div class="field-group">
+                    <label class="field-label" for="name">Item Name</label>
+                    <input type="text" id="name" name="name"
+                           class="field-input" required>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label" for="costPrice">Cost Price</label>
+                    <input type="number" id="costPrice" name="costPrice"
+                           class="field-input" placeholder="0.00" step="0.01" min="0" required>
+                    <div class="field-hint">Enter price in ₽</div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label" for="weight">Weight</label>
+                    <input type="number" id="weight" name="weight"
+                           class="field-input" placeholder="0.0" step="0.1" min="0">
+                    <div class="field-hint">Optional weight in kg</div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label" for="square">Square</label>
+                    <input type="number" id="square" name="square"
+                           class="field-input" placeholder="0.01" value="0.01" min="0.01" step="0.01">
+                    <div class="field-hint">Enter squares in m²</div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">✓ Save Item</button>
+                    <a href="/seller/profile" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="form-body">
-      <div th:if="${successMessage}" class="alert alert-success">
-        <span>✅</span> <span th:text="${successMessage}"></span>
-      </div>
-      <div th:if="${errorMessage}" class="alert alert-error">
-        <span>❌</span> <span th:text="${errorMessage}"></span>
-      </div>
-
-      <form th:action="@{/seller/add-item}" method="post">
-        <div class="field-group">
-          <label class="field-label" for="name">Item Name</label>
-          <input type="text" id="name" name="name"
-                 class="field-input" required>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label" for="costPrice">Cost Price</label>
-          <input type="number" id="costPrice" name="costPrice"
-                 class="field-input" placeholder="0.00" step="0.01" min="0" required>
-          <div class="field-hint">Enter price in ₽</div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label" for="weight">Weight</label>
-          <input type="number" id="weight" name="weight"
-                 class="field-input" placeholder="0.0" step="0.1" min="0">
-          <div class="field-hint">Optional weight in kg</div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label" for="square">Square</label>
-          <input type="number" id="square" name="square"
-                 class="field-input" placeholder="0.01" value="0.01" min="0.01" step="0.01">
-          <div class="field-hint">Enter squares in m²</div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary">✓ Save Item</button>
-          <a href="/seller/profile" class="btn btn-secondary">Cancel</a>
-        </div>
-      </form>
-    </div>
-  </div>
 </div>
 
 </body>

@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface ItemCardRepository extends JpaRepository<ItemCard, Long> {
     Page<ItemCard> findBySeller(String seller, Pageable pageable);
+
     List<ItemCard> findByNameAndSeller(String name, String seller);
+
     List<ItemCard> findByDescriptionAndSeller(String description, String seller);
 }

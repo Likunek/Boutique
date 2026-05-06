@@ -10,7 +10,7 @@ public class ItemCardMapper {
         ItemCard itemCard = new ItemCard();
         itemCard.setName(itemCardDto.getName());
         itemCard.setDescription(itemCardDto.getDescription());
-        itemCard.setPrice(price*1.2);
+        itemCard.setPrice(price * 1.2);
         itemCard.setSeller(sellerName);
         return itemCard;
     }

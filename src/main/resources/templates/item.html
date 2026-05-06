@@ -510,7 +510,8 @@
         min-width: auto;
       }
     }
-  </style>
+
+    </style>
 </head>
 <body>
 <div class="back-nav">
@@ -582,15 +583,18 @@
                             </div>
                             <div class="info-card">
                                 <div class="info-title">PRICE</div>
-                                <input type="number" name="costPrice" step="0.01" min="0" class="field-input" th:value="${item.costPrice}" required>
+                                <input type="number" name="costPrice" step="0.01" min="0" class="field-input"
+                                       th:value="${item.costPrice}" required>
                             </div>
                             <div class="info-card">
                                 <div class="info-title">WEIGHT</div>
-                                <input type="number" name="weight" step="0.1" min="0" class="field-input" th:value="${item.weight}">
+                                <input type="number" name="weight" step="0.1" min="0" class="field-input"
+                                       th:value="${item.weight}">
                             </div>
                             <div class="info-card">
                                 <div class="info-title">SQUARE</div>
-                                <input type="number" name="square" step="0.01" min="0.01" class="field-input" th:value="${item.square}" required>
+                                <input type="number" name="square" step="0.01" min="0.01" class="field-input"
+                                       th:value="${item.square}" required>
                             </div>
                         </div>
                         <div style="margin-top: 20px; text-align: right;">
@@ -614,21 +618,28 @@
                     </thead>
                     <tbody>
                     <tr th:each="storageEntry : ${item.itemsAtStorages}">
-                        <td th:text="${storageEntry.storage.city} + ', ' + ${storageEntry.storage.address}">Storage address</td>
+                        <td th:text="${storageEntry.storage.city} + ', ' + ${storageEntry.storage.address}">Storage
+                            address
+                        </td>
                         <td>
                             <span th:id="'countView-' + ${storageEntry.id}" th:text="${storageEntry.count}">0</span>
                             <form th:id="'countForm-' + ${storageEntry.id}" style="display: none;"
-                                  th:action="@{/seller/send-to-storage/{entryId}(entryId=${storageEntry.id})}" method="post">
+                                  th:action="@{/seller/send-to-storage/{entryId}(entryId=${storageEntry.id})}"
+                                  method="post">
                                 <input type="hidden" name="_method" value="put"/>
-                                <input type="hidden" name="itemId" th:value="${item.id}" />
-                                <input type="number" name="count" class="field-input" style="width: 80px;" th:value="${storageEntry.count}" min="0">
+                                <input type="hidden" name="itemId" th:value="${item.id}"/>
+                                <input type="number" name="count" class="field-input" style="width: 80px;"
+                                       th:value="${storageEntry.count}" min="0">
                                 <button type="submit" class="btn btn-primary" style="padding: 8px 16px;">Update</button>
                                 <button type="button" class="btn btn-secondary" style="padding: 8px 16px;"
-                                        th:onclick="'cancelCountEdit(' + ${storageEntry.id} + ')'">Cancel</button>
+                                        th:onclick="'cancelCountEdit(' + ${storageEntry.id} + ')'">Cancel
+                                </button>
                             </form>
                         </td>
                         <td>
-                            <button class="btn btn-text" th:onclick="'enableCountEdit(' + ${storageEntry.id} + ')'">✏️ Edit</button>
+                            <button class="btn btn-text" th:onclick="'enableCountEdit(' + ${storageEntry.id} + ')'">✏️
+                                Edit
+                            </button>
                         </td>
                     </tr>
                     </tbody>
@@ -652,7 +663,8 @@
                         </div>
                         <div class="mini-description-box">
                             <div class="info-title">📝 Description</div>
-                            <div class="mini-description-value" th:text="${item.itemCard.description ?: 'No description provided'}"></div>
+                            <div class="mini-description-value"
+                                 th:text="${item.itemCard.description ?: 'No description provided'}"></div>
                         </div>
                         <div class="mini-bottom-row">
                             <div class="mini-seller-info">
@@ -671,17 +683,20 @@
                     <div class="preview-card-body">
                         <form th:action="@{/seller/add-card/{cardId}(cardId=${item.itemCard.id})}" method="post">
                             <input type="hidden" name="_method" value="put"/>
-                            <input type="hidden" name="itemId" th:value="${item.id}" />
+                            <input type="hidden" name="itemId" th:value="${item.id}"/>
                             <div style="text-align: left; margin-bottom: 15px;">
                                 <label class="info-title">CARD NAME</label>
-                                <input type="text" name="name" class="field-input" th:value="${item.itemCard.name}" required>
+                                <input type="text" name="name" class="field-input" th:value="${item.itemCard.name}"
+                                       required>
                             </div>
                             <div style="text-align: left; margin-bottom: 15px;">
                                 <label class="info-title">DESCRIPTION</label>
-                                <textarea name="description" class="field-input" rows="3" th:text="${item.itemCard.description}"></textarea>
+                                <textarea name="description" class="field-input" rows="3"
+                                          th:text="${item.itemCard.description}"></textarea>
                             </div>
                             <div style="text-align: right; margin-top: 15px;">
-                                <button type="button" class="btn btn-secondary" onclick="cancelCardEdit()">Cancel</button>
+                                <button type="button" class="btn btn-secondary" onclick="cancelCardEdit()">Cancel
+                                </button>
                                 <button type="submit" class="btn btn-primary">💾 Save Card</button>
                             </div>
                         </form>
@@ -696,7 +711,9 @@
 
             <div style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px;">
                 <button type="button" class="btn btn-secondary" onclick="enableItemEdit()">✏️ Edit Item</button>
-                <button th:if="${item.itemCard != null}" type="button" class="btn btn-secondary" onclick="enableCardEdit()">🃏 Edit Card</button>
+                <button th:if="${item.itemCard != null}" type="button" class="btn btn-secondary"
+                        onclick="enableCardEdit()">🃏 Edit Card
+                </button>
             </div>
         </div>
     </div>
@@ -729,6 +746,7 @@
     document.getElementById('countForm-' + entryId).style.display = 'none';
     document.getElementById('countView-' + entryId).style.display = 'inline';
   }
+
 </script>
 </body>
 </html>

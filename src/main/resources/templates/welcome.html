@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to Boutique</title>
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Boutique</title>
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -129,17 +129,18 @@
                 min-width: 120px;
             }
         }
+
     </style>
 </head>
 <body>
 <div class="welcome-title">
-  Welcome to Boutique
+    Welcome to Boutique
 </div>
 <a th:href="@{/item-card (role=${role})}" class="view-items-btn">
-  🛍️ View items
+    🛍️ View items
 </a>
 <a th:href="@{'/' + ${userRole} + '/profile/'+ ${userId}}" class="my-account-btn">
-  My account
+    My account
 </a>
 </body>
 </html>

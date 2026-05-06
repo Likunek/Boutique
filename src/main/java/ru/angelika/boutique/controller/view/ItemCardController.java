@@ -20,6 +20,7 @@ import ru.angelika.boutique.service.ItemService;
 import ru.angelika.boutique.service.SellerService;
 
 import java.util.List;
+
 @Slf4j
 @Controller
 @RequestMapping
@@ -112,12 +113,13 @@ public class ItemCardController {
         model.addAttribute("sellerId", sellerId);
         return "item-card";
     }
+
     @DeleteMapping("/item-card/{id}")
     public String deleteItemCardById(@PathVariable Long id, @RequestParam String role, Model model) {
-         ItemCard itemCard = itemCardService.getItemCard(id);
-         if (role.equals("ROLE_ADMIN") || (role.equals("ROLE_SELLER") && getAuthSeller().getName().equals(itemCard.getSeller()))) {
-             itemCardService.deleteItemCard(id);
-         }
+        ItemCard itemCard = itemCardService.getItemCard(id);
+        if (role.equals("ROLE_ADMIN") || (role.equals("ROLE_SELLER") && getAuthSeller().getName().equals(itemCard.getSeller()))) {
+            itemCardService.deleteItemCard(id);
+        }
         return "redirect:/welcome";
     }
 

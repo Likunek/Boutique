@@ -37,17 +37,18 @@ public class ItemService {
     public List<Item> getItemBySellerId(Long id) {
         return itemRepository.findBySellerIdAndVerifyTrue(id);
     }
-    public List<Item> getAllItemBySeller( Seller seller) {
+
+    public List<Item> getAllItemBySeller(Seller seller) {
         return itemRepository.findBySellerWithStorages(seller);
     }
 
     public Item getItemById(Long id) {
         log.debug("Get item by id={}", id);
-       return itemRepository.findById(id)
-               .orElseThrow(() -> {
-                   log.error("Item not found for get, id={}", id);
-                   return new ResourceNotFoundException(Item.class, id);
-               });
+        return itemRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Item not found for get, id={}", id);
+                    return new ResourceNotFoundException(Item.class, id);
+                });
     }
 
     public void addCardItem(Item item) {
@@ -57,7 +58,7 @@ public class ItemService {
     }
 
     public void updateItem(ItemDto itemDto, Long id) {
-        Item item =itemRepository.findById(id)
+        Item item = itemRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("Item not found for update, id={}", id);
                     return new ResourceNotFoundException(Item.class, id);
@@ -69,7 +70,7 @@ public class ItemService {
                         log.error("ItemCard not found for update price, id={}", id);
                         return new ResourceNotFoundException(Item.class, id);
                     });
-            itemCard.setPrice(itemDto.getCostPrice()*1.2);
+            itemCard.setPrice(itemDto.getCostPrice() * 1.2);
             itemCardRepository.save(itemCard);
             log.debug("Update price itemCard by id={}", itemCard.getId());
         }

@@ -64,12 +64,13 @@ public class ItemCardService {
         if (nameDuplicate.size() > 0 && descriptionDuplicate.size() > 0) {
             log.error("ItemCard by seller={}, with name={}, description={} already exists",
                     seller, itemCardDto.getName(), itemCardDto.getDescription());
-            throw new ResourceExistsException(ItemCard.class, itemCardDto.getName() + " : "+ itemCardDto.getDescription());
+            throw new ResourceExistsException(ItemCard.class, itemCardDto.getName() + " : " + itemCardDto.getDescription());
         }
         ItemCardMapper.toItemCardUpdate(itemCardDto, itemCard);
         itemCardRepository.save(itemCard);
         log.info("Update itemCard by id={}", id);
     }
+
     public void deleteItemCard(Long id) {
         itemCardRepository.findById(id).orElseThrow(() -> {
             log.error("ItemCard not found for delete, id={}", id);

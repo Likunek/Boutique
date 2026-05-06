@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="'Seller - ' + ${seller.name}">Seller profile</title>
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Seller - ' + ${seller.name}">Seller profile</title>
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -178,34 +178,35 @@
                 width: auto;
             }
         }
+
     </style>
 </head>
 <body>
 <div class="back-nav">
-  <a th:href="@{/item-card (role=${role})}">← Back to Cards</a>
+    <a th:href="@{/item-card (role=${role})}">← Back to Cards</a>
 </div>
 
 <div class="container">
-  <div class="profile-card">
-    <div class="card-header">
-      <div class="avatar">
-        <span th:text="${seller.name != null ? seller.name.substring(0,1) : '?'}">👤</span>
-      </div>
-      <h1 th:text="${seller.name}">Seller Name</h1>
-      <div>Seller profile</div>
-    </div>
-    <div class="card-body">
-      <div class="info-row">
-        <div class="info-icon">📧</div>
-        <div class="info-label">Email</div>
-        <div class="info-value" th:text="${seller.email != null ? seller.email : 'not specified'}">
+    <div class="profile-card">
+        <div class="card-header">
+            <div class="avatar">
+                <span th:text="${seller.name != null ? seller.name.substring(0,1) : '?'}">👤</span>
+            </div>
+            <h1 th:text="${seller.name}">Seller Name</h1>
+            <div>Seller profile</div>
         </div>
-      </div>
-      <div style="text-align: center;">
-        <a th:href="@{/item-card/by-seller/{id}(id=${seller.id})}" class="btn-secondary">🛍️ View items</a>
-      </div>
+        <div class="card-body">
+            <div class="info-row">
+                <div class="info-icon">📧</div>
+                <div class="info-label">Email</div>
+                <div class="info-value" th:text="${seller.email != null ? seller.email : 'not specified'}">
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <a th:href="@{/item-card/by-seller/{id}(id=${seller.id})}" class="btn-secondary">🛍️ View items</a>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 </body>
 </html>

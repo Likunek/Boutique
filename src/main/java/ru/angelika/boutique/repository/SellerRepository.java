@@ -5,6 +5,8 @@ import ru.angelika.boutique.model.Seller;
 
 public interface SellerRepository extends JpaRepository<Seller, Long> {
     Seller findByName(String name);
+
     Seller findByNumber(String number);
+
     Seller findByEmail(String email);
 }
