@@ -53,7 +53,7 @@ public class UserService {
         User user = userRepository.findByNumber(number);
         if (user == null) {
             log.error("User not found for get, number={}", number);
-           throw new ResourceNotFoundException(User.class, number);
+            throw new ResourceNotFoundException(User.class, number);
         }
         return user;
     }
@@ -62,7 +62,8 @@ public class UserService {
         User user = userRepository.findByName(name);
         if (user == null) {
             throw new ResourceNotFoundException(User.class, name);
-        }return UserMapper.toGetUser(user);
+        }
+        return UserMapper.toGetUser(user);
     }
 
     public void updateUser(UserDto userDto, Long id) {

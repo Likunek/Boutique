@@ -23,8 +23,7 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public String userPage(@PathVariable Long id, Model model)
-    {
+    public String userPage(@PathVariable Long id, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String phone = auth.getName();
         User currentUser = userService.getByNumber(phone);

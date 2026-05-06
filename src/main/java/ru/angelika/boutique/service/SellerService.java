@@ -55,7 +55,7 @@ public class SellerService {
         Seller seller = sellerRepository.findByNumber(number);
         if (seller == null) {
             log.error("Seller not found for get, number={}", number);
-            throw  new ResourceNotFoundException(Seller.class, number);
+            throw new ResourceNotFoundException(Seller.class, number);
         }
         return seller;
     }

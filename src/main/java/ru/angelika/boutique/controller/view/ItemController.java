@@ -67,6 +67,7 @@ public class ItemController {
         model.addAttribute("items", items);
         return "seller-items";
     }
+
     @GetMapping("/seller/items/{id}")
     public String getItemById(@PathVariable Long id, Model model) {
         addData(model);
@@ -74,6 +75,7 @@ public class ItemController {
         model.addAttribute("item", item);
         return "item";
     }
+
     @PutMapping("/seller/items/{id}")
     public String updateItem(@PathVariable Long id, @Valid ItemDto itemDto, RedirectAttributes redirectAttributes) {
         try {
@@ -85,6 +87,7 @@ public class ItemController {
         }
         return "redirect:/seller/items/" + id;
     }
+
     @DeleteMapping("/seller/items/{id}")
     public String deleteItem(@PathVariable Long id) {
         itemService.deleteItem(id);

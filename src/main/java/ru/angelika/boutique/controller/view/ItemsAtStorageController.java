@@ -20,6 +20,7 @@ import ru.angelika.boutique.service.SellerService;
 import ru.angelika.boutique.service.StorageService;
 
 import java.util.List;
+
 @Slf4j
 @Controller
 @RequestMapping("/seller/send-to-storage")
@@ -40,14 +41,26 @@ public class ItemsAtStorageController {
 
     @GetMapping
     public String getFormItemsAtStorage(Model model) {
-        addData(model);
+        Seller seller = getAuthSeller();
+        List<Item> items = itemService.getItemBySellerId(seller.getId());
+        List<Storage> storages = storageService.getAllStorages();
+
+        model.addAttribute("items", items);
+        model.addAttribute("storages", storages);
+        model.addAttribute("id", seller.getId());
         return "send-to-storage";
     }
 
     @PostMapping
     public String addItemsAtStorage(@Valid ItemsAtStorageDto itemsAtStorageDto, Model model) {
-        addData(model);
         try {
+            Seller seller = getAuthSeller();
+            List<Item> items = itemService.getItemBySellerId(seller.getId());
+            List<Storage> storages = storageService.getAllStorages();
+
+            model.addAttribute("items", items);
+            model.addAttribute("storages", storages);
+            model.addAttribute("id", seller.getId());
             itemsAtStorageService.addItemsAtStorage(itemsAtStorageDto);
             model.addAttribute("successMessage", "Item successfully sent to storage!");
         } catch (Exception e) {
@@ -62,6 +75,11 @@ public class ItemsAtStorageController {
     public String updateFormItemsAtStorage(@PathVariable Long id, @RequestParam Long itemId,
                                            @Min(0) Long count, RedirectAttributes redirectAttributes) {
         try {
+            Seller seller = getAuthSeller();
+            Item item = itemService.getItemById(id);
+            if (!seller.getId().equals(item.getSeller().getId())) {
+                return "redirect:/welcome";
+            }
             itemsAtStorageService.updateItemsAtStorage(id, count);
             redirectAttributes.addFlashAttribute("successMessage", "Item successfully sent to storage!");
         } catch (Exception e) {
@@ -71,15 +89,8 @@ public class ItemsAtStorageController {
         return "redirect:/seller/items/" + itemId;
     }
 
-    private void addData(Model model) {
+    private Seller getAuthSeller() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Seller seller = sellerService.getByNumber(auth.getName());
-
-        List<Item> items = itemService.getItemBySellerId(seller.getId());
-        List<Storage> storages = storageService.getAllStorages();
-
-        model.addAttribute("items", items);
-        model.addAttribute("storages", storages);
-        model.addAttribute("id", seller.getId());
+        return sellerService.getByNumber(auth.getName());
     }
 }

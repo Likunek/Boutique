@@ -33,35 +33,69 @@
 
         .logout-container {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 40px;
+            right: 50px;
             z-index: 1000;
         }
 
         .btn-logout {
-            background: #fff;
-            border: 1px solid #dc3545;
-            color: #dc3545;
-            padding: 10px 22px;
-            border-radius: 60px;
-            font-weight: 500;
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-            transition: all 0.2s ease;
-        }
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    padding: 10px 22px;
+    border-radius: 60px;
+    color: #dc3545;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    border: 1px solid #dc3545;
+    box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
 
-        .btn-logout:hover {
-            background: #dc3545;
-            color: white;
-            border-color: #dc3545;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.2);
-        }
+.btn-logout:hover {
+    background: #dc3545;
+    color: white;
+    border-color: #dc3545;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+}
+        .back-nav {
+      position: fixed;
+      top: 40px;
+      left: 50px;
+      z-index: 1000;
+    }
+
+    .back-nav a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      padding: 10px 22px;
+      border-radius: 60px;
+      color: #4a5b3c;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+      border: 1px solid #adb5bd;
+      transition: all 0.2s ease;
+    }
+
+    .back-nav a:hover {
+    background: #8aaE7a;
+    color: white;
+    border-color: #8aaE7a;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(138, 174, 122, 0.3);
+}
         .delete-container {
            position: fixed;
-           bottom: 20px;
-           right: 20px;
+           bottom: 40px;
+           right: 50px;
            z-index: 1000;
         }
 
@@ -353,9 +387,12 @@
     </style>
 </head>
 <body>
+<div class="back-nav">
+  <a href="/welcome">← Back to Home</a>
+</div>
 <div class="logout-container">
   <form th:action="@{/logout}" method="post" style="display:inline;">
-    <button type="submit" class="btn btn-logout">🚪 Logout</button>
+    <button type="submit" class="btn-logout">🚪 Logout</button>
   </form>
 </div>
 
@@ -397,7 +434,6 @@
       </div>
 
       <div class="footer-nav">
-        <a href="/welcome" class="btn-text">🏠 Back to Home</a>
         <div class="seller-id" th:text="'Seller ID: ' + ${seller.id}">Seller ID: </div>
       </div>
     </div>

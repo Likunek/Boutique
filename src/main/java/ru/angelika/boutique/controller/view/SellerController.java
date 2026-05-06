@@ -13,7 +13,7 @@ import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.service.SellerService;
 
 @Controller
-@RequestMapping("/seller/profile")
+@RequestMapping
 public class SellerController {
 
     private final SellerService sellerService;
@@ -23,11 +23,9 @@ public class SellerController {
         this.sellerService = sellerService;
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/seller/profile/{id}")
     public String sellerPage(@PathVariable Long id, Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String phone = auth.getName();
-        Seller currentSeller = sellerService.getByNumber(phone);
+        Seller currentSeller = getAuthSeller();
         if (!currentSeller.getId().equals(id)) {
             return "redirect:/welcome";
         }
@@ -35,10 +33,26 @@ public class SellerController {
         model.addAttribute("seller", seller);
         return "seller";
     }
-    @DeleteMapping("{id}")
+
+    @GetMapping("/public-seller/{id}")
+    public String getSeller(@PathVariable Long id, Model model) {
+        Seller seller = sellerService.getById(id);
+        model.addAttribute("seller", seller);
+        return "public-seller";
+    }
+
+    @DeleteMapping("/seller/profile/{id}")
     public String deleteSeller(@PathVariable Long id) {
+        Seller seller = getAuthSeller();
+        if (!seller.getId().equals(id)) {
+            return "redirect:/welcome";
+        }
         sellerService.deleteSeller(id);
         return "redirect:/registration";
     }
 
+    private Seller getAuthSeller() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return sellerService.getByNumber(auth.getName());
+    }
 }

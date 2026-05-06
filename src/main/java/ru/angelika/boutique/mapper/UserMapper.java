@@ -10,7 +10,7 @@ import ru.angelika.boutique.model.User;
 
 public class UserMapper {
 
-    public static User toUser(UserDto userDto){
+    public static User toUser(UserDto userDto) {
         User user = new User();
         user.setName(userDto.getName());
         user.setNumber(userDto.getNumber());
@@ -38,6 +38,7 @@ public class UserMapper {
         seller.setEmail(userDto.getEmail());
         return seller;
     }
+
     public static UserGetDto toGetUser(User user) {
         return UserGetDto.builder()
                 .id(user.getId())

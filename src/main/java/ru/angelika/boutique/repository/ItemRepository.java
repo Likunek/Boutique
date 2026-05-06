@@ -10,10 +10,14 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
     Item findByName(String name);
+
+    Item findByItemCardId(Long itemCardId);
+
     List<Item> findBySellerId(Long sellerId);
+
     List<Item> findBySellerIdAndVerifyTrue(Long sellerId);
+
     @Query("SELECT DISTINCT i FROM Item i LEFT JOIN FETCH i.itemsAtStorages WHERE i.seller = :seller")
     List<Item> findBySellerWithStorages(@Param("seller") Seller seller);
-
 
 }
