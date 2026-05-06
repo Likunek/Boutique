@@ -33,12 +33,6 @@ public class ItemController {
         this.sellerService = sellerService;
     }
 
-    @GetMapping("/seller/add-item")
-    public String getFormNewItem(Model model) {
-        addData(model);
-        return "add-item";
-    }
-
     @PostMapping("/seller/add-item")
     public String addItem(@Valid ItemDto itemDto, BindingResult result, Model model) {
 
@@ -60,6 +54,12 @@ public class ItemController {
         return "add-item";
     }
 
+    @GetMapping("/seller/add-item")
+    public String getFormNewItem(Model model) {
+        addData(model);
+        return "add-item";
+    }
+
     @GetMapping("/seller/items")
     public String getAllItemsSeller(Model model) {
         Seller seller = addData(model);
@@ -70,8 +70,10 @@ public class ItemController {
 
     @GetMapping("/seller/items/{id}")
     public String getItemById(@PathVariable Long id, Model model) {
-        addData(model);
         Item item = itemService.getItemById(id);
+        if (security(item.getSeller().getId())) {
+            return "redirect:/welcome";
+        }
         model.addAttribute("item", item);
         return "item";
     }
@@ -79,6 +81,9 @@ public class ItemController {
     @PutMapping("/seller/items/{id}")
     public String updateItem(@PathVariable Long id, @Valid ItemDto itemDto, RedirectAttributes redirectAttributes) {
         try {
+            if (security(itemService.getItemById(id).getSeller().getId())) {
+                return "redirect:/welcome";
+            }
             itemService.updateItem(itemDto, id);
             redirectAttributes.addFlashAttribute("successMessage", "Item successfully update!");
         } catch (Exception e) {
@@ -99,5 +104,13 @@ public class ItemController {
         Seller seller = sellerService.getByNumber(auth.getName());
         model.addAttribute("id", seller.getId());
         return seller;
+    }
+    private boolean security(Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String roleName = auth.getAuthorities().iterator().next().getAuthority();
+        if (roleName.equals("ROLE_SELLER")) {
+            return !sellerService.getByNumber(auth.getName()).getId().equals(id);
+        }
+        return false;
     }
 }
