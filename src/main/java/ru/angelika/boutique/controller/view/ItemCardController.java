@@ -99,9 +99,12 @@ public class ItemCardController {
 
     @GetMapping("/item-card/{id}")
     public String getItemCardById(@PathVariable Long id, @RequestParam String role, Model model) {
-        String sellerName = getAuthSeller().getName();
+        boolean isOwner = false;
         ItemCard itemCard = itemCardService.getItemCard(id);
-        boolean isOwner = role.equals("ROLE_SELLER") && sellerName.equals(itemCard.getSeller());
+        switch (role) {
+            case "ROLE_SELLER" -> isOwner = getAuthSeller().getName().equals(itemCard.getSeller());
+            case "ROLE_ADMIN" -> isOwner = true;
+        }
         Long sellerId = sellerService.getBySellerName(itemCard.getSeller()).getId();
         model.addAttribute("isOwner", isOwner);
         model.addAttribute("itemCard", itemCard);
