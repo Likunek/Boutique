@@ -12,6 +12,8 @@ import ru.angelika.boutique.repository.ItemRepository;
 import ru.angelika.boutique.repository.ItemsAtStorageRepository;
 import ru.angelika.boutique.repository.StorageRepository;
 
+import java.util.List;
+
 @Slf4j
 @Service
 public class ItemsAtStorageService {
@@ -46,6 +48,10 @@ public class ItemsAtStorageService {
                 itemsAtStorageDto.getItemId(), itemsAtStorageDto.getStorageId(), itemsAtStorageDto.getCount());
     }
 
+    public List<ItemsAtStorage> getItemsAtStorageByStorageId(Long id) {
+       return itemsAtStorageRepository.findByStorageId(id);
+    }
+
     public ItemsAtStorage getItemsAtStorage(Long id) {
         return itemsAtStorageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ItemsAtStorage.class, id));
@@ -64,7 +70,15 @@ public class ItemsAtStorageService {
 
     public void deleteItemsAtStorage(Long id) {
         itemsAtStorageRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(ItemsAtStorage.class, id));
+                .orElseThrow(() -> {
+                    log.error("ItemsAtStorage not found for delete, id={}", id);
+                    return new ResourceNotFoundException(ItemsAtStorage.class, id);
+                });
+        Item item = itemRepository.findItemByItemsAtStorageId(id);
+        item.getItemsAtStorages().removeIf(s -> s.getId().equals(id));
+        itemRepository.save(item);
+        log.info("Update item by id={}, delete ItemsAtStorage by id={}", item.getId(), id);
         itemsAtStorageRepository.deleteById(id);
+        log.info("Delete itemsAtStorage by id={}", id);
     }
 }

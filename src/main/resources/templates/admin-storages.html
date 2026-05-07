@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Storages</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(to top, #ff9f7c 0%, #ffe5d9 50%, #ffffff 100%);
+            min-height: 100vh;
+            padding: 80px 20px 40px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle at 10% 20%, rgba(107, 140, 92, 0.08) 0%, rgba(107, 140, 92, 0.02) 90%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6b8c5c 0%, #8aaE7a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .back-nav {
+            position: fixed;
+            top: 40px;
+            left: 50px;
+            z-index: 1000;
+        }
+
+        .back-nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 22px;
+            border-radius: 60px;
+            color: #4a5b3c;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+            border: 1px solid #adb5bd;
+            transition: all 0.2s ease;
+        }
+
+        .back-nav a:hover {
+            background: #8aaE7a;
+            color: white;
+            border-color: #8aaE7a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(138, 174, 122, 0.3);
+        }
+
+        .logout-container {
+            position: fixed;
+            top: 40px;
+            right: 50px;
+            z-index: 1000;
+        }
+
+        .btn-logout {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 22px;
+            border-radius: 60px;
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            border: 1px solid #dc3545;
+            box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-logout:hover {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+        }
+
+        .table-wrapper {
+            background: white;
+            border-radius: 32px;
+            padding: 20px;
+            border: 2px solid #ffe5d9;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 12px;
+            background: #f8f9fa;
+            color: #2c3e2f;
+            font-weight: 600;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            color: #495057;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+        .btn-danger:hover {
+            background: #b02a37;
+            transform: scale(1.05);
+        }
+
+        .btn-edit {
+            background: #4a5b3c;
+        }
+        .btn-edit:hover {
+            background: #6b8c5c;
+            transform: scale(1.05);
+        }
+
+        .btn-save {
+            background: #28a745;
+        }
+        .btn-save:hover {
+            background: #218838;
+            transform: scale(1.05);
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+        }
+        .btn-cancel:hover {
+            background: #5a6268;
+            transform: scale(1.05);
+        }
+
+        .actions-col {
+            width: 1px;
+            white-space: nowrap;
+            padding-right: 16px;
+        }
+
+        .edit-input {
+            width: 120px;
+            padding: 6px 8px;
+            border: 1px solid #dee2e6;
+            border-radius: 14px;
+            font-size: 13px;
+            margin-right: 6px;
+        }
+
+        @media (max-width: 768px) {
+            th, td {
+                padding: 8px;
+                font-size: 12px;
+            }
+            .table-wrapper {
+                padding: 12px;
+            }
+            .back-nav, .logout-container {
+                top: 20px;
+            }
+            .back-nav { left: 20px; }
+            .logout-container { right: 20px; }
+            .edit-input {
+                width: 80px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="back-nav">
+    <a href="/admin/profile/1">← Back to Admin</a>
+</div>
+
+<div class="logout-container">
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn-logout">🚪 Logout</button>
+    </form>
+</div>
+
+<div class="container">
+    <h1 class="page-title">🏭 All Storages</h1>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>Max capacity</th>
+                <th class="actions-col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="storage : ${storages}">
+                <td th:text="${storage.id}"></td>
+
+                <td>
+                    <span th:id="'view-address-' + ${storage.id}" th:text="${storage.address}">Address</span>
+                    <input th:id="'edit-address-' + ${storage.id}" type="text" class="edit-input"
+                           th:value="${storage.address}" style="display: none;">
+                </td>
+
+                <td>
+                    <span th:id="'view-city-' + ${storage.id}" th:text="${storage.city}">City</span>
+                    <input th:id="'edit-city-' + ${storage.id}" type="text" class="edit-input"
+                           th:value="${storage.city}" style="display: none;">
+                </td>
+
+                <td>
+                    <span th:id="'view-capacity-' + ${storage.id}" th:text="${storage.maxCapacity}">0</span>
+                    <input th:id="'edit-capacity-' + ${storage.id}" type="number" class="edit-input"
+                           th:value="${storage.maxCapacity}" min="0" style="display: none;">
+                </td>
+
+                <td class="actions-col">
+                    <div th:id="'view-actions-' + ${storage.id}">
+                        <button class="btn btn-edit" th:onclick="'enableStorageEdit(' + ${storage.id} + ')'">✏️ Edit
+                        </button>
+                        <form th:action="@{/admin/storages/{id}(id=${storage.id})}" method="post"
+                              style="display: inline-block;"
+                              onsubmit="return confirm('Delete storage ' + this.querySelector('input[name=storageName]').value + '?');">
+                            <input type="hidden" name="_method" value="delete"/>
+                            <input type="hidden" name="storageName"
+                                   th:value="${storage.city} + ' ' + ${storage.address}"/>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+
+                    <div th:id="'edit-actions-' + ${storage.id}" style="display: none;">
+                        <form th:action="@{/admin/storages/{id}(id=${storage.id})}" method="post"
+                              style="display: inline-block;">
+                            <input type="hidden" name="_method" value="put"/>
+                            <input type="hidden" name="address" th:id="'hidden-address-' + ${storage.id}">
+                            <input type="hidden" name="city" th:id="'hidden-city-' + ${storage.id}">
+                            <input type="hidden" name="maxCapacity" th:id="'hidden-capacity-' + ${storage.id}">
+                            <button type="submit" class="btn btn-save"
+                                    th:onclick="'document.getElementById(\'hidden-address-' + ${storage.id} + '\').value = document.getElementById(\'edit-address-' + ${storage.id} + '\').value; document.getElementById(\'hidden-city-' + ${storage.id} + '\').value = document.getElementById(\'edit-city-' + ${storage.id} + '\').value; document.getElementById(\'hidden-capacity-' + ${storage.id} + '\').value = document.getElementById(\'edit-capacity-' + ${storage.id} + '\').value; return true;'">
+                                Save
+                            </button>
+                        </form>
+                        <button class="btn btn-cancel" th:onclick="'cancelStorageEdit(' + ${storage.id} + ')'">Cancel
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function enableStorageEdit(id) {
+        document.getElementById('view-address-' + id).style.display = 'none';
+        document.getElementById('edit-address-' + id).style.display = 'inline-block';
+
+        document.getElementById('view-city-' + id).style.display = 'none';
+        document.getElementById('edit-city-' + id).style.display = 'inline-block';
+
+        document.getElementById('view-capacity-' + id).style.display = 'none';
+        document.getElementById('edit-capacity-' + id).style.display = 'inline-block';
+
+        document.getElementById('view-actions-' + id).style.display = 'none';
+        document.getElementById('edit-actions-' + id).style.display = 'block';
+    }
+
+    function cancelStorageEdit(id) {
+        document.getElementById('view-address-' + id).style.display = 'inline';
+        document.getElementById('edit-address-' + id).style.display = 'none';
+
+        document.getElementById('view-city-' + id).style.display = 'inline';
+        document.getElementById('edit-city-' + id).style.display = 'none';
+
+        document.getElementById('view-capacity-' + id).style.display = 'inline';
+        document.getElementById('edit-capacity-' + id).style.display = 'none';
+
+        document.getElementById('view-actions-' + id).style.display = 'block';
+        document.getElementById('edit-actions-' + id).style.display = 'none';
+    }
+
+</script>
+</body>
+</html>
