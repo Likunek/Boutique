@@ -25,6 +25,7 @@ public class StorageService {
     }
 
     public void addStorage(StorageDto storageDto) {
+        checkDuplicate(storageDto.getAddress(), storageDto.getCity());
         storageRepository.save(StorageMapper.toStorage(storageDto));
     }
 
@@ -42,13 +43,7 @@ public class StorageService {
 
     public void updateStorage(StorageDto storageDto, Long id) {
         Storage storage = storageRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Storage.class, id));
-        List<Storage> storagesByAddress = storageRepository.findByAddress(storageDto.getAddress());
-        List<Storage> storagesByCity = storageRepository.findByCity(storageDto.getCity());
-        if (storagesByAddress.size() > 0 && storagesByCity.size() > 0) {
-            log.error("Storage with address={}, city={} already exists",
-                    storageDto.getAddress(), storageDto.getCity());
-            throw new ResourceExistsException(Storage.class,  storageDto.getCity() + " : " + storageDto.getAddress());
-        }
+        checkDuplicate(storageDto.getAddress(), storageDto.getCity());
         storageRepository.save(StorageMapper.updateStorage(storage, storageDto));
         log.info("Update Storage by id={}", id);
     }
@@ -59,5 +54,14 @@ public class StorageService {
                 .forEach(s -> itemsAtStorageService.deleteItemsAtStorage(s.getId()));
         storageRepository.deleteById(id);
         log.info("Delete Storage by id={}", id);
+    }
+
+    private void checkDuplicate(String address, String city) {
+        List<Storage> storagesByAddress = storageRepository.findByAddress(address);
+        List<Storage> storagesByCity = storageRepository.findByCity(city);
+        if (storagesByAddress.size() > 0 && storagesByCity.size() > 0) {
+            log.error("Storage with address={}, city={} already exists", address, city);
+            throw new ResourceExistsException(Storage.class,  city + " : " + address);
+        }
     }
 }
