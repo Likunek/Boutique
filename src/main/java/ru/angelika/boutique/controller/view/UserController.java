@@ -43,6 +43,7 @@ public class UserController {
         if (security(id)) {
             return "redirect:/welcome";
         }
+        userService.deleteUser(id);
         return "admin-users";
     }
 
