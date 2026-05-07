@@ -44,7 +44,7 @@ public class UserController {
             return "redirect:/welcome";
         }
         userService.deleteUser(id);
-        return "admin-users";
+        return "redirect:/admin/users";
     }
 
     private boolean security(Long id) {

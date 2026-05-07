@@ -18,7 +18,7 @@ public class User {
     private String number;
     @Column(name = "email", unique = true)
     private String email;
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "cart_id")
     private Cart cart;
     @Column(name = "balance")
