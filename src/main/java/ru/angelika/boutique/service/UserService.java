@@ -11,6 +11,8 @@ import ru.angelika.boutique.mapper.UserMapper;
 import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.repository.UserRepository;
 
+import java.util.List;
+
 @Slf4j
 @Service
 public class UserService {
@@ -56,6 +58,10 @@ public class UserService {
             throw new ResourceNotFoundException(User.class, number);
         }
         return user;
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     public UserGetDto getUserByName(String name) {
