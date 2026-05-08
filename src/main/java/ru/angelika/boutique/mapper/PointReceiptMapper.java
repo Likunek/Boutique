@@ -10,4 +10,10 @@ public class PointReceiptMapper {
         pointReceipt.setCity(pointReceiptDto.getCity());
         return pointReceipt;
     }
+
+    public static PointReceipt updatePointReceipt(PointReceiptDto pointReceiptDto,  PointReceipt pointReceipt) {
+        pointReceipt.setAddress(pointReceiptDto.getAddress());
+        pointReceipt.setCity(pointReceiptDto.getCity());
+        return pointReceipt;
+    }
 }

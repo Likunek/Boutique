@@ -17,5 +17,5 @@ public class PointReceipt {
     @Column(name = "city")
     private String city;
     @Column(name = "rating")
-    private Double rating;
+    private Double rating = 0.0;
 }

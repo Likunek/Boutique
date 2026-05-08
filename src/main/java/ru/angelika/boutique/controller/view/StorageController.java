@@ -44,7 +44,7 @@ public class StorageController {
         return "admin-add-storage";
     }
     @GetMapping("/add")
-    public String getFormNewItem() {
+    public String getFormNewStorage() {
         return "admin-add-storage";
     }
 

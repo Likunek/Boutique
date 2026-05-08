@@ -26,6 +26,8 @@ public class PointReceiptService {
     public void addPointReceipt(PointReceiptDto pointReceiptDto) {
         checkDuplicate(pointReceiptDto.getAddress(), pointReceiptDto.getCity());
         pointReceiptRepository.save(PointReceiptMapper.toPointReceipt(pointReceiptDto));
+        log.info("Add new pointReceipt: address={}, city={}",
+                pointReceiptDto.getAddress(), pointReceiptDto.getCity());
     }
 
     public PointReceipt getPointReceipt(Long id) {
@@ -33,17 +35,29 @@ public class PointReceiptService {
                 .orElseThrow(() -> new ResourceNotFoundException(PointReceipt.class, id));
     }
 
+    public List<PointReceipt> getAllPoints() {
+        return pointReceiptRepository.findAll();
+    }
+
     public void updatePointReceipt(Long id, PointReceiptDto pointReceiptDto) {
         PointReceipt pointReceipt = pointReceiptRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(PointReceipt.class, id));
-        pointReceipt.setAddress(pointReceiptDto.getAddress());
-        pointReceiptRepository.save(pointReceipt);
+                .orElseThrow(() -> {
+                    log.error("PointReceipt not found for update, id={}", id);
+                    return new ResourceNotFoundException(PointReceipt.class, id);
+                });
+        checkDuplicate(pointReceiptDto.getAddress(), pointReceiptDto.getCity());
+        pointReceiptRepository.save(PointReceiptMapper.updatePointReceipt(pointReceiptDto, pointReceipt));
+        log.info("Update pointReceipt by id={}", id);
     }
 
     public void deletePointReceipt(Long id) {
         pointReceiptRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(PointReceipt.class, id));
+                .orElseThrow(() -> {
+                    log.error("PointReceipt not found for delete, id={}", id);
+                    return new ResourceNotFoundException(PointReceipt.class, id);
+                });
         pointReceiptRepository.deleteById(id);
+        log.info("Delete pointReceipt by id={}", id);
     }
 
     private void checkDuplicate(String address, String city) {
