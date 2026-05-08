@@ -2,15 +2,18 @@ package ru.angelika.boutique.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
 public class PointReceiptDto {
-    @NotNull
-    @NotBlank
+    @NotBlank(message = "Address is required")
+    @Size(max = 50, message = "Address must be up to 50 characters")
     private String address;
-    @NotNull
-    private String description;
+    @NotBlank(message = "City is required")
+    @Size(max = 20, message = "City must be up to 20 characters")
+    private String city;
+
 }

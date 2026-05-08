@@ -14,8 +14,8 @@ public class PointReceipt {
     private Long id;
     @Column(name = "address")
     private String address;
-    @Column(name = "description")
-    private String description;
+    @Column(name = "city")
+    private String city;
     @Column(name = "rating")
     private Double rating;
 }
