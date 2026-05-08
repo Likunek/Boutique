@@ -7,6 +7,7 @@ import ru.angelika.boutique.dto.StorageDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.StorageMapper;
+import ru.angelika.boutique.model.Item;
 import ru.angelika.boutique.model.Storage;
 import ru.angelika.boutique.repository.StorageRepository;
 
@@ -27,6 +28,8 @@ public class StorageService {
     public void addStorage(StorageDto storageDto) {
         checkDuplicate(storageDto.getAddress(), storageDto.getCity());
         storageRepository.save(StorageMapper.toStorage(storageDto));
+        log.info("Add new storage: address={}, city={}, MaxCapacity={}",
+                storageDto.getAddress(), storageDto.getCity(), storageDto.getMaxCapacity());
     }
 
     public List<Storage> getAllStorage() {
@@ -42,18 +45,24 @@ public class StorageService {
     }
 
     public void updateStorage(StorageDto storageDto, Long id) {
-        Storage storage = storageRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Storage.class, id));
+        Storage storage = storageRepository.findById(id).orElseThrow(() -> {
+            log.error("Storage not found for update, id={}", id);
+            return new ResourceNotFoundException(Storage.class, id);
+        });
         checkDuplicate(storageDto.getAddress(), storageDto.getCity());
         storageRepository.save(StorageMapper.updateStorage(storage, storageDto));
-        log.info("Update Storage by id={}", id);
+        log.info("Update storage by id={}", id);
     }
 
     public void deleteStorage(Long id) {
-        storageRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Storage.class, id));
+        storageRepository.findById(id).orElseThrow(() -> {
+            log.error("Storage not found for delete, id={}", id);
+            return new ResourceNotFoundException(Storage.class, id);
+        });
         itemsAtStorageService.getItemsAtStorageByStorageId(id)
                 .forEach(s -> itemsAtStorageService.deleteItemsAtStorage(s.getId()));
         storageRepository.deleteById(id);
-        log.info("Delete Storage by id={}", id);
+        log.info("Delete storage by id={}", id);
     }
 
     private void checkDuplicate(String address, String city) {
