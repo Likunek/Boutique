@@ -36,8 +36,8 @@ public class ItemController {
 
     @PostMapping("/seller/add-item")
     public String addItem(@Valid ItemDto itemDto, BindingResult result, Model model) {
-
         if (result.hasErrors()) {
+            log.error("Error add Item {}", itemDto.getName());
             model.addAttribute("errorMessage", "Please correct the errors: " +
                     result.getAllErrors().stream()
                             .map(DefaultMessageSourceResolvable::getDefaultMessage)
