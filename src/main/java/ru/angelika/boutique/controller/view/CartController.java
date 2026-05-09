@@ -25,17 +25,22 @@ public class CartController {
 
     @GetMapping("user/cart/{id}")
     public String getCart(@PathVariable Long id, Model model) {
-        if (security(id)) {
+        if (!security(id).equals(id)) {
             return "redirect:/welcome";
         }
         model.addAttribute("cart", cartService.getCartById(id));
         return "user-cart";
     }
 
+    @GetMapping("/user/cart/add-card/{id}")
+    public String addItemInCart(@PathVariable Long id) {
+        Long cartId = security(id);
+        cartService.addCardInCart(cartId, id);
+        return "redirect:/item-card?role=ROLE_USER";
+    }
 
-
-    private boolean security(Long id) {
+    private Long security(Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return userService.getByNumber(auth.getName()).getCart().getId().equals(id);
+        return userService.getByNumber(auth.getName()).getCart().getId();
     }
 }

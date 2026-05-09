@@ -385,7 +385,7 @@
 
             <div class="action-buttons">
                 <a th:if="${user.cart != null}"
-                   th:href="@{/cart/{id}(id=${user.cart.id})}"
+                   th:href="@{/user/cart/{id}(id=${user.cart.id})}"
                    class="btn btn-primary">
                     🛒 My Cart
                 </a>
