@@ -49,7 +49,11 @@ public class ItemsAtStorageService {
     }
 
     public List<ItemsAtStorage> getItemsAtStorageByStorageId(Long id) {
-       return itemsAtStorageRepository.findByStorageId(id);
+        return itemsAtStorageRepository.findByStorageId(id);
+    }
+
+    public List<ItemsAtStorage> getAllItemsAtStorage() {
+        return itemsAtStorageRepository.findAll();
     }
 
     public ItemsAtStorage getItemsAtStorage(Long id) {
@@ -63,6 +67,7 @@ public class ItemsAtStorageService {
                     log.error("ItemsAtStorage not found for update, id={}", id);
                     return new ResourceNotFoundException(ItemsAtStorage.class, id);
                 });
+        if (count == 0) { deleteItemsAtStorage(id);return;}
         itemsAtStorage.setCount(count);
         itemsAtStorageRepository.save(itemsAtStorage);
         log.info("Update itemsAtStorage by id={}, count={}", id, count);

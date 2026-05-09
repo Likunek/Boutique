@@ -23,7 +23,7 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@RequestMapping("/seller/send-to-storage")
+@RequestMapping
 public class ItemsAtStorageController {
     private final ItemService itemService;
     private final SellerService sellerService;
@@ -39,19 +39,7 @@ public class ItemsAtStorageController {
         this.itemsAtStorageService = itemsAtStorageService;
     }
 
-    @GetMapping
-    public String getFormItemsAtStorage(Model model) {
-        Seller seller = getAuthSeller();
-        List<Item> items = itemService.getItemBySellerId(seller.getId());
-        List<Storage> storages = storageService.getAllStorages();
-
-        model.addAttribute("items", items);
-        model.addAttribute("storages", storages);
-        model.addAttribute("id", seller.getId());
-        return "send-to-storage";
-    }
-
-    @PostMapping
+    @PostMapping("/seller/send-to-storage")
     public String addItemsAtStorage(@Valid ItemsAtStorageDto itemsAtStorageDto, Model model) {
         try {
             Seller seller = getAuthSeller();
@@ -71,7 +59,24 @@ public class ItemsAtStorageController {
         return "send-to-storage";
     }
 
-    @PutMapping("{id}")
+    @GetMapping("/seller/send-to-storage")
+    public String getFormItemsAtStorage(Model model) {
+        Seller seller = getAuthSeller();
+        List<Item> items = itemService.getItemBySellerId(seller.getId());
+        List<Storage> storages = storageService.getAllStorages();
+
+        model.addAttribute("items", items);
+        model.addAttribute("storages", storages);
+        model.addAttribute("id", seller.getId());
+        return "send-to-storage";
+    }
+    @GetMapping("admin/item-at-storage")
+    public String getAllItemsAtStorage(Model model) {
+        model.addAttribute("itemsAtStorages", itemsAtStorageService.getAllItemsAtStorage());
+        return "admin-items-at-storage";
+    }
+
+    @PutMapping("/seller/send-to-storage/{id}")
     public String updateFormItemsAtStorage(@PathVariable Long id, @RequestParam Long itemId,
                                            @Min(0) Long count, RedirectAttributes redirectAttributes) {
         try {
