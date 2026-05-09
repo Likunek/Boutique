@@ -3,6 +3,7 @@ package ru.angelika.boutique.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -16,6 +17,10 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.NEW;
+    @Column(name = "date", nullable = false)
+    private LocalDateTime date = LocalDateTime.now();
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "order_item",
             inverseJoinColumns = @JoinColumn(name = "item_id"))
