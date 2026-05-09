@@ -31,6 +31,10 @@ public class ItemCardService {
     public void addItemCard(ItemCardDto itemCardDto, String seller) {
         checkDuplicate(seller, itemCardDto.getName(), itemCardDto.getDescription());
         Item item = itemService.getItemById(itemCardDto.getItemId());
+        if (item.getItemCard() != null) {
+            log.error("ItemCard by itemId={} already exists", item.getId());
+            throw new ResourceExistsException(ItemCard.class, " itemId : " + item.getId().toString());
+        }
         ItemCard itemCard = itemCardRepository.save(ItemCardMapper.toItemCard(itemCardDto, item.getCostPrice(), seller));
         item.setItemCard(itemCard);
         itemService.addCardItem(item);
