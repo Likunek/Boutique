@@ -4,8 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.ItemsAtStorageDto;
+import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.model.Item;
+import ru.angelika.boutique.model.ItemCard;
 import ru.angelika.boutique.model.ItemsAtStorage;
 import ru.angelika.boutique.model.Storage;
 import ru.angelika.boutique.repository.ItemRepository;
@@ -21,6 +23,7 @@ public class ItemsAtStorageService {
     private final ItemRepository itemRepository;
     private final StorageRepository storageRepository;
 
+
     @Autowired
     public ItemsAtStorageService(ItemsAtStorageRepository itemsAtStorageRepository, ItemRepository itemRepository, StorageRepository storageRepository) {
         this.itemsAtStorageRepository = itemsAtStorageRepository;
@@ -29,6 +32,13 @@ public class ItemsAtStorageService {
     }
 
     public void addItemsAtStorage(ItemsAtStorageDto itemsAtStorageDto) {
+        if (itemsAtStorageRepository.findByItemIdAndStorageId(itemsAtStorageDto.getItemId(),
+                itemsAtStorageDto.getStorageId()) != null) {
+            log.error("ItemsAtStorage  with itemId={}, storageId={} already exists",
+                    itemsAtStorageDto.getItemId(), itemsAtStorageDto.getStorageId());
+            throw new ResourceExistsException(ItemCard.class,
+                    itemsAtStorageDto.getItemId() + " , " + itemsAtStorageDto.getStorageId());
+        }
         Item item = itemRepository.findById(itemsAtStorageDto.getItemId())
                 .orElseThrow(() -> {
                     log.error("Item not found for adding itemsAtStorage, id={}", itemsAtStorageDto.getItemId());

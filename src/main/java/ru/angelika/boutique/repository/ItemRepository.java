@@ -11,6 +11,7 @@ import java.util.List;
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
     Item findByItemCardId(Long itemCardId);
+    Item findBySellerIdAndName(Long sellerId, String name);
 
     List<Item> findBySellerId(Long sellerId);
 

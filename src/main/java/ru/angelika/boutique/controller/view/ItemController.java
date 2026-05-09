@@ -97,10 +97,11 @@ public class ItemController {
     @PutMapping("/seller/items/{id}")
     public String updateItem(@PathVariable Long id, @Valid ItemDto itemDto, RedirectAttributes redirectAttributes) {
         try {
-            if (security(itemService.getItemById(id).getSeller().getId())) {
+            Long sellerId = itemService.getItemById(id).getSeller().getId();
+            if (security(sellerId)) {
                 return "redirect:/welcome";
             }
-            itemService.updateItem(itemDto, id);
+            itemService.updateItem(itemDto, id, sellerId);
             redirectAttributes.addFlashAttribute("successMessage", "Item successfully update!");
         } catch (Exception e) {
             log.error("Error update item id={}: {}", id, e.getMessage(), e);

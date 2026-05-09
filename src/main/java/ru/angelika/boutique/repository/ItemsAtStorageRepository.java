@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ItemsAtStorageRepository extends JpaRepository<ItemsAtStorage, Long> {
     List<ItemsAtStorage> findByStorageId(Long storageId);
+    ItemsAtStorage findByItemIdAndStorageId(Long itemId, Long storageId);
 }
