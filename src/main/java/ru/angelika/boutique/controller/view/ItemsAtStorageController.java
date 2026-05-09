@@ -23,7 +23,7 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@RequestMapping("/seller/send-to-storage")
+@RequestMapping
 public class ItemsAtStorageController {
     private final ItemService itemService;
     private final SellerService sellerService;
@@ -39,19 +39,7 @@ public class ItemsAtStorageController {
         this.itemsAtStorageService = itemsAtStorageService;
     }
 
-    @GetMapping
-    public String getFormItemsAtStorage(Model model) {
-        Seller seller = getAuthSeller();
-        List<Item> items = itemService.getItemBySellerId(seller.getId());
-        List<Storage> storages = storageService.getAllStorages();
-
-        model.addAttribute("items", items);
-        model.addAttribute("storages", storages);
-        model.addAttribute("id", seller.getId());
-        return "send-to-storage";
-    }
-
-    @PostMapping
+    @PostMapping("/seller/send-to-storage")
     public String addItemsAtStorage(@Valid ItemsAtStorageDto itemsAtStorageDto, Model model) {
         try {
             Seller seller = getAuthSeller();
@@ -71,13 +59,29 @@ public class ItemsAtStorageController {
         return "send-to-storage";
     }
 
-    @PutMapping("{id}")
+    @GetMapping("/seller/send-to-storage")
+    public String getFormItemsAtStorage(Model model) {
+        Seller seller = getAuthSeller();
+        List<Item> items = itemService.getItemBySellerId(seller.getId());
+        List<Storage> storages = storageService.getAllStorages();
+
+        model.addAttribute("items", items);
+        model.addAttribute("storages", storages);
+        model.addAttribute("id", seller.getId());
+        return "send-to-storage";
+    }
+    @GetMapping("admin/item-at-storage")
+    public String getAllItemsAtStorage(Model model) {
+        model.addAttribute("itemsAtStorages", itemsAtStorageService.getAllItemsAtStorage());
+        return "admin-items-at-storage";
+    }
+
+    @PutMapping("/seller/send-to-storage/{id}")
     public String updateFormItemsAtStorage(@PathVariable Long id, @RequestParam Long itemId,
                                            @Min(0) Long count, RedirectAttributes redirectAttributes) {
         try {
-            Seller seller = getAuthSeller();
             Item item = itemService.getItemById(id);
-            if (!seller.getId().equals(item.getSeller().getId())) {
+            if (security(item.getSeller().getId())) {
                 return "redirect:/welcome";
             }
             itemsAtStorageService.updateItemsAtStorage(id, count);
@@ -92,5 +96,14 @@ public class ItemsAtStorageController {
     private Seller getAuthSeller() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return sellerService.getByNumber(auth.getName());
+    }
+
+    private boolean security(Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String roleName = auth.getAuthorities().iterator().next().getAuthority();
+        if (roleName.equals("ROLE_SELLER")) {
+            return !sellerService.getByNumber(auth.getName()).getId().equals(id);
+        }
+        return false;
     }
 }

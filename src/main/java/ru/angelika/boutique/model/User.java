@@ -18,12 +18,9 @@ public class User {
     private String number;
     @Column(name = "email", unique = true)
     private String email;
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "cart_id")
     private Cart cart;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "point_receipt_id")
-    private PointReceipt pointReceipt;
     @Column(name = "balance")
     @Min(0)
     private Double balance = 0.0;

@@ -9,6 +9,8 @@ import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.repository.SellerRepository;
 
+import java.util.List;
+
 @Slf4j
 @Service
 public class SellerService {
@@ -68,6 +70,10 @@ public class SellerService {
             throw new ResourceNotFoundException(Seller.class, name);
         }
         return seller;
+    }
+
+    public List<Seller> getAllSeller() {
+        return sellerRepository.findAll();
     }
 
     public void updateSeller(SellerDto sellerDto, Long id) {

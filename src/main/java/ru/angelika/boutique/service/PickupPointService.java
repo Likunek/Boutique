@@ -1,0 +1,70 @@
+package ru.angelika.boutique.service;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.angelika.boutique.dto.PickupPointDto;
+import ru.angelika.boutique.exception.ResourceExistsException;
+import ru.angelika.boutique.exception.ResourceNotFoundException;
+import ru.angelika.boutique.mapper.PickupPointMapper;
+import ru.angelika.boutique.model.PickupPoint;
+import ru.angelika.boutique.repository.PickupPointRepository;
+
+import java.util.List;
+
+@Slf4j
+@Service
+public class PickupPointService {
+    private final PickupPointRepository pickupPointRepository;
+
+    @Autowired
+    public PickupPointService(PickupPointRepository pickupPointRepository) {
+        this.pickupPointRepository = pickupPointRepository;
+    }
+
+    public void addPickupPoint(PickupPointDto pickupPointDto) {
+        checkDuplicate(pickupPointDto.getAddress(), pickupPointDto.getCity());
+        pickupPointRepository.save(PickupPointMapper.toPointReceipt(pickupPointDto));
+        log.info("Add new pointReceipt: address={}, city={}",
+                pickupPointDto.getAddress(), pickupPointDto.getCity());
+    }
+
+    public PickupPoint getPickupPoint(Long id) {
+        return pickupPointRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(PickupPoint.class, id));
+    }
+
+    public List<PickupPoint> getAllPoints() {
+        return pickupPointRepository.findAll();
+    }
+
+    public void updatePickupPoint(Long id, PickupPointDto pickupPointDto) {
+        PickupPoint pointReceipt = pickupPointRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("PointReceipt not found for update, id={}", id);
+                    return new ResourceNotFoundException(PickupPoint.class, id);
+                });
+        checkDuplicate(pickupPointDto.getAddress(), pickupPointDto.getCity());
+        pickupPointRepository.save(PickupPointMapper.updatePointReceipt(pickupPointDto, pointReceipt));
+        log.info("Update pointReceipt by id={}", id);
+    }
+
+    public void deletePickupPoint(Long id) {
+        pickupPointRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("PointReceipt not found for delete, id={}", id);
+                    return new ResourceNotFoundException(PickupPoint.class, id);
+                });
+        pickupPointRepository.deleteById(id);
+        log.info("Delete pointReceipt by id={}", id);
+    }
+
+    private void checkDuplicate(String address, String city) {
+        List<PickupPoint> pointsByAddress = pickupPointRepository.findByAddress(address);
+        List<PickupPoint> pointsByCity = pickupPointRepository.findByCity(city);
+        if (pointsByAddress.size() > 0 && pointsByCity.size() > 0) {
+            log.error("PointReceipt with address={}, city={} already exists", address, city);
+            throw new ResourceExistsException(PickupPoint.class,  city + " : " + address);
+        }
+    }
+}

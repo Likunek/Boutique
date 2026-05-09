@@ -25,8 +25,7 @@ public class SellerController {
 
     @GetMapping("/seller/profile/{id}")
     public String sellerPage(@PathVariable Long id, Model model) {
-        Seller currentSeller = getAuthSeller();
-        if (!currentSeller.getId().equals(id)) {
+        if (security(id)) {
             return "redirect:/welcome";
         }
         Seller seller = sellerService.getById(id);
@@ -40,19 +39,27 @@ public class SellerController {
         model.addAttribute("seller", seller);
         return "public-seller";
     }
+    @GetMapping("/admin/sellers")
+    public String getAllSellers(Model model) {
+        model.addAttribute("sellers", sellerService.getAllSeller());
+        return "admin-sellers";
+    }
 
     @DeleteMapping("/seller/profile/{id}")
     public String deleteSeller(@PathVariable Long id) {
-        Seller seller = getAuthSeller();
-        if (!seller.getId().equals(id)) {
+        if (security(id)) {
             return "redirect:/welcome";
         }
         sellerService.deleteSeller(id);
         return "redirect:/registration";
     }
 
-    private Seller getAuthSeller() {
+    private boolean security(Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return sellerService.getByNumber(auth.getName());
+        String roleName = auth.getAuthorities().iterator().next().getAuthority();
+        if (roleName.equals("ROLE_SELLER")) {
+            return !sellerService.getByNumber(auth.getName()).getId().equals(id);
+        }
+        return false;
     }
 }

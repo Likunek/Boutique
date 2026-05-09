@@ -4,13 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.ItemsAtStorageDto;
+import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.model.Item;
+import ru.angelika.boutique.model.ItemCard;
 import ru.angelika.boutique.model.ItemsAtStorage;
 import ru.angelika.boutique.model.Storage;
 import ru.angelika.boutique.repository.ItemRepository;
 import ru.angelika.boutique.repository.ItemsAtStorageRepository;
 import ru.angelika.boutique.repository.StorageRepository;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -18,6 +22,7 @@ public class ItemsAtStorageService {
     private final ItemsAtStorageRepository itemsAtStorageRepository;
     private final ItemRepository itemRepository;
     private final StorageRepository storageRepository;
+
 
     @Autowired
     public ItemsAtStorageService(ItemsAtStorageRepository itemsAtStorageRepository, ItemRepository itemRepository, StorageRepository storageRepository) {
@@ -27,6 +32,13 @@ public class ItemsAtStorageService {
     }
 
     public void addItemsAtStorage(ItemsAtStorageDto itemsAtStorageDto) {
+        if (itemsAtStorageRepository.findByItemIdAndStorageId(itemsAtStorageDto.getItemId(),
+                itemsAtStorageDto.getStorageId()) != null) {
+            log.error("ItemsAtStorage  with itemId={}, storageId={} already exists",
+                    itemsAtStorageDto.getItemId(), itemsAtStorageDto.getStorageId());
+            throw new ResourceExistsException(ItemCard.class,
+                    itemsAtStorageDto.getItemId() + " , " + itemsAtStorageDto.getStorageId());
+        }
         Item item = itemRepository.findById(itemsAtStorageDto.getItemId())
                 .orElseThrow(() -> {
                     log.error("Item not found for adding itemsAtStorage, id={}", itemsAtStorageDto.getItemId());
@@ -46,6 +58,14 @@ public class ItemsAtStorageService {
                 itemsAtStorageDto.getItemId(), itemsAtStorageDto.getStorageId(), itemsAtStorageDto.getCount());
     }
 
+    public List<ItemsAtStorage> getItemsAtStorageByStorageId(Long id) {
+        return itemsAtStorageRepository.findByStorageId(id);
+    }
+
+    public List<ItemsAtStorage> getAllItemsAtStorage() {
+        return itemsAtStorageRepository.findAll();
+    }
+
     public ItemsAtStorage getItemsAtStorage(Long id) {
         return itemsAtStorageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ItemsAtStorage.class, id));
@@ -57,6 +77,7 @@ public class ItemsAtStorageService {
                     log.error("ItemsAtStorage not found for update, id={}", id);
                     return new ResourceNotFoundException(ItemsAtStorage.class, id);
                 });
+        if (count == 0) { deleteItemsAtStorage(id);return;}
         itemsAtStorage.setCount(count);
         itemsAtStorageRepository.save(itemsAtStorage);
         log.info("Update itemsAtStorage by id={}, count={}", id, count);
@@ -64,7 +85,15 @@ public class ItemsAtStorageService {
 
     public void deleteItemsAtStorage(Long id) {
         itemsAtStorageRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(ItemsAtStorage.class, id));
+                .orElseThrow(() -> {
+                    log.error("ItemsAtStorage not found for delete, id={}", id);
+                    return new ResourceNotFoundException(ItemsAtStorage.class, id);
+                });
+        Item item = itemRepository.findItemByItemsAtStorageId(id);
+        item.getItemsAtStorages().removeIf(s -> s.getId().equals(id));
+        itemRepository.save(item);
+        log.info("Update item by id={}, delete ItemsAtStorage by id={}", item.getId(), id);
         itemsAtStorageRepository.deleteById(id);
+        log.info("Delete itemsAtStorage by id={}", id);
     }
 }

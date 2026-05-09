@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(to top, #ff9f7c 0%, #ffe5d9 50%, #ffffff 100%);
+            min-height: 100vh;
+            padding: 60px 20px 30px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle at 10% 20%, rgba(107, 140, 92, 0.08) 0%, rgba(107, 140, 92, 0.02) 90%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6b8c5c 0%, #8aaE7a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #495057;
+            font-size: 16px;
+        }
+
+        .back-nav {
+            position: fixed;
+            top: 40px;
+            left: 50px;
+            z-index: 1000;
+        }
+
+        .back-nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 22px;
+            border-radius: 60px;
+            color: #4a5b3c;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+            border: 1px solid #adb5bd;
+            transition: all 0.2s ease;
+        }
+
+        .back-nav a:hover {
+            background: #8aaE7a;
+            color: white;
+            border-color: #8aaE7a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(138, 174, 122, 0.3);
+        }
+
+        .logout-container {
+            position: fixed;
+            top: 40px;
+            right: 50px;
+            z-index: 1000;
+        }
+
+        .btn-logout {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 22px;
+            border-radius: 60px;
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            border: 1px solid #dc3545;
+            box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-logout:hover {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .admin-card-link {
+            display: block;
+            background: white;
+            border-radius: 28px;
+            padding: 24px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+             border: 3px solid #ffe5d9;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            height: 100%;
+        }
+
+        .admin-card-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+            border-color: #d4e0d0;
+        }
+
+        .card-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e2f;
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: #6c757d;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+
+        @media (max-width: 768px) {
+            .buttons-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 32px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="back-nav">
+    <a href="/welcome">← Back to Home</a>
+</div>
+
+<div class="logout-container">
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn-logout">🚪 Logout</button>
+    </form>
+</div>
+
+<div class="container">
+    <div class="header">
+        <h1>Admin Dashboard</h1>
+    </div>
+
+    <div class="buttons-grid">
+        <a href="/admin/sellers" class="admin-card-link">
+            <div class="card-icon">🏪</div>
+            <div class="card-title">All sellers</div>
+            <div class="card-desc">View and manage all sellers</div>
+        </a>
+
+        <a href="/admin/users" class="admin-card-link">
+            <div class="card-icon">👥</div>
+            <div class="card-title">All users</div>
+            <div class="card-desc">View and manage registered users</div>
+        </a>
+
+        <a href="/admin/storages" class="admin-card-link">
+            <div class="card-icon">🏭</div>
+            <div class="card-title">Storages</div>
+            <div class="card-desc">View all storage locations</div>
+        </a>
+
+        <a href="/admin/storages/add" class="admin-card-link">
+            <div class="card-icon">➕</div>
+            <div class="card-title">Add storage</div>
+            <div class="card-desc">Create a new storage location</div>
+        </a>
+        <a href="/admin/items" class="admin-card-link">
+            <div class="card-icon">📦</div>
+            <div class="card-title">All items</div>
+            <div class="card-desc">View and manage all items in the catalog</div>
+        </a>
+
+        <a href="/admin/item-at-storage" class="admin-card-link">
+            <div class="card-icon">📊</div>
+            <div class="card-title">Items in storage</div>
+            <div class="card-desc">Inventory of all items at storages</div>
+        </a>
+
+        <a href="/admin/points" class="admin-card-link">
+            <div class="card-icon">📍</div>
+            <div class="card-title">Pickup points</div>
+            <div class="card-desc">View all point of receipt</div>
+        </a>
+
+        <a href="/admin/points/add" class="admin-card-link">
+            <div class="card-icon">➕</div>
+            <div class="card-title">Add pickup point</div>
+            <div class="card-desc">Create a new pickup point</div>
+        </a>
+
+        <a href="/admin/orders" class="admin-card-link">
+            <div class="card-icon">📋</div>
+            <div class="card-title">Orders</div>
+            <div class="card-desc">View all customer orders</div>
+        </a>
+
+        <a href="/admin/supplies" class="admin-card-link">
+            <div class="card-icon">🚚</div>
+            <div class="card-title">Supplies</div>
+            <div class="card-desc">View all supplies</div>
+        </a>
+
+
+    </div>
+</div>
+</body>
+</html>

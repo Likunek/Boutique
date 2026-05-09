@@ -29,6 +29,7 @@ public class ItemCardService {
     }
 
     public void addItemCard(ItemCardDto itemCardDto, String seller) {
+        checkDuplicate(seller, itemCardDto.getName(), itemCardDto.getDescription());
         Item item = itemService.getItemById(itemCardDto.getItemId());
         ItemCard itemCard = itemCardRepository.save(ItemCardMapper.toItemCard(itemCardDto, item.getCostPrice(), seller));
         item.setItemCard(itemCard);
@@ -58,14 +59,7 @@ public class ItemCardService {
             log.error("ItemCard not found for update, id={}", id);
             return new ResourceNotFoundException(ItemCard.class, id);
         });
-        List<ItemCard> nameDuplicate = itemCardRepository.findByNameAndSeller(itemCardDto.getName(), seller);
-        List<ItemCard> descriptionDuplicate = itemCardRepository
-                .findByDescriptionAndSeller(itemCardDto.getDescription(), seller);
-        if (nameDuplicate.size() > 0 && descriptionDuplicate.size() > 0) {
-            log.error("ItemCard by seller={}, with name={}, description={} already exists",
-                    seller, itemCardDto.getName(), itemCardDto.getDescription());
-            throw new ResourceExistsException(ItemCard.class, itemCardDto.getName() + " : " + itemCardDto.getDescription());
-        }
+        checkDuplicate(seller, itemCardDto.getName(), itemCardDto.getDescription());
         ItemCardMapper.toItemCardUpdate(itemCardDto, itemCard);
         itemCardRepository.save(itemCard);
         log.info("Update itemCard by id={}", id);
@@ -79,6 +73,15 @@ public class ItemCardService {
         itemService.deleteItemCard(id);
         itemCardRepository.deleteById(id);
         log.info("Delete itemCard by id={}", id);
+    }
+
+    private void checkDuplicate(String seller, String name, String description) {
+        List<ItemCard> nameDuplicate = itemCardRepository.findByNameAndSeller(name, seller);
+        List<ItemCard> descriptionDuplicate = itemCardRepository.findByDescriptionAndSeller(description, seller);
+        if (nameDuplicate.size() > 0 && descriptionDuplicate.size() > 0) {
+            log.error("ItemCard by seller={}, with name={}, description={} already exists", seller, name, description);
+            throw new ResourceExistsException(ItemCard.class, name + " : " + description);
+        }
     }
 
 }

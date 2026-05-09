@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.ItemDto;
+import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.ItemMapper;
 import ru.angelika.boutique.model.Item;
@@ -13,7 +14,6 @@ import ru.angelika.boutique.repository.ItemCardRepository;
 import ru.angelika.boutique.repository.ItemRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -29,9 +29,18 @@ public class ItemService {
     }
 
     public void addItem(ItemDto itemDto, Seller seller) {
+        checkDuplicate(seller.getId(), itemDto.getName());
         itemRepository.save(ItemMapper.toItem(itemDto, seller));
         log.info("Add new item: name={}, price={}, weight={}, square ={}, sellerId={}",
                 itemDto.getName(), itemDto.getCostPrice(), itemDto.getWeight(), itemDto.getSquare(), seller.getId());
+    }
+
+    public List<Item> getAllItems() {
+        return itemRepository.findAll();
+    }
+
+    public List<Item> getAllItemVerifyFalse() {
+        return itemRepository.findByVerifyFalse();
     }
 
     public List<Item> getItemBySellerId(Long id) {
@@ -51,13 +60,31 @@ public class ItemService {
                 });
     }
 
+    public Item getItemByCardId(Long id) {
+        Item item = itemRepository.findByItemCardId(id);
+         if (item == null) {
+             log.error("Item not found for get, id={}", id);
+             throw  new ResourceNotFoundException(Item.class, id);
+         }
+         return item;
+    }
+
     public void addCardItem(Item item) {
         log.info("Update Item's ItemCard field: itemId={}, itemCardId={}",
                 item.getId(), item.getItemCard().getId());
         itemRepository.save(item);
     }
 
-    public void updateItem(ItemDto itemDto, Long id) {
+    public void updateVerify(Long id, boolean verify) {
+        Item item = getItemById(id);
+        item.setVerify(verify);
+        itemRepository.save(item);
+        log.info("Update verify Item: itemId={}, verify={}",
+                item.getId(), verify);
+    }
+
+    public void updateItem(ItemDto itemDto, Long id, Long sellerId) {
+        checkDuplicate(sellerId, itemDto.getName());
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("Item not found for update, id={}", id);
@@ -95,5 +122,15 @@ public class ItemService {
         Item item = itemRepository.findByItemCardId(itemCardId);
         item.setItemCard(null);
         itemRepository.save(item);
+        log.info("Delete item's itemCard. itemId={}", item.getId());
     }
+
+    private void checkDuplicate(Long sellerId, String name) {
+        Item item = itemRepository.findBySellerIdAndName(sellerId, name);
+        if (item != null) {
+            log.error("Item by sellerId={}, with name={}already exists", sellerId, name);
+            throw new ResourceExistsException(Item.class, sellerId + " : " + name);
+        }
+    }
+
 }

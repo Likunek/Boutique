@@ -11,15 +11,19 @@ import ru.angelika.boutique.mapper.UserMapper;
 import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.repository.UserRepository;
 
+import java.util.List;
+
 @Slf4j
 @Service
 public class UserService {
     private final UserRepository userRepository;
-
+    private final AuthenticationService authenticationService;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+
+    public UserService(UserRepository userRepository, AuthenticationService authenticationService) {
         this.userRepository = userRepository;
+        this.authenticationService = authenticationService;
     }
 
     public void addUser(UserDto user) {
@@ -56,6 +60,10 @@ public class UserService {
             throw new ResourceNotFoundException(User.class, number);
         }
         return user;
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     public UserGetDto getUserByName(String name) {
@@ -97,10 +105,11 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        userRepository.findById(id).orElseThrow(() -> {
+        User user = userRepository.findById(id).orElseThrow(() -> {
             log.error("User not found for delete, id={}", id);
             return new ResourceNotFoundException(User.class, id);
         });
+        authenticationService.deleteAuthentication(user.getNumber());
         userRepository.deleteById(id);
         log.info("Delete user by id={}", id);
     }

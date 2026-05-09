@@ -63,6 +63,7 @@ public class RegistrationController {
                 case SELLER -> sellerService.addSeller(UserMapper.toSeller(user));
             }
             authenticationService.addAuthentication(UserMapper.toAuthentication(user));
+            model.addAttribute("successMessage", "You have successfully registered!");
             return "redirect:/login";
         } catch (Exception e) {
             log.error("Error add account '{}': {}", user.getName(), e.getMessage(), e);
@@ -82,13 +83,22 @@ public class RegistrationController {
                 model.addAttribute("userId", userService.getByNumber(phone).getId());
                 model.addAttribute("userRole", "user");
             }
-
             case "ROLE_SELLER" -> {
                 model.addAttribute("userId", sellerService.getByNumber(phone).getId());
                 model.addAttribute("userRole", "seller");
             }
+            case "ROLE_ADMIN" -> {
+                model.addAttribute("userId", 1);
+                model.addAttribute("userRole", "admin");
+            }
+            default -> log.error("Error authentication account");
         }
         return "welcome";
+    }
+
+    @GetMapping("/admin/profile/1")
+    public String adminPage() {
+        return "admin";
     }
 
 }

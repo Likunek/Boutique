@@ -66,8 +66,7 @@ public class ItemCardController {
                              @Valid ItemCardUpdateDto itemCardUpdateDto, RedirectAttributes redirectAttributes) {
         try {
             String sellerName = getAuthSeller().getName();
-            ItemCard itemCard = itemCardService.getItemCard(id);
-            if (!sellerName.equals(itemCard.getSeller())) {
+            if (!security(sellerName)) {
                 return "redirect:/welcome";
             }
             itemCardService.updateItemCard(itemCardUpdateDto, id, sellerName);
@@ -117,7 +116,7 @@ public class ItemCardController {
     @DeleteMapping("/item-card/{id}")
     public String deleteItemCardById(@PathVariable Long id, @RequestParam String role, Model model) {
         ItemCard itemCard = itemCardService.getItemCard(id);
-        if (role.equals("ROLE_ADMIN") || (role.equals("ROLE_SELLER") && getAuthSeller().getName().equals(itemCard.getSeller()))) {
+        if (role.equals("ROLE_ADMIN") || security(itemCard.getSeller())) {
             itemCardService.deleteItemCard(id);
         }
         return "redirect:/welcome";
@@ -126,5 +125,14 @@ public class ItemCardController {
     private Seller getAuthSeller() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return sellerService.getByNumber(auth.getName());
+    }
+
+    private boolean security(String name) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String roleName = auth.getAuthorities().iterator().next().getAuthority();
+        if (roleName.equals("ROLE_SELLER")) {
+            return sellerService.getByNumber(auth.getName()).getName().equals(name);
+        }
+        return false;
     }
 }

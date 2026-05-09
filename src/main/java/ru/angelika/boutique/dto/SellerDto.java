@@ -9,11 +9,7 @@ import lombok.Data;
 @Data
 @Builder
 public class SellerDto {
-    @NotNull
     private String name;
-    @NotNull
-    @Size(min = 11, max = 11, message = "Number must be exactly 8 characters")
     private String number;
-    @Email
     private String email;
 }

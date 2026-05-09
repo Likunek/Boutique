@@ -515,7 +515,8 @@
 </head>
 <body>
 <div class="back-nav">
-    <a th:href="@{/seller/profile/{id}(id=${id})}" class="btn btn-text">← Back to Profile</a>
+    <a th:if="${isAdmin}" th:href="@{/admin/profile/1}" class="btn btn-text">← Back to Profile</a>
+    <a th:unless="${isAdmin}" th:href="@{/seller/profile/{id}(id=${id})}" class="btn btn-text">← Back to Profile</a>
 </div>
 
 <div class="logout-container">

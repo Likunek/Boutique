@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 public class ItemController {
     private final ItemService itemService;
     private final SellerService sellerService;
+    private boolean isAdmin = true;
 
     @Autowired
     public ItemController(ItemService itemService, SellerService sellerService) {
@@ -33,16 +34,10 @@ public class ItemController {
         this.sellerService = sellerService;
     }
 
-    @GetMapping("/seller/add-item")
-    public String getFormNewItem(Model model) {
-        addData(model);
-        return "add-item";
-    }
-
     @PostMapping("/seller/add-item")
     public String addItem(@Valid ItemDto itemDto, BindingResult result, Model model) {
-
         if (result.hasErrors()) {
+            log.error("Error add Item {}", itemDto.getName());
             model.addAttribute("errorMessage", "Please correct the errors: " +
                     result.getAllErrors().stream()
                             .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -60,6 +55,12 @@ public class ItemController {
         return "add-item";
     }
 
+    @GetMapping("/seller/add-item")
+    public String getFormNewItem(Model model) {
+        addData(model);
+        return "add-item";
+    }
+
     @GetMapping("/seller/items")
     public String getAllItemsSeller(Model model) {
         Seller seller = addData(model);
@@ -70,16 +71,37 @@ public class ItemController {
 
     @GetMapping("/seller/items/{id}")
     public String getItemById(@PathVariable Long id, Model model) {
-        addData(model);
         Item item = itemService.getItemById(id);
+        if (security(item.getSeller().getId())) {
+            return "redirect:/welcome";
+        }
         model.addAttribute("item", item);
+        model.addAttribute("isAdmin", isAdmin);
         return "item";
+    }
+    @GetMapping("/admin/items")
+    public String getAllItems(@RequestParam(defaultValue = "true") boolean unverified, Model model) {
+        if (unverified) {
+            model.addAttribute("items", itemService.getAllItems());
+        } else {
+            model.addAttribute("items", itemService.getAllItemVerifyFalse());
+        }
+        return "admin-items";
+    }
+    @PutMapping("/admin/items/{id}")
+    public String updateVerify(@PathVariable Long id, @RequestParam(defaultValue = "true") boolean verify) {
+        itemService.updateVerify(id, verify);
+        return "redirect:/admin/items";
     }
 
     @PutMapping("/seller/items/{id}")
     public String updateItem(@PathVariable Long id, @Valid ItemDto itemDto, RedirectAttributes redirectAttributes) {
         try {
-            itemService.updateItem(itemDto, id);
+            Long sellerId = itemService.getItemById(id).getSeller().getId();
+            if (security(sellerId)) {
+                return "redirect:/welcome";
+            }
+            itemService.updateItem(itemDto, id, sellerId);
             redirectAttributes.addFlashAttribute("successMessage", "Item successfully update!");
         } catch (Exception e) {
             log.error("Error update item id={}: {}", id, e.getMessage(), e);
@@ -99,5 +121,14 @@ public class ItemController {
         Seller seller = sellerService.getByNumber(auth.getName());
         model.addAttribute("id", seller.getId());
         return seller;
+    }
+    private boolean security(Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String roleName = auth.getAuthorities().iterator().next().getAuthority();
+        if (roleName.equals("ROLE_SELLER")) {
+            isAdmin = false;
+            return !sellerService.getByNumber(auth.getName()).getId().equals(id);
+        }
+        return false;
     }
 }
