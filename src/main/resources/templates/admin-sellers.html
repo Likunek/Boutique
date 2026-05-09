@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Users</title>
-    <style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Users</title>
+  <style>
         * {
             margin: 0;
             padding: 0;
@@ -181,6 +181,15 @@
             white-space: nowrap;
             padding-right: 50px;
         }
+        .seller-link {
+            color: #2c3e2f;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .seller-link:hover {
+            color: #8aaE7a;
+            text-decoration: underline;
+        }
 
         @media (max-width: 768px) {
             th, td {
@@ -204,52 +213,52 @@
 </head>
 <body>
 <div class="back-nav">
-    <a href="/admin/profile/1">← Back to Admin</a>
+  <a href="/admin/profile/1">← Back to Admin</a>
 </div>
 
 <div class="logout-container">
-    <form th:action="@{/logout}" method="post">
-        <button type="submit" class="btn-logout">🚪 Logout</button>
-    </form>
+  <form th:action="@{/logout}" method="post">
+    <button type="submit" class="btn-logout">🚪 Logout</button>
+  </form>
 </div>
 
 <div class="container">
-    <h1 class="page-title">👥 All Users</h1>
+  <h1 class="page-title">👥 All Sellers</h1>
 
-    <div class="table-wrapper">
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Number</th>
-                <th>Email</th>
-                <th>Balance</th>
-                <th class="actions-col"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="user : ${users}">
-                <td th:text="${user.id}"></td>
-                <td th:text="${user.name}"></td>
-                <td th:text="${user.number}"></td>
-                <td>
-                    <span th:if="${user.email != null}" th:text="${user.email}"></span>
-                    <span th:unless="${user.email != null}">—</span>
-                </td>
-                <td th:text="${user.balance} + ' ₽'">0.00 ₽</td>
-                <td class="actions-col">
-                    <form th:action="@{/users/{id}(id=${user.id})}" method="post"
-                          onsubmit="return confirm('Are you sure you want to delete user ' + document.querySelector('[name=userName]').value + '?');">
-                        <input type="hidden" name="_method" value="delete"/>
-                        <input type="hidden" name="userName" th:value="${user.name}"/>
-                        <button type="submit" class="btn-danger">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Number</th>
+        <th>Email</th>
+        <th class="actions-col"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="seller : ${sellers}">
+        <td th:text="${seller.id}"></td>
+        <td>
+          <a th:href="@{/public-seller/{id}(id=${seller.id})}" class="seller-link" th:text="${seller.name}">Seller Name</a>
+        </td>
+        <td th:text="${seller.number}"></td>
+        <td>
+          <span th:if="${seller.email != null}" th:text="${seller.email}"></span>
+          <span th:unless="${seller.email != null}">—</span>
+        </td>
+        <td class="actions-col">
+          <form th:action="@{/seller/profile/{id}(id=${seller.id})}" method="post"
+                onsubmit="return confirm('Are you sure you want to delete user ' + this.querySelector('[name=userName]').value + '?');">
+            <input type="hidden" name="_method" value="delete"/>
+            <input type="hidden" name="userName" th:value="${seller.name}"/>
+            <button type="submit" class="btn-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 </body>
 </html>

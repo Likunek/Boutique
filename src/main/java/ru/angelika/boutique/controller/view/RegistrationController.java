@@ -63,6 +63,7 @@ public class RegistrationController {
                 case SELLER -> sellerService.addSeller(UserMapper.toSeller(user));
             }
             authenticationService.addAuthentication(UserMapper.toAuthentication(user));
+            model.addAttribute("successMessage", "You have successfully registered!");
             return "redirect:/login";
         } catch (Exception e) {
             log.error("Error add account '{}': {}", user.getName(), e.getMessage(), e);
