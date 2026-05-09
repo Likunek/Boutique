@@ -27,5 +27,5 @@ public class Order {
     private List<Item> items;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "point_receipt_id")
-    private PointReceipt pointReceipt;
+    private PickupPoint point;
 }

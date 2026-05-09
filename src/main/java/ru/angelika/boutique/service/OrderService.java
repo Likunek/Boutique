@@ -15,15 +15,15 @@ public class OrderService {
     private final UserService userService;
     private final ItemService itemService;
     private final OrderRepository orderRepository;
-    private final PointReceiptService pointReceiptService;
+    private final PickupPointService pickupPointService;
 
     @Autowired
     public OrderService(UserService userService, ItemService itemService, OrderRepository orderRepository,
-                        PointReceiptService pointReceiptService) {
+                        PickupPointService pickupPointService) {
         this.userService = userService;
         this.itemService = itemService;
         this.orderRepository = orderRepository;
-        this.pointReceiptService = pointReceiptService;
+        this.pickupPointService = pickupPointService;
     }
 
    public List<Order> getAllOrders() {

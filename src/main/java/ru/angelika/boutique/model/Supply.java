@@ -20,6 +20,9 @@ public class Supply {
     @Column(name = "weight")
     private Double weight;
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "storage_id")
+    private Storage storage;
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "point_receipt_id")
-    private PointReceipt pointReceipt;
+    private PickupPoint point;
 }

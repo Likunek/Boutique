@@ -8,25 +8,25 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.angelika.boutique.dto.PointReceiptDto;
-import ru.angelika.boutique.dto.StorageDto;
-import ru.angelika.boutique.service.PointReceiptService;
+import ru.angelika.boutique.dto.PickupPointDto;
+
+import ru.angelika.boutique.service.PickupPointService;
 
 import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
 @RequestMapping("/admin/points")
-public class PointReceiptController {
-    private final PointReceiptService pointReceiptService;
+public class PickupPointController {
+    private final PickupPointService pickupPointService;
 
     @Autowired
-    public PointReceiptController(PointReceiptService pointReceiptService) {
-        this.pointReceiptService = pointReceiptService;
+    public PickupPointController(PickupPointService pickupPointService) {
+        this.pickupPointService = pickupPointService;
     }
 
     @PostMapping("/add")
-    public String addPointReceipt(@Valid PointReceiptDto pointDto, BindingResult result, Model model) {
+    public String addPoint(@Valid PickupPointDto pointDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
             log.error("Error add PointReceipt '{}, {}'", pointDto.getCity(), pointDto.getAddress());
             model.addAttribute("errorMessage", "Please correct the errors: " +
@@ -36,7 +36,7 @@ public class PointReceiptController {
             return "admin-add-point";
         }
         try {
-            pointReceiptService.addPointReceipt(pointDto);
+            pickupPointService.addPickupPoint(pointDto);
             model.addAttribute("successMessage", "PointReceipt added successfully!");
         } catch (Exception e) {
             log.error("Error add PointReceipt '{}, {}': {}", pointDto.getCity(), pointDto.getAddress(), e.getMessage(), e);
@@ -51,17 +51,17 @@ public class PointReceiptController {
 
     @GetMapping
     public String getAllPoints(Model model) {
-        model.addAttribute("points", pointReceiptService.getAllPoints());
+        model.addAttribute("points", pickupPointService.getAllPoints());
         return "admin-points";
     }
     @PutMapping("{id}")
-    public String updatePoint(PointReceiptDto pointReceiptDto, @PathVariable Long id) {
-        pointReceiptService.updatePointReceipt(id, pointReceiptDto);
+    public String updatePoint(PickupPointDto pickupPointDto, @PathVariable Long id) {
+        pickupPointService.updatePickupPoint(id, pickupPointDto);
         return "redirect:/admin/points";
     }
     @DeleteMapping("{id}")
     public String deletePoint(@PathVariable Long id) {
-        pointReceiptService.deletePointReceipt(id);
+        pickupPointService.deletePickupPoint(id);
         return "redirect:/admin/points";
     }
 }

@@ -7,7 +7,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(schema = "public", name = "point_receipts")
-public class PointReceipt {
+public class PickupPoint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false, unique = true)
