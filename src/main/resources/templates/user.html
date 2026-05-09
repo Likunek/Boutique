@@ -392,15 +392,6 @@
                 <div th:unless="${user.cart != null}" class="btn disabled">
                     🛒 Cart not active
                 </div>
-
-                <a th:if="${user.pointReceipt != null}"
-                   th:href="@{/point-receipt/{id}(id=${user.pointReceipt.id})}"
-                   class="btn btn-primary">
-                    📦 Pickup point
-                </a>
-                <div th:unless="${user.pointReceipt != null}" class="btn disabled">
-                    📦 No pickup point
-                </div>
             </div>
         </div>
 

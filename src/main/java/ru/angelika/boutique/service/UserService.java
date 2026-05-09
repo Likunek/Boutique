@@ -8,7 +8,9 @@ import ru.angelika.boutique.dto.UserGetDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.UserMapper;
+import ru.angelika.boutique.model.Cart;
 import ru.angelika.boutique.model.User;
+import ru.angelika.boutique.repository.CartRepository;
 import ru.angelika.boutique.repository.UserRepository;
 
 import java.util.List;
@@ -17,12 +19,13 @@ import java.util.List;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final CartRepository cartRepository;
     private final AuthenticationService authenticationService;
 
     @Autowired
-
-    public UserService(UserRepository userRepository, AuthenticationService authenticationService) {
+    public UserService(UserRepository userRepository, CartRepository cartRepository, AuthenticationService authenticationService) {
         this.userRepository = userRepository;
+        this.cartRepository = cartRepository;
         this.authenticationService = authenticationService;
     }
 
@@ -39,9 +42,10 @@ public class UserService {
             log.error("User with email={} already exists", user.getEmail());
             throw new ResourceExistsException(User.class, user.getEmail());
         }
-        userRepository.save(UserMapper.toUser(user));
-        log.info("Add new user: name={}, number={}, email={}",
-                user.getName(), user.getNumber(), user.getEmail());
+        Cart cart = cartRepository.save(new Cart());
+        userRepository.save(UserMapper.toUser(user, cart));
+        log.info("Add new user: name={}, number={}, email={}, cartId={}",
+                user.getName(), user.getNumber(), user.getEmail(), cart.getId());
     }
 
     public User getById(Long id) {

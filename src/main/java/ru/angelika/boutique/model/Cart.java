@@ -3,6 +3,7 @@ package ru.angelika.boutique.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -16,7 +17,7 @@ public class Cart {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cart_item_card",
             inverseJoinColumns = @JoinColumn(name = "item_card_id"))
-    private List<ItemCard> itemCards;
+    private List<ItemCard> itemCards = new ArrayList<>();
     @Column(name = "total_price")
     private Double totalPrice = 0.0;
 }

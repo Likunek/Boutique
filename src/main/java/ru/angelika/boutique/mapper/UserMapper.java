@@ -10,7 +10,7 @@ import ru.angelika.boutique.model.User;
 
 public class UserMapper {
 
-    public static User toUser(UserDto userDto) {
+    public static User toUser(UserDto userDto, Cart cart) {
         User user = new User();
         user.setName(userDto.getName());
         user.setNumber(userDto.getNumber());
@@ -18,7 +18,7 @@ public class UserMapper {
         if (userDto.getEmail().isBlank() || userDto.getEmail() == null) {
             user.setEmail(null);
         }
-        user.setCart(new Cart());
+        user.setCart(cart);
         return user;
     }
 
