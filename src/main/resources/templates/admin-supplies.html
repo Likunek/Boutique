@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Orders</title>
+    <title>All Supplies</title>
     <style>
         * {
             margin: 0;
@@ -153,18 +153,6 @@
             background: #f8f9fa;
         }
 
-        .status {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .status-NEW { background: #e3f2fd; color: #0d6efd; }
-        .status-WAY { background: #d1e7dd; color: #198754; }
-        .status-DELIVERED { background: #cfe2ff; color: #0a58ca; }
-        .status-RECEIVED { background: #f8d7da; color: #dc3545; }
-
         .items-list {
             margin: 0;
             padding-left: 20px;
@@ -181,6 +169,14 @@
         }
         details summary:hover {
             color: #8aaE7a;
+        }
+
+        .info-block {
+            margin-bottom: 4px;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #2c3e2f;
         }
 
         @media (max-width: 768px) {
@@ -212,50 +208,54 @@
 </div>
 
 <div class="container">
-    <h1 class="page-title">📋 All Orders</h1>
+    <h1 class="page-title">🚚 All Supplies</h1>
 
     <div class="table-wrapper">
         <table>
             <thead>
             <tr>
-                <th>Order ID</th>
-                <th>User</th>
-                <th>Date</th>
-                <th>Status</th>
+                <th>Supply ID</th>
+                <th>Weight (kg)</th>
                 <th>Items</th>
+                <th>Storage</th>
                 <th>Pickup point</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="order : ${orders}">
-                <td th:text="${order.id}">1</td>
-                <td>
-                    <span th:if="${order.user != null}" th:text="${order.user.id}"></span>
-                    <span th:unless="${order.user != null}">—</span>
-                </td>
-                <td>
-                    <span th:text="${#temporals.format(order.date, 'dd.MM.yyyy HH:mm:ss')}"></span>
-                </td>
-                <td>
-                    <span th:class="'status status-' + ${order.status}" th:text="${order.status}"></span>
-                </td>
+            <tr th:each="supply : ${supplies}">
+                <td th:text="${supply.id}">1</td>
+                <td th:text="${supply.weight != null ? supply.weight + ' kg' : '-'}">0 kg</td>
                 <td>
                     <details>
-                        <summary>Show items (<span th:text="${#lists.size(order.items)}"></span>)</summary>
+                        <summary>Show items (<span th:text="${#lists.size(supply.items)}">0</span>)</summary>
                         <ul class="items-list">
-                            <li th:each="item : ${order.items}" class="item-row">
-                                <span th:text="'Id ' + ${item.id} + ': ' + ${item.name}">Item name</span>
+                            <li th:each="item : ${supply.items}" class="item-row">
+                                <span th:text="'ID ' + ${item.id} + ': ' + ${item.name}">Item name</span>
                             </li>
                         </ul>
                     </details>
                 </td>
                 <td>
-                    <div th:if="${order.point != null}">
-                        <div><strong>Id:</strong> <span th:text="${order.point.id}"></span></div>
-                        <div><strong>Address:</strong> <span th:text="${order.point.address}"></span></div>
-                        <div><strong>City:</strong> <span th:text="${order.point.city}"></span></div>
+                    <div th:if="${supply.storage != null}">
+                        <div class="info-block"><span class="info-label">ID:</span> <span
+                                th:text="${supply.storage.id}">1</span></div>
+                        <div class="info-block"><span class="info-label">Address:</span> <span
+                                th:text="${supply.storage.address}"></span></div>
+                        <div class="info-block"><span class="info-label">City:</span> <span
+                                th:text="${supply.storage.city}"></span></div>
                     </div>
-                    <span th:unless="${order.point != null}">—</span>
+                    <span th:unless="${supply.storage != null}">—</span>
+                </td>
+                <td>
+                    <div th:if="${supply.pointReceipt != null}">
+                        <div class="info-block"><span class="info-label">ID:</span> <span
+                                th:text="${supply.pointReceipt.id}">1</span></div>
+                        <div class="info-block"><span class="info-label">Address:</span> <span
+                                th:text="${supply.pointReceipt.address}"></span></div>
+                        <div class="info-block"><span class="info-label">City:</span> <span
+                                th:text="${supply.pointReceipt.city}"></span></div>
+                    </div>
+                    <span th:unless="${supply.pointReceipt != null}">—</span>
                 </td>
             </tr>
             </tbody>
