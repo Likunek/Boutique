@@ -5,11 +5,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import ru.angelika.boutique.model.ItemCard;
+import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.service.CartService;
 import ru.angelika.boutique.service.UserService;
+
+import java.util.List;
 
 @Controller
 @RequestMapping
@@ -25,22 +27,36 @@ public class CartController {
 
     @GetMapping("user/cart/{id}")
     public String getCart(@PathVariable Long id, Model model) {
-        if (!security(id).equals(id)) {
+        if (!security().getCart().getId().equals(id)) {
             return "redirect:/welcome";
         }
         model.addAttribute("cart", cartService.getCartById(id));
         return "user-cart";
     }
 
-    @GetMapping("/user/cart/add-card/{id}")
+    @GetMapping("/user/cart/card/{id}")
     public String addItemInCart(@PathVariable Long id) {
-        Long cartId = security(id);
+        Long cartId = security().getCart().getId();
         cartService.addCardInCart(cartId, id);
         return "redirect:/item-card?role=ROLE_USER";
     }
 
-    private Long security(Long id) {
+    @PostMapping("/user/cart/card/{id}")
+    public String deleteItemsFromCart(@PathVariable Long id, @RequestParam List<Long> cards) {
+        Long userId = security().getId();
+        cartService.deleteCardsFromCart(id, cards);
+        return "redirect:/user/cart/{id}";
+    }
+
+    @DeleteMapping("/user/cart/card/{id}")
+    public String deleteItemFromCart(@PathVariable Long id) {
+        Long cartId = security().getCart().getId();
+        cartService.deleteCardFromCart(cartId, id);
+        return "redirect:/item-card?role=ROLE_USER";
+    }
+
+    private User security() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return userService.getByNumber(auth.getName()).getCart().getId();
+        return userService.getByNumber(auth.getName());
     }
 }

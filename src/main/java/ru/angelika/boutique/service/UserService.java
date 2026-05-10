@@ -9,11 +9,13 @@ import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.UserMapper;
 import ru.angelika.boutique.model.Cart;
+import ru.angelika.boutique.model.ItemCard;
 import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.repository.CartRepository;
 import ru.angelika.boutique.repository.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -68,6 +70,14 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public List<Long> getCardsId(String number) {
+        User user = getByNumber(number);
+        return user.getCart().getItemCards()
+                .stream()
+                .map(ItemCard::getId)
+                .toList();
     }
 
     public UserGetDto getUserByName(String name) {

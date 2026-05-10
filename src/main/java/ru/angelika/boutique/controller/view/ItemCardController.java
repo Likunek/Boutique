@@ -18,6 +18,7 @@ import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.service.ItemCardService;
 import ru.angelika.boutique.service.ItemService;
 import ru.angelika.boutique.service.SellerService;
+import ru.angelika.boutique.service.UserService;
 
 import java.util.List;
 
@@ -26,12 +27,15 @@ import java.util.List;
 @RequestMapping
 public class ItemCardController {
     private final ItemService itemService;
+    private final UserService userService;
     private final SellerService sellerService;
     private final ItemCardService itemCardService;
 
     @Autowired
-    public ItemCardController(ItemService itemService, SellerService sellerService, ItemCardService itemCardService) {
+    public ItemCardController(ItemService itemService, UserService userService,
+                              SellerService sellerService, ItemCardService itemCardService) {
         this.itemService = itemService;
+        this.userService = userService;
         this.sellerService = sellerService;
         this.itemCardService = itemCardService;
     }
@@ -82,6 +86,10 @@ public class ItemCardController {
     public String getAllItemCard(@RequestParam(defaultValue = "0") int page,
                                  @RequestParam(defaultValue = "12") int size, @RequestParam String role, Model model) {
         Page<ItemCard> itemCards = itemCardService.getAllItemCard(page, size);
+        if (role.equals("ROLE_USER")) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            model.addAttribute("cardsId", userService.getCardsId(auth.getName()));
+        }
         model.addAttribute("itemCardsPage", itemCards);
         model.addAttribute("role", role);
         return "all-cards";
@@ -135,4 +143,5 @@ public class ItemCardController {
         }
         return false;
     }
+
 }

@@ -332,11 +332,11 @@
       </div>
     </div>
 
-    <form th:action="@{/cart/remove-selected}" method="post" id="deleteForm">
+    <form th:action="@{/user/cart/card/{id}(id=${cart.id})}" method="post" id="deleteForm">
       <div class="cart-items">
         <div th:each="card : ${cart.itemCards}" class="cart-item">
           <div class="item-checkbox">
-            <input type="checkbox" name="selectedItemIds" th:value="${card.id}">
+            <input type="checkbox" name="cards" th:value="${card.id}">
           </div>
           <div class="item-image">📦</div>
           <div class="item-details">
