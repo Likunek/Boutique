@@ -18,4 +18,7 @@ public class PickupPoint {
     private String city;
     @Column(name = "rating")
     private Double rating = 0.0;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "storage_id")
+    private Storage storage;
 }

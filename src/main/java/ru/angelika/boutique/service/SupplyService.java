@@ -12,9 +12,21 @@ import java.util.List;
 @Service
 public class SupplyService {
     private final SupplyRepository supplyRepository;
+    private final OrderService orderService;
+    private final StorageService storageService;
+    private final ItemsAtStorageService itemsAtStorageService;
+
     @Autowired
-    public SupplyService(SupplyRepository supplyRepository) {
+    public SupplyService(SupplyRepository supplyRepository, OrderService orderService,
+                         StorageService storageService, ItemsAtStorageService itemsAtStorageService) {
         this.supplyRepository = supplyRepository;
+        this.orderService = orderService;
+        this.storageService = storageService;
+        this.itemsAtStorageService = itemsAtStorageService;
+    }
+
+    public void addSupply() {
+
     }
 
     public List<Supply> getAllSupplies() {

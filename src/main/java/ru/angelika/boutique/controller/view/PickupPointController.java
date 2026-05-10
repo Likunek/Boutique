@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.angelika.boutique.dto.PickupPointDto;
 
 import ru.angelika.boutique.service.PickupPointService;
+import ru.angelika.boutique.service.StorageService;
 
 import java.util.stream.Collectors;
 
@@ -19,10 +20,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/admin/points")
 public class PickupPointController {
     private final PickupPointService pickupPointService;
+    private final StorageService storageService;
 
     @Autowired
-    public PickupPointController(PickupPointService pickupPointService) {
+    public PickupPointController(PickupPointService pickupPointService, StorageService storageService) {
         this.pickupPointService = pickupPointService;
+        this.storageService = storageService;
     }
 
     @PostMapping("/add")
@@ -45,13 +48,15 @@ public class PickupPointController {
         return "admin-add-point";
     }
     @GetMapping("/add")
-    public String getFormNewPoint() {
+    public String getFormNewPoint(Model model) {
+        model.addAttribute("storages", storageService.getAllStorage());
         return "admin-add-point";
     }
 
     @GetMapping
     public String getAllPoints(Model model) {
         model.addAttribute("points", pickupPointService.getAllPoints());
+        model.addAttribute("storages", storageService.getAllStorage());
         return "admin-points";
     }
     @PutMapping("{id}")

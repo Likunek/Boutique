@@ -8,8 +8,10 @@ import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.PickupPointMapper;
 import ru.angelika.boutique.model.PickupPoint;
+import ru.angelika.boutique.model.Storage;
 import ru.angelika.boutique.repository.OrderRepository;
 import ru.angelika.boutique.repository.PickupPointRepository;
+import ru.angelika.boutique.repository.StorageRepository;
 
 import java.util.List;
 
@@ -18,16 +20,23 @@ import java.util.List;
 public class PickupPointService {
     private final PickupPointRepository pickupPointRepository;
     private final OrderRepository orderRepository;
+    private final StorageRepository storageRepository;
 
     @Autowired
-    public PickupPointService(PickupPointRepository pickupPointRepository, OrderRepository orderRepository) {
+    public PickupPointService(PickupPointRepository pickupPointRepository,
+                              OrderRepository orderRepository, StorageRepository storageRepository) {
         this.pickupPointRepository = pickupPointRepository;
         this.orderRepository = orderRepository;
+        this.storageRepository = storageRepository;
     }
 
     public void addPickupPoint(PickupPointDto pickupPointDto) {
         checkDuplicate(pickupPointDto.getAddress(), pickupPointDto.getCity());
-        pickupPointRepository.save(PickupPointMapper.toPointReceipt(pickupPointDto));
+        Storage storage = storageRepository.findById(pickupPointDto.getStorageId()).orElseThrow(() -> {
+            log.error("Storage not found for delete, id={}", pickupPointDto.getStorageId());
+            return new ResourceNotFoundException(Storage.class, pickupPointDto.getStorageId());
+        });
+        pickupPointRepository.save(PickupPointMapper.toPointReceipt(pickupPointDto, storage));
         log.info("Add new pointReceipt: address={}, city={}",
                 pickupPointDto.getAddress(), pickupPointDto.getCity());
     }
@@ -35,6 +44,10 @@ public class PickupPointService {
     public PickupPoint getPickupPoint(Long id) {
         return pickupPointRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(PickupPoint.class, id));
+    }
+
+    public List<PickupPoint> getAllPointsByStorage(Long id) {
+        return pickupPointRepository.findByStorageId(id);
     }
 
     public List<PickupPoint> getAllPoints() {
@@ -47,9 +60,19 @@ public class PickupPointService {
                     log.error("PointReceipt not found for update, id={}", id);
                     return new ResourceNotFoundException(PickupPoint.class, id);
                 });
+        Storage storage = storageRepository.findById(pickupPointDto.getStorageId()).orElseThrow(() -> {
+            log.error("Storage not found for delete, id={}", pickupPointDto.getStorageId());
+            return new ResourceNotFoundException(Storage.class, pickupPointDto.getStorageId());
+        });
         checkDuplicate(pickupPointDto.getAddress(), pickupPointDto.getCity());
-        pickupPointRepository.save(PickupPointMapper.updatePointReceipt(pickupPointDto, pointReceipt));
-        log.info("Update pointReceipt by id={}", id);
+        pickupPointRepository.save(PickupPointMapper.updatePointReceipt(pickupPointDto, pointReceipt, storage));
+        log.info("Update point by id={}", id);
+    }
+
+    public void updateStorage(PickupPoint point) {
+        pickupPointRepository.save(point);
+        log.info("Update point by id={} with storage={}", point.getId(),
+                point.getStorage().getCity() + " " + point.getStorage().getAddress());
     }
 
     public void deletePickupPoint(Long id) {

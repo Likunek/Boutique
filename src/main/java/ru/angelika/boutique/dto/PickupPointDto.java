@@ -1,6 +1,7 @@
 package ru.angelika.boutique.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
@@ -14,5 +15,6 @@ public class PickupPointDto {
     @NotBlank(message = "City is required")
     @Size(max = 20, message = "City must be up to 20 characters")
     private String city;
-
+    @NotNull
+    private Long storageId;
 }
