@@ -271,6 +271,17 @@
       box-shadow: 0 6px 14px rgba(230,106,62,0.4);
     }
 
+    /* Стиль для кнопки "в корзине" */
+    .btn-cart.in-cart {
+      background: #28a745;
+      border-color: #28a745;
+      box-shadow: 0 4px 12px rgba(40,167,69,0.3);
+    }
+    .btn-cart.in-cart:hover {
+      background: #218838;
+      border-color: #218838;
+    }
+
     @media (max-width: 600px) {
       .back-nav, .logout-container {
         top: 20px;
@@ -338,12 +349,26 @@
             </div>
 
             <div class="bottom-row">
-                <a th:href="@{/public-seller/{id}(id=${sellerId})}" class="seller-link" th:text="${itemCard.seller}">
+                <a th:href="@{/public-seller/{id}(id=${sellerId}, role=${role})}" class="seller-link" th:text="${itemCard.seller}">
                     Seller name
                 </a>
-                <a th:href="@{/user/cart/add-card/{id}(id=${itemCard.id})}" class="btn-cart">
-                    🛒 Add to Cart
-                </a>
+                <th:block th:if="${role == 'ROLE_USER'}">
+                    <form th:if="${cardsId != null and !cardsId.contains(itemCard.id)}"
+                          th:action="@{/user/cart/add-card/{id}(id=${itemCard.id}, card=true)}"
+                          method="post"
+                          style="display: inline;">
+                        <button type="submit" class="btn-cart">🛒 Add to Cart</button>
+                    </form>
+                    <form th:if="${cardsId != null and cardsId.contains(itemCard.id)}"
+                          th:action="@{/user/cart/card/{id}(id=${itemCard.id}, card=true)}"
+                          method="post"
+                          style="display: inline;">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn-cart in-cart" title="Remove from cart">
+                            <span>1</span> in cart
+                        </button>
+                    </form>
+                </th:block>
             </div>
         </div>
     </div>

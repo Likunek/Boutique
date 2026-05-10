@@ -24,7 +24,9 @@ public class Order {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "order_item",
             inverseJoinColumns = @JoinColumn(name = "item_id"))
-    private List<Item> items;
+    private List<ItemCard> items;
+    @Column(name = "price", nullable = false)
+    private Double price;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "point_receipt_id")
     private PickupPoint point;

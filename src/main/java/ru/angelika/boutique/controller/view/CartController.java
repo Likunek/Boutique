@@ -34,10 +34,13 @@ public class CartController {
         return "user-cart";
     }
 
-    @GetMapping("/user/cart/card/{id}")
-    public String addItemInCart(@PathVariable Long id) {
+    @PostMapping("/user/cart/add-card/{id}")
+    public String addItemInCart(@PathVariable Long id, @RequestParam(defaultValue = "false") boolean card) {
         Long cartId = security().getCart().getId();
         cartService.addCardInCart(cartId, id);
+        if (card) {
+            return "redirect:/item-card/" + id + "?role=ROLE_USER";
+        }
         return "redirect:/item-card?role=ROLE_USER";
     }
 
@@ -49,9 +52,12 @@ public class CartController {
     }
 
     @DeleteMapping("/user/cart/card/{id}")
-    public String deleteItemFromCart(@PathVariable Long id) {
+    public String deleteItemFromCart(@PathVariable Long id, @RequestParam(defaultValue = "false") boolean card) {
         Long cartId = security().getCart().getId();
         cartService.deleteCardFromCart(cartId, id);
+        if (card) {
+            return "redirect:/item-card/" + id + "?role=ROLE_USER";
+        }
         return "redirect:/item-card?role=ROLE_USER";
     }
 

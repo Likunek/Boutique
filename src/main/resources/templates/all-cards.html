@@ -260,7 +260,7 @@
 </div>
 
 <div class="container">
-    <h1 class="page-title">🛍️ Item Cards</h1>
+    <h1 class="page-title">🛍️ Item Cards <span th:text="${name}"></span></h1>
 
     <div class="cards-grid">
         <div th:each="card : ${itemCardsPage.content}"
@@ -276,8 +276,8 @@
                     </div>
                     <th:block th:if="${role == 'ROLE_USER'}">
                         <form th:if="${cardsId != null and !cardsId.contains(card.id)}"
-                              th:action="@{/user/cart/card/{id}(id=${card.id})}"
-                              method="get"
+                              th:action="@{/user/cart/add-card/{id}(id=${card.id})}"
+                              method="post"
                               style="display: inline;"
                               onclick="event.stopPropagation();">
                             <button type="submit" class="cart-btn" title="Add to cart">🛒</button>

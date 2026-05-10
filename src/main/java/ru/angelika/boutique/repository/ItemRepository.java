@@ -11,6 +11,7 @@ import java.util.List;
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
     Item findByItemCardId(Long itemCardId);
+
     Item findBySellerIdAndName(Long sellerId, String name);
 
     List<Item> findBySellerId(Long sellerId);
@@ -24,6 +25,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query("SELECT DISTINCT i FROM Item i LEFT JOIN FETCH i.itemsAtStorages WHERE i.seller = :seller")
     List<Item> findBySellerWithStorages(@Param("seller") Seller seller);
-
 
 }
