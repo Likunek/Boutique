@@ -26,6 +26,7 @@ public class OrderService {
         this.pickupPointService = pickupPointService;
     }
 
+
    public List<Order> getAllOrders() {
         return orderRepository.findAll();
    }

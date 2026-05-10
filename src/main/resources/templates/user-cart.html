@@ -332,7 +332,7 @@
       </div>
     </div>
 
-    <form th:action="@{/user/cart/card/{id}(id=${cart.id})}" method="post" id="deleteForm">
+    <form th:action="@{/user/cart/card}" method="post" id="deleteForm">
       <div class="cart-items">
         <div th:each="card : ${cart.itemCards}" class="cart-item">
           <div class="item-checkbox">
@@ -354,15 +354,14 @@
     </form>
 
     <div class="checkout-wrapper">
-      <form th:action="@{/order/create}" method="post">
-        <input type="hidden" name="cartId" th:value="${cart.id}">
+      <form th:action="@{/user/order/{cartId}(cartId=${cart.id})}" method="get">
         <button type="submit" class="btn btn-checkout-large">✅ Checkout all items</button>
       </form>
     </div>
   </div>
 
   <div th:if="${cart == null or #lists.isEmpty(cart.itemCards)}" class="empty-cart">
-    🛍️ Your cart is empty. <a href="/item-card" style="color: #8aaE7a;">Continue shopping</a>
+    🛍️ Your cart is empty. <a th:href="@{/item-card(role='ROLE_USER')}" style="color: #8aaE7a;">Continue shopping</a>
   </div>
 </div>
 </body>

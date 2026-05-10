@@ -44,11 +44,11 @@ public class CartController {
         return "redirect:/item-card?role=ROLE_USER";
     }
 
-    @PostMapping("/user/cart/card/{id}")
-    public String deleteItemsFromCart(@PathVariable Long id, @RequestParam List<Long> cards) {
-        Long userId = security().getId();
-        cartService.deleteCardsFromCart(id, cards);
-        return "redirect:/user/cart/{id}";
+    @PostMapping("/user/cart/card")
+    public String deleteItemsFromCart(@RequestParam List<Long> cards) {
+        Long cartId = security().getCart().getId();
+        cartService.deleteCardsFromCart(cartId, cards);
+        return "redirect:/user/cart/" + cartId;
     }
 
     @DeleteMapping("/user/cart/card/{id}")
