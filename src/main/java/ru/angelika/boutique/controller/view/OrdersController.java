@@ -1,13 +1,18 @@
 package ru.angelika.boutique.controller.view;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import ru.angelika.boutique.dto.OrderDto;
+import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.service.CartService;
 import ru.angelika.boutique.service.OrderService;
+import ru.angelika.boutique.service.PickupPointService;
+import ru.angelika.boutique.service.UserService;
 
 @Controller
 @RequestMapping
@@ -15,11 +20,26 @@ public class OrdersController {
 
     private final OrderService orderService;
     private final CartService cartService;
+    private final UserService userService;
+    private final PickupPointService pickupPointService;
 
     @Autowired
-    public OrdersController(OrderService orderService, CartService cartService) {
+    public OrdersController(OrderService orderService, CartService cartService, UserService userService,
+                            PickupPointService pickupPointService) {
         this.orderService = orderService;
         this.cartService = cartService;
+        this.userService = userService;
+        this.pickupPointService = pickupPointService;
+    }
+
+    @PostMapping("/user/order")
+    public String addOrder(@Valid OrderDto orderDto, @RequestParam Long cartId, Model model) {
+        User user = security();
+        if (!user.getCart().getId().equals(cartId)) {
+            return "redirect:/welcome";
+        }
+        orderService.addOrder(orderDto, user, cartId);
+        return "redirect:/user/cart/" + cartId;
     }
 
     @GetMapping("/admin/orders")
@@ -29,8 +49,18 @@ public class OrdersController {
     }
     @GetMapping("/user/order/{cartId}")
     public String getFormNewOrder(@PathVariable Long cartId, Model model) {
+        if (!security().getCart().getId().equals(cartId)) {
+            return "redirect:/welcome";
+        }
         model.addAttribute("cartId", cartId);
+        model.addAttribute("totalPrice", cartService.getCartById(cartId).getTotalPrice());
+        model.addAttribute("pickupPoints", pickupPointService.getAllPoints());
         model.addAttribute("items", cartService.getCartById(cartId).getItemCards());
         return "user-order";
+    }
+
+    private User security() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return userService.getByNumber(auth.getName());
     }
 }

@@ -12,22 +12,25 @@ import ru.angelika.boutique.model.Cart;
 import ru.angelika.boutique.model.ItemCard;
 import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.repository.CartRepository;
+import ru.angelika.boutique.repository.OrderRepository;
 import ru.angelika.boutique.repository.UserRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
+    private final OrderRepository orderRepository;
     private final AuthenticationService authenticationService;
 
     @Autowired
-    public UserService(UserRepository userRepository, CartRepository cartRepository, AuthenticationService authenticationService) {
+    public UserService(UserRepository userRepository, CartRepository cartRepository,
+                       OrderRepository orderRepository, AuthenticationService authenticationService) {
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
+        this.orderRepository = orderRepository;
         this.authenticationService = authenticationService;
     }
 
@@ -124,6 +127,7 @@ public class UserService {
             return new ResourceNotFoundException(User.class, id);
         });
         authenticationService.deleteAuthentication(user.getNumber());
+        orderRepository.deleteAll(orderRepository.findByUserId(id));
         userRepository.deleteById(id);
         log.info("Delete user by id={}", id);
     }

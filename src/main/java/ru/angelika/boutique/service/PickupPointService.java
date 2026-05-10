@@ -8,6 +8,7 @@ import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.PickupPointMapper;
 import ru.angelika.boutique.model.PickupPoint;
+import ru.angelika.boutique.repository.OrderRepository;
 import ru.angelika.boutique.repository.PickupPointRepository;
 
 import java.util.List;
@@ -16,10 +17,12 @@ import java.util.List;
 @Service
 public class PickupPointService {
     private final PickupPointRepository pickupPointRepository;
+    private final OrderRepository orderRepository;
 
     @Autowired
-    public PickupPointService(PickupPointRepository pickupPointRepository) {
+    public PickupPointService(PickupPointRepository pickupPointRepository, OrderRepository orderRepository) {
         this.pickupPointRepository = pickupPointRepository;
+        this.orderRepository = orderRepository;
     }
 
     public void addPickupPoint(PickupPointDto pickupPointDto) {
@@ -55,6 +58,7 @@ public class PickupPointService {
                     log.error("PointReceipt not found for delete, id={}", id);
                     return new ResourceNotFoundException(PickupPoint.class, id);
                 });
+        orderRepository.deleteAll(orderRepository.findByPointId(id));
         pickupPointRepository.deleteById(id);
         log.info("Delete pointReceipt by id={}", id);
     }

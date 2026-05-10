@@ -306,7 +306,7 @@
                 </div>
             </div>
 
-            <form th:action="@{/user/order}" method="post">
+            <form th:action="@{/user/order (cartId=${cartId})}" method="post">
                 <div th:each="item : ${items}">
                     <input type="hidden" name="itemCards" th:value="${item.id}"/>
                 </div>
