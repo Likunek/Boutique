@@ -21,7 +21,10 @@ public class OrderService {
     private final PickupPointService pickupPointService;
 
     public void addOrder(OrderDto orderDto, User user, Long cartId) {
-        List<ItemCard> cards = orderDto.getItemCards().stream().map(itemCardService::getItemCard).toList();
+        List<ItemCard> cards = orderDto.getItemCards()
+                .parallelStream()
+                .map(itemCardService::getItemCard)
+                .toList();
         PickupPoint point = pickupPointService.getPickupPoint(orderDto.getPointId());
         orderRepository.save(OrderMapper.toOrder(user, point, cards));
         cartService.deleteCardsFromCart(cartId, orderDto.getItemCards());
