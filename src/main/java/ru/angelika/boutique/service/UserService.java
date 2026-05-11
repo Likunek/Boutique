@@ -8,9 +8,7 @@ import ru.angelika.boutique.dto.UserGetDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.UserMapper;
-import ru.angelika.boutique.model.Cart;
-import ru.angelika.boutique.model.ItemCard;
-import ru.angelika.boutique.model.User;
+import ru.angelika.boutique.model.*;
 import ru.angelika.boutique.repository.CartRepository;
 import ru.angelika.boutique.repository.OrderRepository;
 import ru.angelika.boutique.repository.UserRepository;
@@ -69,6 +67,11 @@ public class UserService {
             throw new ResourceNotFoundException(User.class, number);
         }
         return user;
+    }
+
+    public List<Order> getOrders(Long userId) {
+        log.debug("Get orders by userId={}", userId);
+        return orderRepository.findByUserIdAndStatusNot(userId, Status.RECEIVED);
     }
 
     public List<User> getAllUsers() {
