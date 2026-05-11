@@ -48,6 +48,9 @@ public class ItemCardService {
     public Page<ItemCard> getAllItemCard(int page, int size) {
         return itemCardRepository.findAll(PageRequest.of(page, size));
     }
+    public Page<ItemCard> getAllItemCardBySearch(int page, int size, String text) {
+        return itemCardRepository.findByNameOrDescription(text.toLowerCase(), PageRequest.of(page, size));
+    }
 
     public Page<ItemCard> getAllItemCardBySeller(int page, int size, String seller) {
         return itemCardRepository.findBySeller(seller, PageRequest.of(page, size));

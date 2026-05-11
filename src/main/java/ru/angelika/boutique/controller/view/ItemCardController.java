@@ -86,6 +86,7 @@ public class ItemCardController {
     public String getAllItemCard(@RequestParam(defaultValue = "0") int page,
                                  @RequestParam(defaultValue = "12") int size, @RequestParam String role,
                                  @RequestParam(defaultValue = "false") boolean seller,
+                                 @RequestParam(defaultValue = "") String search,
                                  @RequestParam(defaultValue = "0") Long sellerId, Model model) {
         if (role.equals("ROLE_USER")) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -96,6 +97,11 @@ public class ItemCardController {
             model.addAttribute("itemCardsPage", itemCardService.getAllItemCardBySeller(page, size, sellerName));
             model.addAttribute("role", role);
             model.addAttribute("name", "by " + sellerName);
+            return "all-cards";
+        }
+        if (!search.isBlank()) {
+            model.addAttribute("itemCardsPage", itemCardService.getAllItemCardBySearch(page, size, search));
+            model.addAttribute("role", role);
             return "all-cards";
         }
         model.addAttribute("itemCardsPage", itemCardService.getAllItemCard(page, size));
