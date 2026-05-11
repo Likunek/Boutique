@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.OrderDto;
 import ru.angelika.boutique.mapper.OrderMapper;
+import org.springframework.transaction.annotation.Transactional;
 import ru.angelika.boutique.model.*;
 import ru.angelika.boutique.repository.OrderRepository;
 
@@ -32,7 +33,7 @@ public class OrderService {
         log.debug("Get orders by status={}", status);
         return orderRepository.findByStatus(status);
     }
-
+    @Transactional
     public void updateStatus(Order order, Status status) {
         order.setStatus(status);
         orderRepository.save(order);
