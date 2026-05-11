@@ -24,7 +24,7 @@ public class ItemService {
     private final ItemCardRepository itemCardRepository;
 
     public void addItem(ItemDto itemDto, Seller seller) {
-        checkDuplicate(seller.getId(), itemDto.getName());
+        checkDuplicate(seller.getId(), itemDto.getName(), null);
         itemRepository.save(ItemMapper.toItem(itemDto, seller));
         log.info("Add new item: name={}, price={}, weight={}, square ={}, sellerId={}",
                 itemDto.getName(), itemDto.getCostPrice(), itemDto.getWeight(), itemDto.getSquare(), seller.getId());
@@ -79,7 +79,7 @@ public class ItemService {
     }
 
     public void updateItem(ItemDto itemDto, Long id, Long sellerId) {
-        checkDuplicate(sellerId, itemDto.getName());
+        checkDuplicate(sellerId, itemDto.getName(), id);
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("Item not found for update, id={}", id);
@@ -120,10 +120,10 @@ public class ItemService {
         log.info("Delete item's itemCard. itemId={}", item.getId());
     }
 
-    private void checkDuplicate(Long sellerId, String name) {
+    private void checkDuplicate(Long sellerId, String name, Long id) {
         Item item = itemRepository.findBySellerIdAndName(sellerId, name);
-        if (item != null) {
-            log.error("Item by sellerId={}, with name={}already exists", sellerId, name);
+        if (item != null && !item.getId().equals(id)) {
+            log.error("Item by sellerId={}, with name={} already exists", sellerId, name);
             throw new ResourceExistsException(Item.class, sellerId + " : " + name);
         }
     }

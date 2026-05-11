@@ -25,7 +25,7 @@ public class PickupPointService {
 
 
     public void addPickupPoint(PickupPointDto pickupPointDto) {
-        checkDuplicate(pickupPointDto.getAddress(), pickupPointDto.getCity());
+        checkDuplicate(pickupPointDto.getAddress(), pickupPointDto.getCity(), null);
         Storage storage = storageRepository.findById(pickupPointDto.getStorageId()).orElseThrow(() -> {
             log.error("Storage not found for delete, id={}", pickupPointDto.getStorageId());
             return new ResourceNotFoundException(Storage.class, pickupPointDto.getStorageId());
@@ -58,9 +58,7 @@ public class PickupPointService {
             log.error("Storage not found for delete, id={}", pickupPointDto.getStorageId());
             return new ResourceNotFoundException(Storage.class, pickupPointDto.getStorageId());
         });
-        if (pickupPointDto.getStorageId().equals(pointReceipt.getStorage().getId())) {
-            checkDuplicate(pickupPointDto.getAddress(), pickupPointDto.getCity());
-        }
+        checkDuplicate(pickupPointDto.getAddress(), pickupPointDto.getCity(), id);
         pickupPointRepository.save(PickupPointMapper.updatePointReceipt(pickupPointDto, pointReceipt, storage));
         log.info("Update point by id={}", id);
     }
@@ -82,9 +80,11 @@ public class PickupPointService {
         log.info("Delete pointReceipt by id={}", id);
     }
 
-    private void checkDuplicate(String address, String city) {
+    private void checkDuplicate(String address, String city, Long id) {
         List<PickupPoint> pointsByAddress = pickupPointRepository.findByAddress(address);
+        pointsByAddress.removeIf(point -> point.getId().equals(id));
         List<PickupPoint> pointsByCity = pickupPointRepository.findByCity(city);
+        pointsByCity.removeIf(point -> point.getId().equals(id));
         if (pointsByAddress.size() > 0 && pointsByCity.size() > 0) {
             log.error("PointReceipt with address={}, city={} already exists", address, city);
             throw new ResourceExistsException(PickupPoint.class,  city + " : " + address);

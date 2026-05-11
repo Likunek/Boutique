@@ -24,7 +24,7 @@ public class ItemCardService {
     private final ItemService itemService;
 
     public void addItemCard(ItemCardDto itemCardDto, String seller) {
-        checkDuplicate(seller, itemCardDto.getName(), itemCardDto.getDescription());
+        checkDuplicate(seller, itemCardDto.getName(), itemCardDto.getDescription(), null);
         Item item = itemService.getItemById(itemCardDto.getItemId());
         if (item.getItemCard() != null) {
             log.error("ItemCard by itemId={} already exists", item.getId());
@@ -61,7 +61,7 @@ public class ItemCardService {
             log.error("ItemCard not found for update, id={}", id);
             return new ResourceNotFoundException(ItemCard.class, id);
         });
-        checkDuplicate(seller, itemCardDto.getName(), itemCardDto.getDescription());
+        checkDuplicate(seller, itemCardDto.getName(), itemCardDto.getDescription(), id);
         ItemCardMapper.toItemCardUpdate(itemCardDto, itemCard);
         itemCardRepository.save(itemCard);
         log.info("Update itemCard by id={}", id);
@@ -77,9 +77,11 @@ public class ItemCardService {
         log.info("Delete itemCard by id={}", id);
     }
 
-    private void checkDuplicate(String seller, String name, String description) {
+    private void checkDuplicate(String seller, String name, String description, Long id) {
         List<ItemCard> nameDuplicate = itemCardRepository.findByNameAndSeller(name, seller);
+        nameDuplicate.removeIf(itemCard -> itemCard.getId().equals(id));
         List<ItemCard> descriptionDuplicate = itemCardRepository.findByDescriptionAndSeller(description, seller);
+        descriptionDuplicate.removeIf(itemCard -> itemCard.getId().equals(id));
         if (nameDuplicate.size() > 0 && descriptionDuplicate.size() > 0) {
             log.error("ItemCard by seller={}, with name={}, description={} already exists", seller, name, description);
             throw new ResourceExistsException(ItemCard.class, name + " : " + description);
