@@ -59,16 +59,33 @@ public class ItemsAtStorageService {
     }
 
     public List<ItemsAtStorage> getItemsAtStorageByStorageId(Long id) {
+        log.debug("Get all itemsAtStorages by storageId={}", id);
         return itemsAtStorageRepository.findByStorageId(id);
     }
 
+    public ItemsAtStorage getByItemAndStorage(Long itemId, Long storageId) {
+        log.debug("Get itemsAtStorage by itemId={}, storageId={}", itemId, storageId);
+        ItemsAtStorage itemsAtStorage = itemsAtStorageRepository.findByItemIdAndStorageId(itemId, storageId);
+        if (itemsAtStorage == null) {
+            log.error("ItemsAtStorage not found for get, itemId={}, storageId={}", itemId, storageId);
+            throw new ResourceNotFoundException(ItemsAtStorage.class, itemId.toString() + " " + storageId.toString());
+        }
+        return itemsAtStorage;
+    }
+
     public List<ItemsAtStorage> getAllItemsAtStorage() {
+        log.debug("Get all itemsAtStorages");
         return itemsAtStorageRepository.findAll();
     }
 
     public ItemsAtStorage getItemsAtStorage(Long id) {
         return itemsAtStorageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ItemsAtStorage.class, id));
+    }
+
+    public void updateCount(ItemsAtStorage itemsAtStorage) {
+        itemsAtStorageRepository.save(itemsAtStorage);
+        log.info("Update count items from itemsAtStorage by id={}", itemsAtStorage.getId());
     }
 
     public void updateItemsAtStorage(Long id, Long count) {

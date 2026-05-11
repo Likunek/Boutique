@@ -37,10 +37,6 @@ public class StorageService {
                 storageDto.getAddress(), storageDto.getCity(), storageDto.getMaxCapacity());
     }
 
-    public List<Storage> getAllStorage() {
-        return storageRepository.findAll();
-    }
-
     public Storage getStorage(Long id) {
         return storageRepository.findById(id).orElseThrow(() -> {
             log.error("Storage not found for get, id={}", id);

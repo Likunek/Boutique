@@ -23,7 +23,7 @@ public class Order {
     private Status status = Status.NEW;
     @Column(name = "date", nullable = false)
     private LocalDateTime date = LocalDateTime.now();
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "order_item",
             inverseJoinColumns = @JoinColumn(name = "item_id"))
     private List<ItemCard> items;

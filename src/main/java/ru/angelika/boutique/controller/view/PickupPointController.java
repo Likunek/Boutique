@@ -36,7 +36,7 @@ public class PickupPointController {
                     result.getAllErrors().stream()
                             .map(DefaultMessageSourceResolvable::getDefaultMessage)
                             .collect(Collectors.joining(", ")));
-            return "admin-add-point";
+            return "redirect:/admin/points/add";
         }
         try {
             pickupPointService.addPickupPoint(pointDto);
@@ -45,18 +45,18 @@ public class PickupPointController {
             log.error("Error add PointReceipt '{}, {}': {}", pointDto.getCity(), pointDto.getAddress(), e.getMessage(), e);
             model.addAttribute("errorMessage", "Error saving PointReceipt: " + e.getMessage());
         }
-        return "admin-add-point";
+        return "redirect:/admin/points/add";
     }
     @GetMapping("/add")
     public String getFormNewPoint(Model model) {
-        model.addAttribute("storages", storageService.getAllStorage());
+        model.addAttribute("storages", storageService.getAllStorages());
         return "admin-add-point";
     }
 
     @GetMapping
     public String getAllPoints(Model model) {
         model.addAttribute("points", pickupPointService.getAllPoints());
-        model.addAttribute("storages", storageService.getAllStorage());
+        model.addAttribute("storages", storageService.getAllStorages());
         return "admin-points";
     }
     @PutMapping("{id}")

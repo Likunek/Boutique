@@ -64,7 +64,9 @@ public class PickupPointService {
             log.error("Storage not found for delete, id={}", pickupPointDto.getStorageId());
             return new ResourceNotFoundException(Storage.class, pickupPointDto.getStorageId());
         });
-        checkDuplicate(pickupPointDto.getAddress(), pickupPointDto.getCity());
+        if (pickupPointDto.getStorageId().equals(pointReceipt.getStorage().getId())) {
+            checkDuplicate(pickupPointDto.getAddress(), pickupPointDto.getCity());
+        }
         pickupPointRepository.save(PickupPointMapper.updatePointReceipt(pickupPointDto, pointReceipt, storage));
         log.info("Update point by id={}", id);
     }

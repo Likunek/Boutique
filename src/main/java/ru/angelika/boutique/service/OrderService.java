@@ -4,11 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.OrderDto;
+import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.OrderMapper;
-import ru.angelika.boutique.model.ItemCard;
-import ru.angelika.boutique.model.Order;
-import ru.angelika.boutique.model.PickupPoint;
-import ru.angelika.boutique.model.User;
+import ru.angelika.boutique.model.*;
 import ru.angelika.boutique.repository.OrderRepository;
 
 import java.util.List;
@@ -36,11 +34,22 @@ public class OrderService {
         PickupPoint point = pickupPointService.getPickupPoint(orderDto.getPointId());
         orderRepository.save(OrderMapper.toOrder(user, point, cards));
         cartService.deleteCardsFromCart(cartId, orderDto.getItemCards());
-        log.info("Add new Order: userId={}, pointId={}, countItems={}",
+        log.info("Add new order: userId={}, pointId={}, countItems={}",
                 user.getId(), point.getId(), cards.size());
     }
 
-   public List<Order> getAllOrders() {
+    public List<Order> getOrdersByStatus(Status status) {
+        log.debug("Get orders by status={}", status);
+        return orderRepository.findByStatus(status);
+    }
+
+    public void updateStatus(Order order, Status status) {
+        order.setStatus(status);
+        orderRepository.save(order);
+        log.info("Update order by id={}, new status={}", order.getId(), status);
+    }
+
+    public List<Order> getAllOrders() {
         return orderRepository.findAll();
-   }
+    }
 }

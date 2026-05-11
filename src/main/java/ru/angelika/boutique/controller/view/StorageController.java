@@ -50,7 +50,7 @@ public class StorageController {
 
     @GetMapping
     public String getAllStorage(Model model) {
-        model.addAttribute("storages", storageService.getAllStorage());
+        model.addAttribute("storages", storageService.getAllStorages());
         return "admin-storages";
     }
     @PutMapping("{id}")
