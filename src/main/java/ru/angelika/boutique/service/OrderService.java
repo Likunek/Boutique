@@ -1,33 +1,23 @@
 package ru.angelika.boutique.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.OrderDto;
-import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.OrderMapper;
 import ru.angelika.boutique.model.*;
 import ru.angelika.boutique.repository.OrderRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class OrderService {
     private final CartService cartService;
     private final ItemCardService itemCardService;
     private final OrderRepository orderRepository;
     private final PickupPointService pickupPointService;
-
-    @Autowired
-    public OrderService(ItemCardService itemCardService, OrderRepository orderRepository,
-                        PickupPointService pickupPointService, CartService cartService) {
-        this.itemCardService = itemCardService;
-        this.orderRepository = orderRepository;
-        this.pickupPointService = pickupPointService;
-        this.cartService = cartService;
-    }
 
     public void addOrder(OrderDto orderDto, User user, Long cartId) {
         List<ItemCard> cards = orderDto.getItemCards().stream().map(itemCardService::getItemCard).toList();

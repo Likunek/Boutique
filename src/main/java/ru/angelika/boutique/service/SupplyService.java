@@ -1,7 +1,7 @@
 package ru.angelika.boutique.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,21 +15,13 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class SupplyService {
 
     private final SupplyRepository supplyRepository;
     private final OrderService orderService;
     private final SupplyTransactionalService service;
     private final PickupPointService pickupPointService;
-
-    @Autowired
-    public SupplyService(SupplyRepository supplyRepository, OrderService orderService,
-                         SupplyTransactionalService service, PickupPointService pickupPointService) {
-        this.supplyRepository = supplyRepository;
-        this.orderService = orderService;
-        this.service = service;
-        this.pickupPointService = pickupPointService;
-    }
 
     public List<Supply> getAllSupplies() {
         return supplyRepository.findAll();

@@ -1,6 +1,6 @@
 package ru.angelika.boutique.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,15 +12,10 @@ import ru.angelika.boutique.model.Order;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class SupplyTransactionalService {
     private final ItemService itemService;
     private final ItemsAtStorageService itemsAtStorageService;
-
-    @Autowired
-    public SupplyTransactionalService(ItemService itemService, ItemsAtStorageService itemsAtStorageService) {
-        this.itemService = itemService;
-        this.itemsAtStorageService = itemsAtStorageService;
-    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<Item> checkCountOnStorage(Order order, Long storageId) {

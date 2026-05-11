@@ -1,7 +1,7 @@
 package ru.angelika.boutique.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.UserDto;
 import ru.angelika.boutique.dto.UserGetDto;
@@ -17,20 +17,12 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
     private final AuthenticationService authenticationService;
-
-    @Autowired
-    public UserService(UserRepository userRepository, CartRepository cartRepository,
-                       OrderRepository orderRepository, AuthenticationService authenticationService) {
-        this.userRepository = userRepository;
-        this.cartRepository = cartRepository;
-        this.orderRepository = orderRepository;
-        this.authenticationService = authenticationService;
-    }
 
     public void addUser(UserDto user) {
         if (userRepository.findByName(user.getName()) != null) {

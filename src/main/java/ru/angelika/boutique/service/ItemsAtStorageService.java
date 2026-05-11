@@ -1,7 +1,7 @@
 package ru.angelika.boutique.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.ItemsAtStorageDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
@@ -18,18 +18,11 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ItemsAtStorageService {
     private final ItemsAtStorageRepository itemsAtStorageRepository;
     private final ItemRepository itemRepository;
     private final StorageRepository storageRepository;
-
-
-    @Autowired
-    public ItemsAtStorageService(ItemsAtStorageRepository itemsAtStorageRepository, ItemRepository itemRepository, StorageRepository storageRepository) {
-        this.itemsAtStorageRepository = itemsAtStorageRepository;
-        this.itemRepository = itemRepository;
-        this.storageRepository = storageRepository;
-    }
 
     public void addItemsAtStorage(ItemsAtStorageDto itemsAtStorageDto) {
         if (itemsAtStorageRepository.findByItemIdAndStorageId(itemsAtStorageDto.getItemId(),

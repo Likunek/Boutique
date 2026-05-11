@@ -1,7 +1,7 @@
 package ru.angelika.boutique.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -18,15 +18,10 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ItemCardService {
     private final ItemCardRepository itemCardRepository;
     private final ItemService itemService;
-
-    @Autowired
-    public ItemCardService(ItemCardRepository itemCardRepository, ItemService itemService) {
-        this.itemCardRepository = itemCardRepository;
-        this.itemService = itemService;
-    }
 
     public void addItemCard(ItemCardDto itemCardDto, String seller) {
         checkDuplicate(seller, itemCardDto.getName(), itemCardDto.getDescription());

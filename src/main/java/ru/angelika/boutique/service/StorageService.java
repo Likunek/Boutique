@@ -1,34 +1,26 @@
 package ru.angelika.boutique.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.StorageDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.StorageMapper;
-import ru.angelika.boutique.model.Item;
 import ru.angelika.boutique.model.PickupPoint;
 import ru.angelika.boutique.model.Storage;
-import ru.angelika.boutique.repository.PickupPointRepository;
 import ru.angelika.boutique.repository.StorageRepository;
 
 import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class StorageService {
     private final StorageRepository storageRepository;
     private final ItemsAtStorageService itemsAtStorageService;
     private final PickupPointService pickupPointService;
 
-    @Autowired
-    public StorageService(StorageRepository storageRepository,
-                          ItemsAtStorageService itemsAtStorageService, PickupPointService pickupPointService) {
-        this.storageRepository = storageRepository;
-        this.itemsAtStorageService = itemsAtStorageService;
-        this.pickupPointService = pickupPointService;
-    }
 
     public void addStorage(StorageDto storageDto) {
         checkDuplicate(storageDto.getAddress(), storageDto.getCity());

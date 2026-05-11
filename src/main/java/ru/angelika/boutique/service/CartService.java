@@ -1,27 +1,22 @@
 package ru.angelika.boutique.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.model.Cart;
 import ru.angelika.boutique.model.ItemCard;
 import ru.angelika.boutique.repository.CartRepository;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
 @Controller
+@RequiredArgsConstructor
 public class CartService {
     private final CartRepository cartRepository;
     private final ItemCardService itemCardService;
 
-    @Autowired
-    public CartService(CartRepository cartRepository, ItemCardService itemCardService) {
-        this.cartRepository = cartRepository;
-        this.itemCardService = itemCardService;
-    }
 
     public Cart getCartById(Long id) {
         log.debug("Cart get By id={}", id);

@@ -1,7 +1,7 @@
 package ru.angelika.boutique.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.PickupPointDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
@@ -17,18 +17,12 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class PickupPointService {
     private final PickupPointRepository pickupPointRepository;
     private final OrderRepository orderRepository;
     private final StorageRepository storageRepository;
 
-    @Autowired
-    public PickupPointService(PickupPointRepository pickupPointRepository,
-                              OrderRepository orderRepository, StorageRepository storageRepository) {
-        this.pickupPointRepository = pickupPointRepository;
-        this.orderRepository = orderRepository;
-        this.storageRepository = storageRepository;
-    }
 
     public void addPickupPoint(PickupPointDto pickupPointDto) {
         checkDuplicate(pickupPointDto.getAddress(), pickupPointDto.getCity());
