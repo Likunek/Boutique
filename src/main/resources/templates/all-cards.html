@@ -302,6 +302,7 @@
         padding: 10px;
       }
     }
+
     </style>
 </head>
 <body>
@@ -317,19 +318,20 @@
 
 <div class="container">
     <h1 class="page-title">🛍️ Item Cards <span th:text="${name}"></span></h1>
-
-    <div class="search-container">
-        <form th:action="@{/item-card}" method="get" class="search-form">
-            <input type="hidden" name="role" th:value="${role}">
-            <input type="text" name="search" th:value="${searchQuery}" placeholder="Search by name or description..." class="search-input">
-            <button type="submit" class="search-btn">🔍 Search</button>
-        </form>
-        <div th:if="${searchQuery != null and !searchQuery.isEmpty()}" class="search-info">
-            Results for: <strong th:text="${searchQuery}"></strong>
-            <a th:href="@{/item-card(role=${role})}" class="clear-search">✖ Clear</a>
+    <div th:if="${seller == false}" class="search-container">
+        <div class="search-container">
+            <form th:action="@{/item-card}" method="get" class="search-form">
+                <input type="hidden" name="role" th:value="${role}">
+                <input type="text" name="search" th:value="${searchQuery}"
+                       placeholder="Search by name or description..." class="search-input">
+                <button type="submit" class="search-btn">🔍 Search</button>
+            </form>
+            <div th:if="${searchQuery != null and !searchQuery.isEmpty()}" class="search-info">
+                Results for: <strong th:text="${searchQuery}"></strong>
+                <a th:href="@{/item-card(role=${role})}" class="clear-search">✖ Clear</a>
+            </div>
         </div>
     </div>
-
     <div class="cards-grid">
         <div th:each="card : ${itemCardsPage.content}"
              class="card"

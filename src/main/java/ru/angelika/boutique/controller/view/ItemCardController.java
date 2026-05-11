@@ -92,9 +92,11 @@ public class ItemCardController {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             model.addAttribute("cardsId", userService.getCardsId(auth.getName()));
         }
+        model.addAttribute("seller", seller);
         if (seller) {
             String sellerName = sellerService.getById(sellerId).getName();
             model.addAttribute("itemCardsPage", itemCardService.getAllItemCardBySeller(page, size, sellerName));
+            model.addAttribute("seller", true);
             model.addAttribute("role", role);
             model.addAttribute("name", "by " + sellerName);
             return "all-cards";
