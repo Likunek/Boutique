@@ -2,7 +2,6 @@ package ru.angelika.boutique.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.validator.constraints.Range;
 
 @Data
 @Entity
@@ -12,7 +11,6 @@ public class Feedback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false, unique = true)
     private Long id;
-    @Range(min = 1, max = 5)
     @Column(name = "rating", nullable = false)
     private Integer rating;
     @Column(name = "text")

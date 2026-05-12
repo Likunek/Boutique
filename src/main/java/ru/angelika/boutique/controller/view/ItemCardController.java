@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import ru.angelika.boutique.dto.FeedbackDto;
 import ru.angelika.boutique.dto.ItemCardDto;
 import ru.angelika.boutique.dto.ItemCardUpdateDto;
 import ru.angelika.boutique.model.Item;
@@ -80,6 +81,12 @@ public class ItemCardController {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
         return "redirect:/seller/items/" + itemId;
+    }
+
+    @PostMapping("/user/item-card/feedback/{id}")
+    public String addFeedback(@PathVariable Long id, @Valid FeedbackDto feedbackDto, @RequestParam Long userId) {
+        itemCardService.addFeedback(feedbackDto, id);
+        return "redirect:/user/profile/" + userId;
     }
 
     @GetMapping("/item-card")

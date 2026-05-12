@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.angelika.boutique.dto.FeedbackDto;
 import ru.angelika.boutique.dto.ItemCardDto;
 import ru.angelika.boutique.dto.ItemCardUpdateDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
+import ru.angelika.boutique.mapper.FeedbackMapper;
 import ru.angelika.boutique.mapper.ItemCardMapper;
 import ru.angelika.boutique.model.Feedback;
 import ru.angelika.boutique.model.Item;
@@ -38,6 +40,15 @@ public class ItemCardService {
                 itemCardDto.getName(), itemCardDto.getDescription(), itemCardDto.getItemId());
     }
 
+    public void addFeedback(FeedbackDto feedbackDto, Long id) {
+        ItemCard itemCard = getItemCard(id);
+        itemCard.getFeedbacks().add(FeedbackMapper.toFeedback(feedbackDto));
+        Double rating = itemCard.getFeedbacks().stream().mapToDouble(Feedback::getRating).average().orElse(0.0);
+        itemCard.setRating(rating);
+        itemCardRepository.save(itemCard);
+        log.info("Added new feedback, update rating={} itemCard by id={}", rating, id);
+    }
+
     public ItemCard getItemCard(Long id) {
         log.debug("Get itemCard by id={}", id);
         return itemCardRepository.findById(id).orElseThrow(() -> {
@@ -64,14 +75,6 @@ public class ItemCardService {
         ItemCardMapper.toItemCardUpdate(itemCardDto, itemCard);
         itemCardRepository.save(itemCard);
         log.info("Update itemCard by id={}", id);
-    }
-
-    public void updateRating(Long id) {
-        ItemCard itemCard = getItemCard(id);
-        Double rating = itemCard.getFeedbacks().stream().mapToDouble(Feedback::getRating).average().orElse(0.0);
-        itemCard.setRating(rating);
-        itemCardRepository.save(itemCard);
-        log.info("Update rating={} itemCard by id={}", rating, id);
     }
 
     public void deleteItemCard(Long id) {
