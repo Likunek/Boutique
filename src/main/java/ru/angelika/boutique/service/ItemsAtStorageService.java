@@ -1,7 +1,7 @@
 package ru.angelika.boutique.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.ItemsAtStorageDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
@@ -18,18 +18,11 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ItemsAtStorageService {
     private final ItemsAtStorageRepository itemsAtStorageRepository;
     private final ItemRepository itemRepository;
     private final StorageRepository storageRepository;
-
-
-    @Autowired
-    public ItemsAtStorageService(ItemsAtStorageRepository itemsAtStorageRepository, ItemRepository itemRepository, StorageRepository storageRepository) {
-        this.itemsAtStorageRepository = itemsAtStorageRepository;
-        this.itemRepository = itemRepository;
-        this.storageRepository = storageRepository;
-    }
 
     public void addItemsAtStorage(ItemsAtStorageDto itemsAtStorageDto) {
         if (itemsAtStorageRepository.findByItemIdAndStorageId(itemsAtStorageDto.getItemId(),
@@ -59,16 +52,33 @@ public class ItemsAtStorageService {
     }
 
     public List<ItemsAtStorage> getItemsAtStorageByStorageId(Long id) {
+        log.debug("Get all itemsAtStorages by storageId={}", id);
         return itemsAtStorageRepository.findByStorageId(id);
     }
 
+    public ItemsAtStorage getByItemAndStorage(Long itemId, Long storageId) {
+        log.debug("Get itemsAtStorage by itemId={}, storageId={}", itemId, storageId);
+        ItemsAtStorage itemsAtStorage = itemsAtStorageRepository.findByItemIdAndStorageId(itemId, storageId);
+        if (itemsAtStorage == null) {
+            log.error("ItemsAtStorage not found for get, itemId={}, storageId={}", itemId, storageId);
+            throw new ResourceNotFoundException(ItemsAtStorage.class, itemId.toString() + " " + storageId.toString());
+        }
+        return itemsAtStorage;
+    }
+
     public List<ItemsAtStorage> getAllItemsAtStorage() {
+        log.debug("Get all itemsAtStorages");
         return itemsAtStorageRepository.findAll();
     }
 
     public ItemsAtStorage getItemsAtStorage(Long id) {
         return itemsAtStorageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ItemsAtStorage.class, id));
+    }
+
+    public void updateCount(ItemsAtStorage itemsAtStorage) {
+        itemsAtStorageRepository.save(itemsAtStorage);
+        log.info("Update count items from itemsAtStorage by id={}", itemsAtStorage.getId());
     }
 
     public void updateItemsAtStorage(Long id, Long count) {

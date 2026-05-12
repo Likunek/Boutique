@@ -18,6 +18,7 @@ import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.service.ItemCardService;
 import ru.angelika.boutique.service.ItemService;
 import ru.angelika.boutique.service.SellerService;
+import ru.angelika.boutique.service.UserService;
 
 import java.util.List;
 
@@ -26,12 +27,15 @@ import java.util.List;
 @RequestMapping
 public class ItemCardController {
     private final ItemService itemService;
+    private final UserService userService;
     private final SellerService sellerService;
     private final ItemCardService itemCardService;
 
     @Autowired
-    public ItemCardController(ItemService itemService, SellerService sellerService, ItemCardService itemCardService) {
+    public ItemCardController(ItemService itemService, UserService userService,
+                              SellerService sellerService, ItemCardService itemCardService) {
         this.itemService = itemService;
+        this.userService = userService;
         this.sellerService = sellerService;
         this.itemCardService = itemCardService;
     }
@@ -80,21 +84,31 @@ public class ItemCardController {
 
     @GetMapping("/item-card")
     public String getAllItemCard(@RequestParam(defaultValue = "0") int page,
-                                 @RequestParam(defaultValue = "12") int size, @RequestParam String role, Model model) {
-        Page<ItemCard> itemCards = itemCardService.getAllItemCard(page, size);
-        model.addAttribute("itemCardsPage", itemCards);
+                                 @RequestParam(defaultValue = "12") int size, @RequestParam String role,
+                                 @RequestParam(defaultValue = "false") boolean seller,
+                                 @RequestParam(defaultValue = "") String search,
+                                 @RequestParam(defaultValue = "0") Long sellerId, Model model) {
+        if (role.equals("ROLE_USER")) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            model.addAttribute("cardsId", userService.getCardsId(auth.getName()));
+        }
+        model.addAttribute("seller", seller);
+        if (seller) {
+            String sellerName = sellerService.getById(sellerId).getName();
+            model.addAttribute("itemCardsPage", itemCardService.getAllItemCardBySeller(page, size, sellerName));
+            model.addAttribute("seller", true);
+            model.addAttribute("role", role);
+            model.addAttribute("name", "by " + sellerName);
+            return "all-cards";
+        }
+        if (!search.isBlank()) {
+            model.addAttribute("itemCardsPage", itemCardService.getAllItemCardBySearch(page, size, search));
+            model.addAttribute("role", role);
+            return "all-cards";
+        }
+        model.addAttribute("itemCardsPage", itemCardService.getAllItemCard(page, size));
         model.addAttribute("role", role);
         return "all-cards";
-    }
-
-    @GetMapping("/item-card/by-seller/{id}")
-    public String getAllItemCardBySeller(@PathVariable Long id, @RequestParam(defaultValue = "0") int page,
-                                         @RequestParam(defaultValue = "12") int size, Model model) {
-        String sellerName = sellerService.getById(id).getName();
-        Page<ItemCard> itemCards = itemCardService.getAllItemCardBySeller(page, size, sellerName);
-        model.addAttribute("itemCardsPage", itemCards);
-        model.addAttribute("sellerName", sellerName);
-        return "all-cards-seller";
     }
 
     @GetMapping("/item-card/{id}")
@@ -104,6 +118,10 @@ public class ItemCardController {
         switch (role) {
             case "ROLE_SELLER" -> isOwner = getAuthSeller().getName().equals(itemCard.getSeller());
             case "ROLE_ADMIN" -> isOwner = true;
+            case "ROLE_USER" -> {
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                model.addAttribute("cardsId", userService.getCardsId(auth.getName()));
+            }
         }
         Long sellerId = sellerService.getBySellerName(itemCard.getSeller()).getId();
         model.addAttribute("isOwner", isOwner);
@@ -135,4 +153,5 @@ public class ItemCardController {
         }
         return false;
     }
+
 }

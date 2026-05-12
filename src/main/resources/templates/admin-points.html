@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>All Pickup Points</title>
   <style>
         * {
@@ -200,9 +199,8 @@
         }
 
         .actions-col {
-            width: 1px;
             white-space: nowrap;
-            padding-right: 16px;
+            width: 180px;
         }
 
         .edit-input {
@@ -212,6 +210,10 @@
             border-radius: 14px;
             font-size: 13px;
             margin-right: 6px;
+        }
+
+        select.edit-input {
+            width: 150px;
         }
 
         @media (max-width: 768px) {
@@ -255,12 +257,13 @@
         <th>Address</th>
         <th>City</th>
         <th>Rating</th>
-        <th class="actions-col"></th>
+        <th>Storage</th>
+        <th class="actions-col">Actions</th>
       </tr>
       </thead>
       <tbody>
       <tr th:each="point : ${points}">
-        <td th:text="${point.id}"></td>
+        <td th:text="${point.id}">--</td>
 
         <td>
           <span th:id="'view-address-' + ${point.id}" th:text="${point.address}">Address</span>
@@ -280,6 +283,20 @@
                  step="0.1" min="0" max="5" th:value="${point.rating}" style="display: none;">
         </td>
 
+        <td>
+          <span th:id="'view-storage-' + ${point.id}"
+                th:text="${point.storage != null ? point.storage.address + ' (' + point.storage.city + ')' : '—'}">—</span>
+
+          <select th:id="'edit-storage-' + ${point.id}" class="edit-input" style="display: none;">
+            <option value="">— None —</option>
+            <option th:each="storage : ${storages}"
+                    th:value="${storage.id}"
+                    th:text="${storage.address + ': ' + storage.city}"
+                    th:selected="${point.storage != null and point.storage.id == storage.id}">
+            </option>
+          </select>
+        </td>
+
         <td class="actions-col">
           <div th:id="'view-actions-' + ${point.id}">
             <button class="btn btn-edit" th:onclick="'enablePointEdit(' + ${point.id} + ')'">✏️ Edit</button>
@@ -287,8 +304,7 @@
                   style="display: inline-block;"
                   onsubmit="return confirm('Delete pickup point: ' + this.querySelector('input[name=pointName]').value + '?');">
               <input type="hidden" name="_method" value="delete"/>
-              <input type="hidden" name="pointName"
-                     th:value="${point.city} + ' ' + ${point.address}"/>
+              <input type="hidden" name="pointName" th:value="${point.city} + ' ' + ${point.address}"/>
               <button type="submit" class="btn btn-danger">Delete</button>
             </form>
           </div>
@@ -299,8 +315,14 @@
               <input type="hidden" name="_method" value="put"/>
               <input type="hidden" name="address" th:id="'hidden-address-' + ${point.id}">
               <input type="hidden" name="city" th:id="'hidden-city-' + ${point.id}">
+              <input type="hidden" name="storageId" th:id="'hidden-storage-' + ${point.id}">
               <button type="submit" class="btn btn-save"
-                      th:onclick="'document.getElementById(\'hidden-address-' + ${point.id} + '\').value = document.getElementById(\'edit-address-' + ${point.id} + '\').value; document.getElementById(\'hidden-city-' + ${point.id} + '\').value = document.getElementById(\'edit-city-' + ${point.id} + '\').value; document.getElementById(\'hidden-rating-' + ${point.id} + '\').value = document.getElementById(\'edit-rating-' + ${point.id} + '\').value; return true;'">
+                      th:onclick="'
+                                        document.getElementById(\'hidden-address-' + ${point.id} + '\').value = document.getElementById(\'edit-address-' + ${point.id} + '\').value;
+                                        document.getElementById(\'hidden-city-' + ${point.id} + '\').value = document.getElementById(\'edit-city-' + ${point.id} + '\').value;
+                                        document.getElementById(\'hidden-storage-' + ${point.id} + '\').value = document.getElementById(\'edit-storage-' + ${point.id} + '\').value;
+                                        return true;
+                                    '">
                 Save
               </button>
             </form>
@@ -324,6 +346,9 @@
         document.getElementById('view-rating-' + id).style.display = 'none';
         document.getElementById('edit-rating-' + id).style.display = 'inline-block';
 
+        document.getElementById('view-storage-' + id).style.display = 'none';
+        document.getElementById('edit-storage-' + id).style.display = 'inline-block';
+
         document.getElementById('view-actions-' + id).style.display = 'none';
         document.getElementById('edit-actions-' + id).style.display = 'block';
     }
@@ -337,6 +362,9 @@
 
         document.getElementById('view-rating-' + id).style.display = 'inline';
         document.getElementById('edit-rating-' + id).style.display = 'none';
+
+        document.getElementById('view-storage-' + id).style.display = 'inline';
+        document.getElementById('edit-storage-' + id).style.display = 'none';
 
         document.getElementById('view-actions-' + id).style.display = 'block';
         document.getElementById('edit-actions-' + id).style.display = 'none';

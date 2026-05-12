@@ -3,6 +3,7 @@ package ru.angelika.boutique.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -13,10 +14,10 @@ public class Supply {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false, unique = true)
     private Long id;
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "supply_item",
             inverseJoinColumns = @JoinColumn(name = "item_id"))
-    private List<Item> items;
+    private List<Item> items = new ArrayList<>();
     @Column(name = "weight")
     private Double weight;
     @ManyToOne(fetch = FetchType.LAZY)

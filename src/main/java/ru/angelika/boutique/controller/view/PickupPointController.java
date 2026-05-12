@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.angelika.boutique.dto.PickupPointDto;
 
 import ru.angelika.boutique.service.PickupPointService;
+import ru.angelika.boutique.service.StorageService;
 
 import java.util.stream.Collectors;
 
@@ -19,10 +20,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/admin/points")
 public class PickupPointController {
     private final PickupPointService pickupPointService;
+    private final StorageService storageService;
 
     @Autowired
-    public PickupPointController(PickupPointService pickupPointService) {
+    public PickupPointController(PickupPointService pickupPointService, StorageService storageService) {
         this.pickupPointService = pickupPointService;
+        this.storageService = storageService;
     }
 
     @PostMapping("/add")
@@ -33,7 +36,7 @@ public class PickupPointController {
                     result.getAllErrors().stream()
                             .map(DefaultMessageSourceResolvable::getDefaultMessage)
                             .collect(Collectors.joining(", ")));
-            return "admin-add-point";
+            return "redirect:/admin/points/add";
         }
         try {
             pickupPointService.addPickupPoint(pointDto);
@@ -42,16 +45,18 @@ public class PickupPointController {
             log.error("Error add PointReceipt '{}, {}': {}", pointDto.getCity(), pointDto.getAddress(), e.getMessage(), e);
             model.addAttribute("errorMessage", "Error saving PointReceipt: " + e.getMessage());
         }
-        return "admin-add-point";
+        return "redirect:/admin/points/add";
     }
     @GetMapping("/add")
-    public String getFormNewPoint() {
+    public String getFormNewPoint(Model model) {
+        model.addAttribute("storages", storageService.getAllStorages());
         return "admin-add-point";
     }
 
     @GetMapping
     public String getAllPoints(Model model) {
         model.addAttribute("points", pickupPointService.getAllPoints());
+        model.addAttribute("storages", storageService.getAllStorages());
         return "admin-points";
     }
     @PutMapping("{id}")

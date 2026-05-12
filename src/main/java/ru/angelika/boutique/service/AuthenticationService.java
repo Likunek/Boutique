@@ -1,7 +1,7 @@
 package ru.angelika.boutique.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -19,16 +19,12 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationRepository authenticationRepository;
 
-    @Autowired
-    public AuthenticationService(PasswordEncoder passwordEncoder, AuthenticationRepository authenticationRepository) {
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationRepository = authenticationRepository;
-    }
 
     public void addAuthentication(Authentication authentication) {
         authentication.setPassword(passwordEncoder.encode(authentication.getPassword()));

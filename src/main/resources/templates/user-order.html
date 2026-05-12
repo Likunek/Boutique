@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(to top, #ff9f7c 0%, #ffe5d9 50%, #ffffff 100%);
+            min-height: 100vh;
+            padding: 80px 20px 40px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle at 10% 20%, rgba(107, 140, 92, 0.08) 0%, rgba(107, 140, 92, 0.02) 90%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .back-nav {
+            position: fixed;
+            top: 40px;
+            left: 50px;
+            z-index: 1000;
+        }
+
+        .back-nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 22px;
+            border-radius: 60px;
+            color: #4a5b3c;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+            border: 1px solid #adb5bd;
+            transition: all 0.2s ease;
+        }
+
+        .back-nav a:hover {
+            background: #8aaE7a;
+            color: white;
+            border-color: #8aaE7a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(138, 174, 122, 0.3);
+        }
+
+        .logout-container {
+            position: fixed;
+            top: 40px;
+            right: 50px;
+            z-index: 1000;
+        }
+
+        .btn-logout {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 22px;
+            border-radius: 60px;
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            border: 1px solid #dc3545;
+            box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-logout:hover {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 32px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6b8c5c 0%, #8aaE7a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .items-list {
+            margin-bottom: 30px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #2c3e2f;
+        }
+
+        .item-seller {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+
+        .item-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #8aaE7a;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-top: 10px;
+            border-top: 2px solid #dee2e6;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .total-label {
+            color: #495057;
+        }
+
+        .total-value {
+            color: #6b8c5c;
+            font-size: 28px;
+        }
+
+        .field-group {
+            margin-bottom: 25px;
+        }
+
+        .field-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .field-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 14px;
+            font-size: 14px;
+            transition: all 0.2s;
+            background: white;
+            cursor: pointer;
+        }
+
+        .field-select:focus {
+            outline: none;
+            border-color: #8aaE7a;
+            box-shadow: 0 0 0 3px rgba(138,174,122,0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #8aaE7a;
+            color: white;
+            box-shadow: 0 4px 10px rgba(138,174,122,0.3);
+        }
+
+        .btn-primary:hover {
+            background: #6b8c5c;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(107,140,92,0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: #495057;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 0 10px;
+            }
+            .form-card {
+                padding: 20px;
+            }
+            .item-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .item-price {
+                align-self: flex-end;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="back-nav">
+    <a th:href="@{/user/cart/{id}(id=${cartId})}">← Back to Cart</a>
+</div>
+
+<div class="logout-container">
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn-logout">🚪 Logout</button>
+    </form>
+</div>
+
+<div class="container">
+    <div class="form-card">
+        <h1 class="form-title">🛒 Order</h1>
+
+        <div th:if="${items != null and !items.isEmpty()}">
+            <div class="items-list">
+                <div th:each="item : ${items}" class="item-row">
+                    <div>
+                        <div class="item-name" th:text="${item.name}">Item name</div>
+                        <div class="item-seller" th:text="'Seller: ' + ${item.seller}">Seller</div>
+                    </div>
+                    <div class="item-price" th:text="${#numbers.formatDecimal(item.price, 1, 2)} + ' ₽'">0 ₽</div>
+                </div>
+
+                <div class="total-row">
+                    <span class="total-label">Total amount:</span>
+                    <span class="total-value" th:text="${#numbers.formatDecimal(totalPrice, 1, 2)} + ' ₽'">0 ₽</span>
+                </div>
+            </div>
+
+            <form th:action="@{/user/order (cartId=${cartId})}" method="post">
+                <div th:each="item : ${items}">
+                    <input type="hidden" name="itemCards" th:value="${item.id}"/>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label" for="pickupPoint">📍 Pickup point</label>
+                    <select id="pickupPoint" name="pointId" class="field-select" required>
+                        <option value="">-- Select a pickup point --</option>
+                        <option th:each="point : ${pickupPoints}"
+                                th:value="${point.id}"
+                                th:text="${point.address} + ', ' + ${point.city}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/user/cart/{id}(id=${cartId})}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">✅ Place order</button>
+                </div>
+            </form>
+        </div>
+
+        <div th:if="${items == null or items.isEmpty()}" class="empty-message">
+            🛍️ No items selected. <a href="@{/item-card(role='ROLE_USER')}" style="color: #8aaE7a;">Go shopping</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add New Item</title>
+  <title>Add New Pickup Point</title>
   <style>
     * {
       margin: 0;
@@ -39,29 +39,29 @@
     }
 
     .btn-logout {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: white;
-    padding: 10px 22px;
-    border-radius: 60px;
-    color: #dc3545;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 14px;
-    border: 1px solid #dc3545;
-    box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      padding: 10px 22px;
+      border-radius: 60px;
+      color: #dc3545;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      border: 1px solid #dc3545;
+      box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
 
-.btn-logout:hover {
-    background: #dc3545;
-    color: white;
-    border-color: #dc3545;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
-}
+    .btn-logout:hover {
+      background: #dc3545;
+      color: white;
+      border-color: #dc3545;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+    }
 
     .back-nav {
       position: fixed;
@@ -87,12 +87,13 @@
     }
 
     .back-nav a:hover {
-    background: #8aaE7a;
-    color: white;
-    border-color: #8aaE7a;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(138, 174, 122, 0.3);
-}
+      background: #8aaE7a;
+      color: white;
+      border-color: #8aaE7a;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(138, 174, 122, 0.3);
+    }
+
     .form-container {
       max-width: 600px;
       margin: 0 auto;
@@ -278,8 +279,7 @@
         font-size: 22px;
       }
     }
-
-    </style>
+  </style>
 </head>
 <body>
 
@@ -296,7 +296,7 @@
 <div class="form-container">
   <div class="form-card">
     <div class="form-header">
-      <h1><span>➕</span> Add New Point</h1>
+      <h1><span>➕</span> Add New Pickup Point</h1>
     </div>
 
     <div class="form-body">
@@ -309,19 +309,31 @@
 
       <form th:action="@{/admin/points/add}" method="post">
         <div class="field-group">
-          <label class="field-label" for="address">Address</label>
+          <label class="field-label" for="address">📍 Address</label>
           <input type="text" id="address" name="address"
-                 class="field-input" required>
+                 class="field-input">
         </div>
 
         <div class="field-group">
-          <label class="field-label" for="city">City</label>
+          <label class="field-label" for="city">🏙️ City</label>
           <input type="text" id="city" name="city"
-                 class="field-input" required>
+                 class="field-input">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="storageId">📦 Storage</label>
+          <select id="storageId" name="storageId" class="field-input" required>
+            <option value="">— Select storage —</option>
+            <option th:each="storage : ${storages}"
+                    th:value="${storage.id}"
+                    th:text="${storage.address + ': ' + storage.city}">
+            </option>
+          </select>
+          <div class="field-hint">Choose the storage where this pickup point is located.</div>
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary">✓ Save Point Receipt</button>
+          <button type="submit" class="btn btn-primary">✓ Add Pickup Point</button>
           <a href="/admin/profile/1" class="btn btn-secondary">Cancel</a>
         </div>
       </form>

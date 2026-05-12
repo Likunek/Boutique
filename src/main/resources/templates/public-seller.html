@@ -240,7 +240,7 @@
                 </div>
             </div>
             <div style="text-align: center;">
-                <a th:href="@{/item-card/by-seller/{id}(id=${seller.id})}" class="btn-secondary">🛍️ View items</a>
+                <a th:href="@{/item-card (sellerId=${seller.id}, seller=true, role=${role})}" class="btn-secondary">🛍️ View items</a>
             </div>
         </div>
     </div>

@@ -1,30 +1,28 @@
 package ru.angelika.boutique.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.UserDto;
 import ru.angelika.boutique.dto.UserGetDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.UserMapper;
-import ru.angelika.boutique.model.User;
+import ru.angelika.boutique.model.*;
+import ru.angelika.boutique.repository.CartRepository;
+import ru.angelika.boutique.repository.OrderRepository;
 import ru.angelika.boutique.repository.UserRepository;
 
 import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final CartRepository cartRepository;
+    private final OrderRepository orderRepository;
     private final AuthenticationService authenticationService;
-
-    @Autowired
-
-    public UserService(UserRepository userRepository, AuthenticationService authenticationService) {
-        this.userRepository = userRepository;
-        this.authenticationService = authenticationService;
-    }
 
     public void addUser(UserDto user) {
         if (userRepository.findByName(user.getName()) != null) {
@@ -39,9 +37,10 @@ public class UserService {
             log.error("User with email={} already exists", user.getEmail());
             throw new ResourceExistsException(User.class, user.getEmail());
         }
-        userRepository.save(UserMapper.toUser(user));
-        log.info("Add new user: name={}, number={}, email={}",
-                user.getName(), user.getNumber(), user.getEmail());
+        Cart cart = cartRepository.save(new Cart());
+        userRepository.save(UserMapper.toUser(user, cart));
+        log.info("Add new user: name={}, number={}, email={}, cartId={}",
+                user.getName(), user.getNumber(), user.getEmail(), cart.getId());
     }
 
     public User getById(Long id) {
@@ -62,8 +61,21 @@ public class UserService {
         return user;
     }
 
+    public List<Order> getOrders(Long userId) {
+        log.debug("Get orders by userId={}", userId);
+        return orderRepository.findByUserIdAndStatusNot(userId, Status.RECEIVED);
+    }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public List<Long> getCardsId(String number) {
+        User user = getByNumber(number);
+        return user.getCart().getItemCards()
+                .stream()
+                .map(ItemCard::getId)
+                .toList();
     }
 
     public UserGetDto getUserByName(String name) {
@@ -110,6 +122,7 @@ public class UserService {
             return new ResourceNotFoundException(User.class, id);
         });
         authenticationService.deleteAuthentication(user.getNumber());
+        orderRepository.deleteAll(orderRepository.findByUserId(id));
         userRepository.deleteById(id);
         log.info("Delete user by id={}", id);
     }

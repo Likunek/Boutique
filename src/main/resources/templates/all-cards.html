@@ -100,6 +100,56 @@
       margin-top: 5px;
     }
 
+    .search-container {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .search-form {
+      display: inline-flex;
+      gap: 10px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 12px 18px;
+      border: 1px solid #dee2e6;
+      border-radius: 40px;
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s;
+    }
+    .search-input:focus {
+      border-color: #8aaE7a;
+      box-shadow: 0 0 0 3px rgba(138,174,122,0.2);
+    }
+    .search-btn {
+      background: #8aaE7a;
+      border: none;
+      border-radius: 40px;
+      padding: 0 24px;
+      color: white;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+    .search-btn:hover {
+      background: #6b8c5c;
+    }
+    .search-info {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #6c757d;
+    }
+    .clear-search {
+      margin-left: 10px;
+      text-decoration: none;
+      color: #dc3545;
+      font-weight: 500;
+    }
+
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -177,18 +227,24 @@
       background: #ff7f50;
       border: 1px solid #ff7f50;
       border-radius: 14px;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       font-size: 24px;
       color: white;
       cursor: pointer;
       transition: all 0.2s ease;
-      text-decoration: none;
-      flex-shrink: 0;
       box-shadow: 0 4px 8px rgba(255,127,80,0.3);
     }
-
+    .cart-btn.in-cart {
+      background: #28a745;
+      border-color: #28a745;
+      box-shadow: 0 4px 8px rgba(40,167,69,0.3);
+    }
+    .cart-btn span {
+      font-size: 20px;
+      font-weight: bold;
+    }
     .cart-btn:hover {
       background: #e66a3e;
       border-color: #e66a3e;
@@ -238,6 +294,13 @@
       .page-title {
         font-size: 20px;
       }
+      .search-form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-btn {
+        padding: 10px;
+      }
     }
 
     </style>
@@ -254,8 +317,21 @@
 </div>
 
 <div class="container">
-    <h1 class="page-title">🛍️ Item Cards</h1>
-
+    <h1 class="page-title">🛍️ Item Cards <span th:text="${name}"></span></h1>
+    <div th:if="${seller == false}" class="search-container">
+        <div class="search-container">
+            <form th:action="@{/item-card}" method="get" class="search-form">
+                <input type="hidden" name="role" th:value="${role}">
+                <input type="text" name="search" th:value="${searchQuery}"
+                       placeholder="Search by name or description..." class="search-input">
+                <button type="submit" class="search-btn">🔍 Search</button>
+            </form>
+            <div th:if="${searchQuery != null and !searchQuery.isEmpty()}" class="search-info">
+                Results for: <strong th:text="${searchQuery}"></strong>
+                <a th:href="@{/item-card(role=${role})}" class="clear-search">✖ Clear</a>
+            </div>
+        </div>
+    </div>
     <div class="cards-grid">
         <div th:each="card : ${itemCardsPage.content}"
              class="card"
@@ -268,10 +344,25 @@
                         <h3 class="card-title" th:text="${card.name}">Card Name</h3>
                         <div class="card-price" th:text="${card.price} + ' ₽'">0 ₽</div>
                     </div>
-                    <a th:href="@{/user/cart/add-card/{id}(id=${card.id})}"
-                       class="cart-btn"
-                       onclick="event.stopPropagation();"
-                       title="Add to cart">🛒</a>
+                    <th:block th:if="${role == 'ROLE_USER'}">
+                        <form th:if="${cardsId != null and !cardsId.contains(card.id)}"
+                              th:action="@{/user/cart/add-card/{id}(id=${card.id})}"
+                              method="post"
+                              style="display: inline;"
+                              onclick="event.stopPropagation();">
+                            <button type="submit" class="cart-btn" title="Add to cart">🛒</button>
+                        </form>
+                        <form th:if="${cardsId != null and cardsId.contains(card.id)}"
+                              th:action="@{/user/cart/card/{id}(id=${card.id})}"
+                              method="post"
+                              style="display: inline;"
+                              onclick="event.stopPropagation();">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="cart-btn in-cart" title="Remove from cart">
+                                <span>1</span>
+                            </button>
+                        </form>
+                    </th:block>
                 </div>
                 <div class="card-seller" th:text="'Seller: ' + ${card.seller}">Seller</div>
             </div>
@@ -279,9 +370,9 @@
     </div>
 
     <div class="pagination" th:if="${itemCardsPage.totalPages > 1}">
-        <a th:href="@{/item-card(page=${itemCardsPage.number - 1}, size=${itemCardsPage.size})}"
+        <a th:href="@{/item-card(page=${itemCardsPage.number - 1}, size=${itemCardsPage.size}, search=${searchQuery}, role=${role})}"
            th:classappend="${itemCardsPage.number == 0 ? 'disabled' : ''}">←</a>
-        <a th:href="@{/item-card(page=${itemCardsPage.number + 1}, size=${itemCardsPage.size})}"
+        <a th:href="@{/item-card(page=${itemCardsPage.number + 1}, size=${itemCardsPage.size}, search=${searchQuery}, role=${role})}"
            th:classappend="${itemCardsPage.number + 1 >= itemCardsPage.totalPages ? 'disabled' : ''}">→</a>
     </div>
 </div>

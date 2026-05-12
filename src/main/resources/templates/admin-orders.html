@@ -219,16 +219,19 @@
             <thead>
             <tr>
                 <th>Order ID</th>
+                <th>Code</th>
                 <th>User</th>
                 <th>Date</th>
                 <th>Status</th>
                 <th>Items</th>
                 <th>Pickup point</th>
+                <th>Total price</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="order : ${orders}">
                 <td th:text="${order.id}">1</td>
+                <td th:text="${order.code}"></td>
                 <td>
                     <span th:if="${order.user != null}" th:text="${order.user.id}"></span>
                     <span th:unless="${order.user != null}">—</span>
@@ -256,6 +259,9 @@
                         <div><strong>City:</strong> <span th:text="${order.point.city}"></span></div>
                     </div>
                     <span th:unless="${order.point != null}">—</span>
+                </td>
+                <td>
+                    <span th:text="${#numbers.formatDecimal(order.price, 1, 2)} + ' ₽'">0.00 ₽</span>
                 </td>
             </tr>
             </tbody>

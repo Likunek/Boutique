@@ -29,6 +29,7 @@ public class UserController {
             return "redirect:/welcome";
         }
         User user = userService.getById(id);
+        model.addAttribute("orders", userService.getOrders(id));
         model.addAttribute("user", user);
         return "user";
     }

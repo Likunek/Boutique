@@ -14,6 +14,8 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false, unique = true)
     private Long id;
+    @Column(name = "code", nullable = false)
+    private Integer code;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -21,10 +23,12 @@ public class Order {
     private Status status = Status.NEW;
     @Column(name = "date", nullable = false)
     private LocalDateTime date = LocalDateTime.now();
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "order_item",
             inverseJoinColumns = @JoinColumn(name = "item_id"))
-    private List<Item> items;
+    private List<ItemCard> items;
+    @Column(name = "price", nullable = false)
+    private Double price;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "point_receipt_id")
     private PickupPoint point;

@@ -394,7 +394,7 @@
                         <td>
                             <ul class="storage-list">
                                 <li th:each="storageEntry : ${item.itemsAtStorages}"
-                                    th:text="${storageEntry.storage.city} + ', ' + ${storageEntry.storage.address} + ': ' + ${storageEntry.count}">
+                                    th:text="${storageEntry.storage.city} + ', ' + ${storageEntry.storage.address} + ';  count: ' + ${storageEntry.count}">
                                     Storage: 0
                                 </li>
                                 <li th:if="${#lists.isEmpty(item.itemsAtStorages)}" style="color: #adb5bd;">Not on

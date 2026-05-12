@@ -5,10 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.service.SellerService;
 
@@ -34,8 +31,9 @@ public class SellerController {
     }
 
     @GetMapping("/public-seller/{id}")
-    public String getSeller(@PathVariable Long id, Model model) {
+    public String getSeller(@PathVariable Long id, @RequestParam String role, Model model) {
         Seller seller = sellerService.getById(id);
+        model.addAttribute("role", role);
         model.addAttribute("seller", seller);
         return "public-seller";
     }

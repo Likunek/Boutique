@@ -247,15 +247,15 @@
                     <span th:unless="${supply.storage != null}">—</span>
                 </td>
                 <td>
-                    <div th:if="${supply.pointReceipt != null}">
+                    <div th:if="${supply.point != null}">
                         <div class="info-block"><span class="info-label">ID:</span> <span
-                                th:text="${supply.pointReceipt.id}">1</span></div>
+                                th:text="${supply.point.id}">1</span></div>
                         <div class="info-block"><span class="info-label">Address:</span> <span
-                                th:text="${supply.pointReceipt.address}"></span></div>
+                                th:text="${supply.point.address}"></span></div>
                         <div class="info-block"><span class="info-label">City:</span> <span
-                                th:text="${supply.pointReceipt.city}"></span></div>
+                                th:text="${supply.point.city}"></span></div>
                     </div>
-                    <span th:unless="${supply.pointReceipt != null}">—</span>
+                    <span th:unless="${supply.point != null}">—</span>
                 </td>
             </tr>
             </tbody>
