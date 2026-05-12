@@ -10,6 +10,7 @@ import ru.angelika.boutique.dto.ItemCardUpdateDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.ItemCardMapper;
+import ru.angelika.boutique.model.Feedback;
 import ru.angelika.boutique.model.Item;
 import ru.angelika.boutique.model.ItemCard;
 import ru.angelika.boutique.repository.ItemCardRepository;
@@ -48,6 +49,7 @@ public class ItemCardService {
     public Page<ItemCard> getAllItemCard(int page, int size) {
         return itemCardRepository.findAll(PageRequest.of(page, size));
     }
+
     public Page<ItemCard> getAllItemCardBySearch(int page, int size, String text) {
         return itemCardRepository.findByNameOrDescription(text.toLowerCase(), PageRequest.of(page, size));
     }
@@ -57,14 +59,19 @@ public class ItemCardService {
     }
 
     public void updateItemCard(ItemCardUpdateDto itemCardDto, Long id, String seller) {
-        ItemCard itemCard = itemCardRepository.findById(id).orElseThrow(() -> {
-            log.error("ItemCard not found for update, id={}", id);
-            return new ResourceNotFoundException(ItemCard.class, id);
-        });
+        ItemCard itemCard = getItemCard(id);
         checkDuplicate(seller, itemCardDto.getName(), itemCardDto.getDescription(), id);
         ItemCardMapper.toItemCardUpdate(itemCardDto, itemCard);
         itemCardRepository.save(itemCard);
         log.info("Update itemCard by id={}", id);
+    }
+
+    public void updateRating(Long id) {
+        ItemCard itemCard = getItemCard(id);
+        Double rating = itemCard.getFeedbacks().stream().mapToDouble(Feedback::getRating).average().orElse(0.0);
+        itemCard.setRating(rating);
+        itemCardRepository.save(itemCard);
+        log.info("Update rating={} itemCard by id={}", rating, id);
     }
 
     public void deleteItemCard(Long id) {
