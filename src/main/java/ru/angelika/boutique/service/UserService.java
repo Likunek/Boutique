@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.UserDto;
-import ru.angelika.boutique.dto.UserGetDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.UserMapper;
@@ -76,14 +75,6 @@ public class UserService {
                 .stream()
                 .map(ItemCard::getId)
                 .toList();
-    }
-
-    public UserGetDto getUserByName(String name) {
-        User user = userRepository.findByName(name);
-        if (user == null) {
-            throw new ResourceNotFoundException(User.class, name);
-        }
-        return UserMapper.toGetUser(user);
     }
 
     public void updateUser(UserDto userDto, Long id) {
