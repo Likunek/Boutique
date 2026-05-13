@@ -24,7 +24,8 @@ public class ItemCard {
     private String seller;
     @Column(name = "rating")
     private Double rating = 0.0;
-    @ManyToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OrderBy("date DESC")
     @JoinTable(name = "item_feedback",
             inverseJoinColumns = @JoinColumn(name = "feedback_id"))
     private List<Feedback> feedbacks = new ArrayList<>();
