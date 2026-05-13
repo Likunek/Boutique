@@ -29,11 +29,20 @@ public class OrderService {
                 .parallelStream()
                 .map(itemCardService::getItemCard)
                 .toList();
+        user.setBalance(user.getBalance() - cards.stream().mapToDouble(ItemCard::getPrice).sum());
         PickupPoint point = pickupPointService.getPickupPoint(orderDto.getPointId());
         orderRepository.save(OrderMapper.toOrder(user, point, cards));
         cartService.deleteCardsFromCart(cartId, orderDto.getItemCards());
         log.info("Add new order: userId={}, pointId={}, countItems={}",
                 user.getId(), point.getId(), cards.size());
+    }
+
+    public double checkPaymentUser(OrderDto orderDto, User user) {
+        List<ItemCard> cards = orderDto.getItemCards()
+                .parallelStream()
+                .map(itemCardService::getItemCard)
+                .toList();
+        return user.getBalance() - cards.stream().mapToDouble(ItemCard::getPrice).sum();
     }
 
     public List<Order> getOrdersByStatus(Status status) {

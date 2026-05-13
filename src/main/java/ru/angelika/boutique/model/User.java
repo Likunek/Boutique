@@ -27,7 +27,6 @@ public class User {
     @JoinColumn(name = "cart_id")
     private Cart cart;
     @Column(name = "balance")
-    @Min(0)
     private Double balance = 0.0;
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "user_item",

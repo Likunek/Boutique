@@ -126,6 +126,43 @@
             text-align: center;
         }
 
+        .alert-error {
+            background: #ffe8e8;
+            color: #a12b2b;
+            border: 1px solid #f5c6c6;
+            border-radius: 16px;
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .balance-info {
+            background: #f0f7ed;
+            border-radius: 16px;
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 15px;
+        }
+
+        .balance-label {
+            font-weight: 600;
+            color: #2c3e2f;
+        }
+
+        .balance-value {
+            font-weight: 700;
+            color: #6b8c5c;
+            font-size: 18px;
+        }
+
         .items-list {
             margin-bottom: 30px;
         }
@@ -272,7 +309,6 @@
                 align-self: flex-end;
             }
         }
-
     </style>
 </head>
 <body>
@@ -289,6 +325,13 @@
 <div class="container">
     <div class="form-card">
         <h1 class="form-title">🛒 Order</h1>
+        <div th:if="${errorMessage}" class="alert-error">
+            <span>⚠️</span> <span th:text="${errorMessage}"></span>
+        </div>
+        <div class="balance-info">
+            <span class="balance-label">💳 Your balance:</span>
+            <span class="balance-value" th:text="${#numbers.formatDecimal(userBalance, 1, 2)} + ' ₽'"></span>
+        </div>
 
         <div th:if="${items != null and !items.isEmpty()}">
             <div class="items-list">
@@ -330,7 +373,7 @@
         </div>
 
         <div th:if="${items == null or items.isEmpty()}" class="empty-message">
-            🛍️ No items selected. <a href="@{/item-card(role='ROLE_USER')}" style="color: #8aaE7a;">Go shopping</a>
+            🛍️ No items selected. <a href="/item-card?role=ROLE_USER" style="color: #8aaE7a;">Go shopping</a>
         </div>
     </div>
 </div>
