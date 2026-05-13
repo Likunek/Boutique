@@ -2,12 +2,15 @@ package ru.angelika.boutique.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.OrderDto;
+import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.OrderMapper;
 import org.springframework.transaction.annotation.Transactional;
 import ru.angelika.boutique.model.*;
 import ru.angelika.boutique.repository.OrderRepository;
+import ru.angelika.boutique.repository.UserRepository;
 
 import java.util.List;
 
@@ -18,6 +21,7 @@ public class OrderService {
     private final CartService cartService;
     private final ItemCardService itemCardService;
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
     private final PickupPointService pickupPointService;
 
     public void addOrder(OrderDto orderDto, User user, Long cartId) {
@@ -37,10 +41,27 @@ public class OrderService {
         return orderRepository.findByStatus(status);
     }
     @Transactional
+    @Scheduled(cron = "0 05 13 * * ?")
+    public void getq() {
+        Order order = orderRepository.findById(3L).orElseThrow(RuntimeException::new);
+        updateStatus(order, Status.RECEIVED);
+    }
+
+    @Transactional
     public void updateStatus(Order order, Status status) {
         order.setStatus(status);
         orderRepository.save(order);
         log.info("Update order by id={}, new status={}", order.getId(), status);
+        if (status == Status.RECEIVED) {
+            User user = userRepository.findById(order.getUser().getId())
+                    .orElseThrow(() -> {
+                        log.error("User not found for update purchase history, id={}", order.getUser().getId());
+                        return new ResourceNotFoundException(User.class, order.getUser().getId());
+                    });
+            user.getItems().addAll(order.getItems());
+            userRepository.save(user);
+            log.info("Update user's purchase history id={}", order.getUser().getId());
+        }
     }
 
     public List<Order> getAllOrders() {

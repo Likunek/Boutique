@@ -15,8 +15,10 @@ import ru.angelika.boutique.mapper.ItemCardMapper;
 import ru.angelika.boutique.model.Feedback;
 import ru.angelika.boutique.model.Item;
 import ru.angelika.boutique.model.ItemCard;
+import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.repository.ItemCardRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -24,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemCardService {
     private final ItemCardRepository itemCardRepository;
+    private final UserService userService;
     private final ItemService itemService;
 
     public void addItemCard(ItemCardDto itemCardDto, String seller) {
@@ -42,7 +45,9 @@ public class ItemCardService {
 
     public void addFeedback(FeedbackDto feedbackDto, Long id) {
         ItemCard itemCard = getItemCard(id);
-        itemCard.getFeedbacks().add(FeedbackMapper.toFeedback(feedbackDto));
+        User user = userService.getById(feedbackDto.getUserId());
+        itemCard.setFeedbacks(new ArrayList<>());
+        itemCard.getFeedbacks().add(FeedbackMapper.toFeedback(feedbackDto, user));
         Double rating = itemCard.getFeedbacks().stream().mapToDouble(Feedback::getRating).average().orElse(0.0);
         itemCard.setRating(rating);
         itemCardRepository.save(itemCard);

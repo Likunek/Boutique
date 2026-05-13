@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.service.UserService;
 
+import java.util.Set;
+
 @Controller
 @RequestMapping
 public class UserController {
@@ -29,6 +31,8 @@ public class UserController {
             return "redirect:/welcome";
         }
         User user = userService.getById(id);
+        Set<Long> feedbacksId = userService.checkOwnFeedbacks(id);
+        model.addAttribute("feedbacksId", feedbacksId);
         model.addAttribute("orders", userService.getOrders(id));
         model.addAttribute("user", user);
         return "user";
