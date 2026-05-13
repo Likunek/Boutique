@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.FeedbackDto;
 import ru.angelika.boutique.dto.ItemCardDto;
@@ -62,16 +63,16 @@ public class ItemCardService {
         });
     }
 
-    public Page<ItemCard> getAllItemCard(int page, int size) {
-        return itemCardRepository.findAll(PageRequest.of(page, size));
+    public Page<ItemCard> getAllItemCard(Pageable pageable) {
+        return itemCardRepository.findAll(pageable);
     }
 
-    public Page<ItemCard> getAllItemCardBySearch(int page, int size, String text) {
-        return itemCardRepository.findByNameOrDescription(text.toLowerCase(), PageRequest.of(page, size));
+    public Page<ItemCard> getAllItemCardBySearch(Pageable pageable, String text) {
+        return itemCardRepository.findByNameOrDescription(text.toLowerCase(), pageable);
     }
 
-    public Page<ItemCard> getAllItemCardBySeller(int page, int size, String seller) {
-        return itemCardRepository.findBySeller(seller, PageRequest.of(page, size));
+    public Page<ItemCard> getAllItemCardBySeller(Pageable pageable, String seller) {
+        return itemCardRepository.findBySeller(seller, pageable);
     }
 
     public void updateItemCard(ItemCardUpdateDto itemCardDto, Long id, String seller) {

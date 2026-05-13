@@ -2,8 +2,12 @@ package ru.angelika.boutique.controller.view;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.valves.rewrite.InternalRewriteMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -93,27 +97,31 @@ public class ItemCardController {
     public String getAllItemCard(@RequestParam(defaultValue = "0") int page,
                                  @RequestParam(defaultValue = "12") int size, @RequestParam String role,
                                  @RequestParam(defaultValue = "false") boolean seller,
+                                 @RequestParam(required = false) Long sellerId,
                                  @RequestParam(defaultValue = "") String search,
-                                 @RequestParam(defaultValue = "0") Long sellerId, Model model) {
+                                 @RequestParam(defaultValue = "id") String sortBy,
+                                 @RequestParam(defaultValue = "asc") String sort, Model model) {
+        Sort.Direction direction  = sort.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        model.addAttribute("seller", seller);
+        model.addAttribute("searchQuery", search);
         if (role.equals("ROLE_USER")) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             model.addAttribute("cardsId", userService.getCardsId(auth.getName()));
         }
-        model.addAttribute("seller", seller);
         if (seller) {
             String sellerName = sellerService.getById(sellerId).getName();
-            model.addAttribute("itemCardsPage", itemCardService.getAllItemCardBySeller(page, size, sellerName));
-            model.addAttribute("seller", true);
+            model.addAttribute("itemCardsPage", itemCardService.getAllItemCardBySeller(pageable, sellerName));
             model.addAttribute("role", role);
             model.addAttribute("name", "by " + sellerName);
             return "all-cards";
         }
         if (!search.isBlank()) {
-            model.addAttribute("itemCardsPage", itemCardService.getAllItemCardBySearch(page, size, search));
+            model.addAttribute("itemCardsPage", itemCardService.getAllItemCardBySearch(pageable, search));
             model.addAttribute("role", role);
             return "all-cards";
         }
-        model.addAttribute("itemCardsPage", itemCardService.getAllItemCard(page, size));
+        model.addAttribute("itemCardsPage", itemCardService.getAllItemCard(pageable));
         model.addAttribute("role", role);
         return "all-cards";
     }
