@@ -1,6 +1,7 @@
 package ru.angelika.boutique.controller.view;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -18,15 +19,10 @@ import java.util.stream.Collectors;
 @Slf4j
 @Controller
 @RequestMapping("/admin/points")
+@RequiredArgsConstructor
 public class PickupPointController {
     private final PickupPointService pickupPointService;
     private final StorageService storageService;
-
-    @Autowired
-    public PickupPointController(PickupPointService pickupPointService, StorageService storageService) {
-        this.pickupPointService = pickupPointService;
-        this.storageService = storageService;
-    }
 
     @PostMapping("/add")
     public String addPoint(@Valid PickupPointDto pointDto, BindingResult result, Model model) {
@@ -47,6 +43,7 @@ public class PickupPointController {
         }
         return "redirect:/admin/points/add";
     }
+
     @GetMapping("/add")
     public String getFormNewPoint(Model model) {
         model.addAttribute("storages", storageService.getAllStorages());
@@ -59,11 +56,13 @@ public class PickupPointController {
         model.addAttribute("storages", storageService.getAllStorages());
         return "admin-points";
     }
+
     @PutMapping("{id}")
     public String updatePoint(PickupPointDto pickupPointDto, @PathVariable Long id) {
         pickupPointService.updatePickupPoint(id, pickupPointDto);
         return "redirect:/admin/points";
     }
+
     @DeleteMapping("{id}")
     public String deletePoint(@PathVariable Long id) {
         pickupPointService.deletePickupPoint(id);

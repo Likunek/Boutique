@@ -49,12 +49,6 @@ public class OrderService {
         log.debug("Get orders by status={}", status);
         return orderRepository.findByStatus(status);
     }
-    @Transactional
-    @Scheduled(cron = "0 05 13 * * ?")
-    public void getq() {
-        Order order = orderRepository.findById(3L).orElseThrow(RuntimeException::new);
-        updateStatus(order, Status.RECEIVED);
-    }
 
     @Transactional
     public void updateStatus(Order order, Status status) {

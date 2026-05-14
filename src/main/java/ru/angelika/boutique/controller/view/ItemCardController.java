@@ -1,6 +1,7 @@
 package ru.angelika.boutique.controller.view;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.valves.rewrite.InternalRewriteMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,20 +31,13 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping
+@RequiredArgsConstructor
 public class ItemCardController {
     private final ItemService itemService;
     private final UserService userService;
     private final SellerService sellerService;
     private final ItemCardService itemCardService;
 
-    @Autowired
-    public ItemCardController(ItemService itemService, UserService userService,
-                              SellerService sellerService, ItemCardService itemCardService) {
-        this.itemService = itemService;
-        this.userService = userService;
-        this.sellerService = sellerService;
-        this.itemCardService = itemCardService;
-    }
 
     @GetMapping("/seller/add-card")
     public String getFormNewCard(Model model) {
@@ -75,7 +69,8 @@ public class ItemCardController {
                              @Valid ItemCardUpdateDto itemCardUpdateDto, RedirectAttributes redirectAttributes) {
         try {
             String sellerName = getAuthSeller().getName();
-            if (!security(sellerName)) {
+            if (!itemService.getItemById(itemId).getSeller().getName().equals(sellerName)) {
+                log.warn("Seller with name={} tried to update itemCard with id={} from someone else's path", sellerName, itemId);
                 return "redirect:/welcome";
             }
             itemCardService.updateItemCard(itemCardUpdateDto, id, sellerName);

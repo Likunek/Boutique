@@ -1,5 +1,7 @@
 package ru.angelika.boutique.controller.view;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,20 +16,18 @@ import ru.angelika.boutique.service.UserService;
 
 import java.util.Set;
 
+@Slf4j
 @Controller
 @RequestMapping
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
     @GetMapping("/user/profile/{id}")
     public String userPage(@PathVariable Long id, Model model) {
         if (security(id)) {
+            log.warn("User tried to view /user/profile/ with id={} from someone else's path", id);
             return "redirect:/welcome";
         }
         User user = userService.getById(id);
@@ -47,6 +47,7 @@ public class UserController {
     @DeleteMapping("/users/{id}")
     public String getAllUsers(@PathVariable Long id, Model model) {
         if (security(id)) {
+            log.warn("User tried to delete /user/profile/ with id={} from someone else's path", id);
             return "redirect:/welcome";
         }
         userService.deleteUser(id);

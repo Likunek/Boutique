@@ -1,6 +1,7 @@
 package ru.angelika.boutique.controller.view;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -16,13 +17,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Controller
 @RequestMapping("/admin/storages")
+@RequiredArgsConstructor
 public class StorageController {
     private final StorageService storageService;
-
-    @Autowired
-    public StorageController(StorageService storageService) {
-        this.storageService = storageService;
-    }
 
     @PostMapping("/add")
     public String addStorage(@Valid StorageDto storageDto, BindingResult result, Model model) {

@@ -178,6 +178,21 @@
             font-weight: 600;
             color: #2c3e2f;
         }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-WAY {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-DELIVERED {
+            background: #d4edda;
+            color: #155724;
+        }
 
         @media (max-width: 768px) {
             th, td {
@@ -193,7 +208,6 @@
             .back-nav { left: 20px; }
             .logout-container { right: 20px; }
         }
-
     </style>
 </head>
 <body>
@@ -215,6 +229,8 @@
             <thead>
             <tr>
                 <th>Supply ID</th>
+                <th>Date</th>
+                <th>Status</th>
                 <th>Weight (kg)</th>
                 <th>Items</th>
                 <th>Storage</th>
@@ -224,6 +240,10 @@
             <tbody>
             <tr th:each="supply : ${supplies}">
                 <td th:text="${supply.id}">1</td>
+                <td th:text="${supply.date != null ? #temporals.format(supply.date, 'dd.MM.yyyy HH:mm') : '-'}">01.01.2025 12:00</td>
+                <td>
+                    <span class="status-badge" th:classappend="'status-' + ${supply.status}" th:text="${supply.status}"></span>
+                </td>
                 <td th:text="${supply.weight != null ? supply.weight + ' kg' : '-'}">0 kg</td>
                 <td>
                     <details>
@@ -237,23 +257,17 @@
                 </td>
                 <td>
                     <div th:if="${supply.storage != null}">
-                        <div class="info-block"><span class="info-label">ID:</span> <span
-                                th:text="${supply.storage.id}">1</span></div>
-                        <div class="info-block"><span class="info-label">Address:</span> <span
-                                th:text="${supply.storage.address}"></span></div>
-                        <div class="info-block"><span class="info-label">City:</span> <span
-                                th:text="${supply.storage.city}"></span></div>
+                        <div class="info-block"><span class="info-label">ID:</span> <span th:text="${supply.storage.id}">1</span></div>
+                        <div class="info-block"><span class="info-label">Address:</span> <span th:text="${supply.storage.address}"></span></div>
+                        <div class="info-block"><span class="info-label">City:</span> <span th:text="${supply.storage.city}"></span></div>
                     </div>
                     <span th:unless="${supply.storage != null}">—</span>
                 </td>
                 <td>
                     <div th:if="${supply.point != null}">
-                        <div class="info-block"><span class="info-label">ID:</span> <span
-                                th:text="${supply.point.id}">1</span></div>
-                        <div class="info-block"><span class="info-label">Address:</span> <span
-                                th:text="${supply.point.address}"></span></div>
-                        <div class="info-block"><span class="info-label">City:</span> <span
-                                th:text="${supply.point.city}"></span></div>
+                        <div class="info-block"><span class="info-label">ID:</span> <span th:text="${supply.point.id}">1</span></div>
+                        <div class="info-block"><span class="info-label">Address:</span> <span th:text="${supply.point.address}"></span></div>
+                        <div class="info-block"><span class="info-label">City:</span> <span th:text="${supply.point.city}"></span></div>
                     </div>
                     <span th:unless="${supply.point != null}">—</span>
                 </td>
