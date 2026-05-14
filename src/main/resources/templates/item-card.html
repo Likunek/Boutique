@@ -5,70 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="'Card - ' + ${itemCard.name}">Card Detail</title>
     <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(to top, #ff9f7c 0%, #ffe5d9 50%, #ffffff 100%);
-      min-height: 100vh;
-      padding: 80px 20px 40px;
-      position: relative;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(to top, #ff9f7c 0%, #ffe5d9 50%, #ffffff 100%);
+            min-height: 100vh;
+            padding: 80px 20px 40px;
+            position: relative;
+        }
 
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: radial-gradient(circle at 10% 20%, rgba(107, 140, 92, 0.08) 0%, rgba(107, 140, 92, 0.02) 90%);
-      pointer-events: none;
-      z-index: 0;
-    }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle at 10% 20%, rgba(107, 140, 92, 0.08) 0%, rgba(107, 140, 92, 0.02) 90%);
+            pointer-events: none;
+            z-index: 0;
+        }
 
-    .back-nav {
-      position: fixed;
-      top: 40px;
-      left: 50px;
-      z-index: 1000;
-    }
+        .back-nav {
+            position: fixed;
+            top: 40px;
+            left: 50px;
+            z-index: 1000;
+        }
 
-    .back-nav a {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: white;
-      padding: 10px 22px;
-      border-radius: 60px;
-      color: #4a5b3c;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 14px;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
-      border: 1px solid #adb5bd;
-      transition: all 0.2s ease;
-    }
+        .back-nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 22px;
+            border-radius: 60px;
+            color: #4a5b3c;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+            border: 1px solid #adb5bd;
+            transition: all 0.2s ease;
+        }
 
-    .back-nav a:hover {
-      background: #8aaE7a;
-      color: white;
-      border-color: #8aaE7a;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 18px rgba(138, 174, 122, 0.3);
-    }
+        .back-nav a:hover {
+            background: #8aaE7a;
+            color: white;
+            border-color: #8aaE7a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(138, 174, 122, 0.3);
+        }
 
-    .logout-container {
-      position: fixed;
-      top: 40px;
-      right: 50px;
-      z-index: 1000;
-    }
-    .btn {
+        .logout-container {
+            position: fixed;
+            top: 40px;
+            right: 50px;
+            z-index: 1000;
+        }
+
+        .btn {
             display: inline-flex;
             align-items: center;
             gap: 10px;
@@ -86,228 +87,300 @@
             white-space: nowrap;
         }
 
-    .btn-logout {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: white;
-      padding: 10px 22px;
-      border-radius: 60px;
-      color: #dc3545;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 14px;
-      border: 1px solid #dc3545;
-      box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
+        .btn-logout {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 22px;
+            border-radius: 60px;
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            border: 1px solid #dc3545;
+            box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
 
-    .btn-logout:hover {
-      background: #dc3545;
-      color: white;
-      border-color: #dc3545;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
-    }
+        .btn-logout:hover {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+        }
 
-    .btn-danger {
-      background: #dc3545;
-      border-color: #dc3545;
-      color: white;
-      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
-    }
+        .btn-danger {
+            background: #dc3545;
+            border-color: #dc3545;
+            color: white;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+        }
 
-    .btn-danger:hover {
-      background: #b02a37;
-      border-color: #b02a37;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
-    }
-    .delete-container {
-       position: fixed;
-       bottom: 40px;
-       right: 50px;
-       z-index: 1000;
-     }
+        .btn-danger:hover {
+            background: #b02a37;
+            border-color: #b02a37;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+        }
 
-    .form-container {
-      max-width: 800px;
-      margin: 0 auto;
-      margin-top: 70px;
-      position: relative;
-      z-index: 1;
-      animation: fadeInUp 0.6s ease-out;
-    }
+        .delete-container {
+            position: fixed;
+            bottom: 40px;
+            right: 50px;
+            z-index: 1000;
+        }
 
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            margin-top: 70px;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
+        }
 
-    .profile-card {
-      background: white;
-      border-radius: 32px;
-      border: 2px solid #8aaE7a;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 8px 20px rgba(0, 0, 0, 0.06);
-      overflow: hidden;
-    }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .profile-card {
+            background: white;
+            border-radius: 32px;
+            border: 2px solid #8aaE7a;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 8px 20px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            margin-bottom: 40px; /* отступ от блока отзывов */
+        }
 
-    .card-image {
-      height: 320px;
-      background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #adb5bd;
-      font-size: 96px;
-      border-bottom: 3px solid #8aaE7a;
-    }
+        .card-image {
+            height: 320px;
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #adb5bd;
+            font-size: 96px;
+            border-bottom: 3px solid #8aaE7a;
+        }
 
-    .form-body {
-      padding: 30px 35px 30px;
-    }
+        .form-body {
+            padding: 30px 35px 30px;
+        }
 
-    .top-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 20px;
-      margin-bottom: 6px;
-    }
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 6px;
+        }
 
-    .item-name {
-      font-size: 28px;
-      font-weight: 700;
-      color: #2c3e2f;
-      margin-bottom: 4px;
-    }
+        .item-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e2f;
+            margin-bottom: 4px;
+        }
 
-    .item-category {
-      font-size: 14px;
-      color: #6c757d;
-      font-weight: 400;
-    }
+        .item-category {
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 400;
+        }
 
-    .price-block {
-      text-align: right;
-      margin-right: 20px;
-    }
+        .price-block {
+            text-align: right;
+            margin-right: 20px;
+        }
 
-    .price-value {
-      font-size: 30px;
-      font-weight: 700;
-      color: #8aaE7a;
-      white-space: nowrap;
-    }
+        .price-value {
+            font-size: 30px;
+            font-weight: 700;
+            color: #8aaE7a;
+            white-space: nowrap;
+        }
 
-    .description-box {
-      background: #f8f9fa;
-      border-radius: 24px;
-      padding: 20px;
-      border: 1px solid #e9ecef;
-      margin-bottom: 20px;
-    }
+        .description-box {
+            background: #f8f9fa;
+            border-radius: 24px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            margin-bottom: 20px;
+        }
 
-    .description-box .info-title {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #6c757d;
-      margin-bottom: 8px;
-    }
+        .description-box .info-title {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
 
-    .description-value {
-      font-size: 15px;
-      line-height: 1.6;
-      color: #495057;
-    }
+        .description-value {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #495057;
+        }
 
-    .bottom-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 20px;
-    }
+        .rating-summary {
+            display: flex;
+            align-items: baseline;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
 
-    .seller-link {
-      font-size: 16px;
-      font-weight: 500;
-      color: #2c3e2f;
-      text-decoration: none;
-      border-bottom: 1px dashed #8aaE7a;
-      transition: color 0.2s, border-color 0.2s;
-    }
+        .rating-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #f5b042;
+        }
 
-    .seller-link:hover {
-      color: #8aaE7a;
-      border-bottom-color: #6b8c5c;
-    }
+        .bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
 
-    .btn-cart {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      background: #ff7f50;
-      border: 1px solid #ff7f50;
-      color: white;
-      border-radius: 60px;
-      padding: 20px 32px;
-      margin-bottom: 20px;
-      margin-right: 20px;
-      font-size: 15px;
-      font-weight: 600;
-      text-decoration: none;
-      box-shadow: 0 10px 10px rgba(255,127,80,0.3);
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
+        .seller-link {
+            font-size: 16px;
+            font-weight: 500;
+            color: #2c3e2f;
+            text-decoration: none;
+            border-bottom: 1px dashed #8aaE7a;
+            transition: color 0.2s, border-color 0.2s;
+        }
 
-    .btn-cart:hover {
-      background: #e66a3e;
-      border-color: #e66a3e;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 14px rgba(230,106,62,0.4);
-    }
+        .seller-link:hover {
+            color: #8aaE7a;
+            border-bottom-color: #6b8c5c;
+        }
 
-    /* Стиль для кнопки "в корзине" */
-    .btn-cart.in-cart {
-      background: #28a745;
-      border-color: #28a745;
-      box-shadow: 0 4px 12px rgba(40,167,69,0.3);
-    }
-    .btn-cart.in-cart:hover {
-      background: #218838;
-      border-color: #218838;
-    }
+        .btn-cart {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #ff7f50;
+            border: 1px solid #ff7f50;
+            color: white;
+            border-radius: 60px;
+            padding: 20px 32px;
+            margin-bottom: 20px;
+            margin-right: 20px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 10px 10px rgba(255,127,80,0.3);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
 
-    @media (max-width: 600px) {
-      .back-nav, .logout-container {
-        top: 20px;
-      }
-      .back-nav {
-        left: 20px;
-      }
-      .logout-container {
-        right: 20px;
-      }
-      .card-image {
-        height: 220px;
-        font-size: 64px;
-      }
-      .form-body {
-        padding: 20px;
-      }
-      .top-row {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .price-block {
-        text-align: left;
-      }
-    }
+        .btn-cart:hover {
+            background: #e66a3e;
+            border-color: #e66a3e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(230,106,62,0.4);
+        }
 
+        .btn-cart.in-cart {
+            background: #28a745;
+            border-color: #28a745;
+            box-shadow: 0 4px 12px rgba(40,167,69,0.3);
+        }
+        .btn-cart.in-cart:hover {
+            background: #218838;
+            border-color: #218838;
+        }
+        .reviews-block {
+            background: white;
+            border-radius: 32px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            padding: 25px 30px;
+        }
+
+        .reviews-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e2f;
+            margin-bottom: 20px;
+            border-left: 5px solid #8aaE7a;
+            padding-left: 15px;
+        }
+
+        .review-card {
+            background: #f8f9fa;
+            border-radius: 24px;
+            padding: 18px;
+            margin-bottom: 16px;
+            border: 1px solid #e9ecef;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .review-rating {
+            margin-left: 12px;
+            color: #f5b042;
+        }
+
+        .review-date {
+            font-size: 12px;
+            color: #adb5bd;
+        }
+
+        .review-text {
+            color: #495057;
+            line-height: 1.5;
+        }
+
+        .no-reviews {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        @media (max-width: 600px) {
+            .back-nav, .logout-container {
+                top: 20px;
+            }
+            .back-nav {
+                left: 20px;
+            }
+            .logout-container {
+                right: 20px;
+            }
+            .card-image {
+                height: 220px;
+                font-size: 64px;
+            }
+            .form-body {
+                padding: 20px;
+            }
+            .top-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .price-block {
+                text-align: left;
+            }
+            .review-header {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -320,6 +393,7 @@
         <button type="submit" class="btn-logout">🚪 Logout</button>
     </form>
 </div>
+
 <div th:if="${isOwner}" class="delete-container">
     <form th:action="@{/item-card/{id}(id=${itemCard.id}, role=${role})}" method="post"
           onsubmit="return confirm('Are you sure you want to delete this item? This action cannot be undone.');">
@@ -327,6 +401,7 @@
         <button type="submit" class="btn btn-danger">🗑️ Delete Item</button>
     </form>
 </div>
+
 <div class="form-container">
     <div class="profile-card">
         <div class="card-image">📦</div>
@@ -343,32 +418,50 @@
 
             <div class="description-box">
                 <div class="info-title">📝 Description</div>
-                <div class="description-value" th:text="${itemCard.description ?: 'No description provided'}">
-                    Description text
-                </div>
+                <div class="description-value" th:text="${itemCard.description ?: 'No description provided'}">Description text</div>
+            </div>
+            <div class="rating-summary">
+                <span class="rating-label">⭐ Overall rating:</span>
+                <span class="rating-value" th:text="${#numbers.formatDecimal(itemCard.rating, 1, 1)}"></span>
+                <span>/ 5</span>
+                <span th:text="'(' + ${itemCard.feedbacks != null ? itemCard.feedbacks.size() : 0} + ' reviews)'"></span>
             </div>
 
             <div class="bottom-row">
-                <a th:href="@{/public-seller/{id}(id=${sellerId}, role=${role})}" class="seller-link" th:text="${itemCard.seller}">
-                    Seller name
-                </a>
+                <a th:href="@{/public-seller/{id}(id=${sellerId}, role=${role})}" class="seller-link" th:text="${itemCard.seller}">Seller name</a>
                 <th:block th:if="${role == 'ROLE_USER'}">
                     <form th:if="${cardsId != null and !cardsId.contains(itemCard.id)}"
                           th:action="@{/user/cart/add-card/{id}(id=${itemCard.id}, card=true)}"
-                          method="post"
-                          style="display: inline;">
+                          method="post" style="display: inline;">
                         <button type="submit" class="btn-cart">🛒 Add to Cart</button>
                     </form>
                     <form th:if="${cardsId != null and cardsId.contains(itemCard.id)}"
                           th:action="@{/user/cart/card/{id}(id=${itemCard.id}, card=true)}"
-                          method="post"
-                          style="display: inline;">
+                          method="post" style="display: inline;">
                         <input type="hidden" name="_method" value="DELETE">
                         <button type="submit" class="btn-cart in-cart" title="Remove from cart">
                             <span>1</span> in cart
                         </button>
                     </form>
                 </th:block>
+            </div>
+        </div>
+    </div>
+    <div class="reviews-block">
+        <div class="reviews-title">📝 Customer Reviews</div>
+        <div th:if="${itemCard.feedbacks == null or itemCard.feedbacks.isEmpty()}" class="no-reviews">
+            No reviews yet. Be the first to write a review!
+        </div>
+        <div th:if="${itemCard.feedbacks != null and !itemCard.feedbacks.isEmpty()}">
+            <div th:each="feedback : ${itemCard.feedbacks}" class="review-card">
+                <div class="review-header">
+                    <div>
+                        <span style="font-weight: 600;" th:text="${feedback.user != null ? feedback.user.name : 'Anonymous'}">User</span>
+                        <span class="review-rating" th:text="'⭐ ' + ${feedback.rating} + '/5'"></span>
+                    </div>
+                    <div class="review-date" th:text="${#temporals.format(feedback.date, 'dd.MM.yyyy')}"></div>
+                </div>
+                <div class="review-text" th:text="${feedback.text != null ? feedback.text : 'No comment'}"></div>
             </div>
         </div>
     </div>

@@ -4,16 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.UserDto;
-import ru.angelika.boutique.dto.UserGetDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.mapper.UserMapper;
 import ru.angelika.boutique.model.*;
-import ru.angelika.boutique.repository.CartRepository;
-import ru.angelika.boutique.repository.OrderRepository;
-import ru.angelika.boutique.repository.UserRepository;
+import ru.angelika.boutique.repository.*;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -22,6 +21,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
+    private final ItemCardRepository itemCardRepository;
+    private final FeedbackRepository feedbackRepository;
     private final AuthenticationService authenticationService;
 
     public void addUser(UserDto user) {
@@ -51,6 +52,18 @@ public class UserService {
         });
     }
 
+    public Set<Long> checkOwnFeedbacks(Long id) {
+        User user = userRepository.findByIdWithItemsAndFeedbacks(id);
+        if (user == null) {
+            log.error("User not found for get, id={}", id);
+            throw new ResourceNotFoundException(User.class, id);
+        }
+        return user.getItems().stream()
+                .filter(item -> item.getFeedbacks().stream().anyMatch(f -> f.getUser().getId().equals(id)))
+                .map(ItemCard::getId)
+                .collect(Collectors.toSet());
+    }
+
     public User getByNumber(String number) {
         log.debug("Get user by number={}", number);
         User user = userRepository.findByNumber(number);
@@ -76,14 +89,6 @@ public class UserService {
                 .stream()
                 .map(ItemCard::getId)
                 .toList();
-    }
-
-    public UserGetDto getUserByName(String name) {
-        User user = userRepository.findByName(name);
-        if (user == null) {
-            throw new ResourceNotFoundException(User.class, name);
-        }
-        return UserMapper.toGetUser(user);
     }
 
     public void updateUser(UserDto userDto, Long id) {
@@ -123,7 +128,18 @@ public class UserService {
         });
         authenticationService.deleteAuthentication(user.getNumber());
         orderRepository.deleteAll(orderRepository.findByUserId(id));
+        List<Feedback> feedbacks = feedbackRepository.findByUserId(id);
+        for (Feedback feedback : feedbacks) {
+            ItemCard itemCard = itemCardRepository.findItemByFeedbackId(feedback.getId());
+            if (itemCard != null) {
+                itemCard.getFeedbacks().removeIf(f -> f.getId().equals(feedback.getId()));
+                itemCardRepository.save(itemCard);
+            }
+        }
+        feedbackRepository.deleteAll();
         userRepository.deleteById(id);
         log.info("Delete user by id={}", id);
     }
+
+
 }

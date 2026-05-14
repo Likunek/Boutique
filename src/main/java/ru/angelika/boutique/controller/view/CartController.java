@@ -1,5 +1,7 @@
 package ru.angelika.boutique.controller.view;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,21 +15,19 @@ import ru.angelika.boutique.service.UserService;
 
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping
+@RequiredArgsConstructor
 public class CartController {
     private final CartService cartService;
     private final UserService userService;
 
-    @Autowired
-    public CartController(CartService cartService, UserService userService) {
-        this.cartService = cartService;
-        this.userService = userService;
-    }
-
     @GetMapping("user/cart/{id}")
     public String getCart(@PathVariable Long id, Model model) {
-        if (!security().getCart().getId().equals(id)) {
+        User user = security();
+        if (!user.getCart().getId().equals(id)) {
+            log.warn("User with id={} tried to view cart from someone else's path", user.getId());
             return "redirect:/welcome";
         }
         model.addAttribute("cart", cartService.getCartById(id));

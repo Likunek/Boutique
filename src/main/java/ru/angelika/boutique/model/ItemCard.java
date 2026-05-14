@@ -3,6 +3,9 @@ package ru.angelika.boutique.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
 @Table(schema = "public", name = "item_cards")
@@ -19,4 +22,11 @@ public class ItemCard {
     private Double price = 0.0;
     @Column(name = "seller", nullable = false)
     private String seller;
+    @Column(name = "rating")
+    private Double rating = 0.0;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OrderBy("date DESC")
+    @JoinTable(name = "item_feedback",
+            inverseJoinColumns = @JoinColumn(name = "feedback_id"))
+    private List<Feedback> feedbacks = new ArrayList<>();
 }

@@ -1,7 +1,6 @@
 package ru.angelika.boutique.mapper;
 
 import ru.angelika.boutique.dto.UserDto;
-import ru.angelika.boutique.dto.UserGetDto;
 import ru.angelika.boutique.model.Authentication;
 import ru.angelika.boutique.model.Cart;
 import ru.angelika.boutique.model.Seller;
@@ -39,13 +38,5 @@ public class UserMapper {
         return seller;
     }
 
-    public static UserGetDto toGetUser(User user) {
-        return UserGetDto.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .number(user.getNumber())
-                .email(user.getEmail())
-                .build();
-    }
 
 }

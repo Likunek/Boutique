@@ -1,6 +1,7 @@
 package ru.angelika.boutique.controller.view;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -22,17 +23,13 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
-@RequestMapping()
+@RequestMapping
+@RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
     private final SellerService sellerService;
     private boolean isAdmin = true;
 
-    @Autowired
-    public ItemController(ItemService itemService, SellerService sellerService) {
-        this.itemService = itemService;
-        this.sellerService = sellerService;
-    }
 
     @PostMapping("/seller/add-item")
     public String addItem(@Valid ItemDto itemDto, BindingResult result, Model model) {
@@ -72,7 +69,9 @@ public class ItemController {
     @GetMapping("/seller/items/{id}")
     public String getItemById(@PathVariable Long id, Model model) {
         Item item = itemService.getItemById(id);
-        if (security(item.getSeller().getId())) {
+        Long sellerId = item.getSeller().getId();
+        if (security(sellerId)) {
+            log.warn("Seller with id={} tried to view item with id={} from someone else's path", sellerId, id);
             return "redirect:/welcome";
         }
         model.addAttribute("item", item);
@@ -99,6 +98,7 @@ public class ItemController {
         try {
             Long sellerId = itemService.getItemById(id).getSeller().getId();
             if (security(sellerId)) {
+                log.warn("Seller with id={} tried to update item with id={} from someone else's path", sellerId, id);
                 return "redirect:/welcome";
             }
             itemService.updateItem(itemDto, id, sellerId);

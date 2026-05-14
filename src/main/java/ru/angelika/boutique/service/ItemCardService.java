@@ -4,16 +4,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.angelika.boutique.dto.FeedbackDto;
 import ru.angelika.boutique.dto.ItemCardDto;
 import ru.angelika.boutique.dto.ItemCardUpdateDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
+import ru.angelika.boutique.mapper.FeedbackMapper;
 import ru.angelika.boutique.mapper.ItemCardMapper;
+import ru.angelika.boutique.model.Feedback;
 import ru.angelika.boutique.model.Item;
 import ru.angelika.boutique.model.ItemCard;
+import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.repository.ItemCardRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -21,6 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemCardService {
     private final ItemCardRepository itemCardRepository;
+    private final UserService userService;
     private final ItemService itemService;
 
     public void addItemCard(ItemCardDto itemCardDto, String seller) {
@@ -37,6 +44,17 @@ public class ItemCardService {
                 itemCardDto.getName(), itemCardDto.getDescription(), itemCardDto.getItemId());
     }
 
+    public void addFeedback(FeedbackDto feedbackDto, Long id) {
+        ItemCard itemCard = getItemCard(id);
+        User user = userService.getById(feedbackDto.getUserId());
+        itemCard.setFeedbacks(new ArrayList<>());
+        itemCard.getFeedbacks().add(FeedbackMapper.toFeedback(feedbackDto, user));
+        Double rating = itemCard.getFeedbacks().stream().mapToDouble(Feedback::getRating).average().orElse(0.0);
+        itemCard.setRating(rating);
+        itemCardRepository.save(itemCard);
+        log.info("Added new feedback, update rating={} itemCard by id={}", rating, id);
+    }
+
     public ItemCard getItemCard(Long id) {
         log.debug("Get itemCard by id={}", id);
         return itemCardRepository.findById(id).orElseThrow(() -> {
@@ -45,22 +63,20 @@ public class ItemCardService {
         });
     }
 
-    public Page<ItemCard> getAllItemCard(int page, int size) {
-        return itemCardRepository.findAll(PageRequest.of(page, size));
-    }
-    public Page<ItemCard> getAllItemCardBySearch(int page, int size, String text) {
-        return itemCardRepository.findByNameOrDescription(text.toLowerCase(), PageRequest.of(page, size));
+    public Page<ItemCard> getAllItemCard(Pageable pageable) {
+        return itemCardRepository.findAll(pageable);
     }
 
-    public Page<ItemCard> getAllItemCardBySeller(int page, int size, String seller) {
-        return itemCardRepository.findBySeller(seller, PageRequest.of(page, size));
+    public Page<ItemCard> getAllItemCardBySearch(Pageable pageable, String text) {
+        return itemCardRepository.findByNameOrDescription(text.toLowerCase(), pageable);
+    }
+
+    public Page<ItemCard> getAllItemCardBySeller(Pageable pageable, String seller) {
+        return itemCardRepository.findBySeller(seller, pageable);
     }
 
     public void updateItemCard(ItemCardUpdateDto itemCardDto, Long id, String seller) {
-        ItemCard itemCard = itemCardRepository.findById(id).orElseThrow(() -> {
-            log.error("ItemCard not found for update, id={}", id);
-            return new ResourceNotFoundException(ItemCard.class, id);
-        });
+        ItemCard itemCard = getItemCard(id);
         checkDuplicate(seller, itemCardDto.getName(), itemCardDto.getDescription(), id);
         ItemCardMapper.toItemCardUpdate(itemCardDto, itemCard);
         itemCardRepository.save(itemCard);

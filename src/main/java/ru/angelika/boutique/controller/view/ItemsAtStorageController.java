@@ -2,6 +2,7 @@ package ru.angelika.boutique.controller.view;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -24,20 +25,12 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping
+@RequiredArgsConstructor
 public class ItemsAtStorageController {
     private final ItemService itemService;
     private final SellerService sellerService;
     private final StorageService storageService;
     private final ItemsAtStorageService itemsAtStorageService;
-
-    @Autowired
-    public ItemsAtStorageController(ItemService itemService, SellerService sellerService,
-                                    StorageService storageService, ItemsAtStorageService itemsAtStorageService) {
-        this.itemService = itemService;
-        this.sellerService = sellerService;
-        this.storageService = storageService;
-        this.itemsAtStorageService = itemsAtStorageService;
-    }
 
     @PostMapping("/seller/send-to-storage")
     public String addItemsAtStorage(@Valid ItemsAtStorageDto itemsAtStorageDto, Model model) {
@@ -80,8 +73,10 @@ public class ItemsAtStorageController {
     public String updateFormItemsAtStorage(@PathVariable Long id, @RequestParam Long itemId,
                                            @Min(0) Long count, RedirectAttributes redirectAttributes) {
         try {
-            Item item = itemService.getItemById(id);
-            if (security(item.getSeller().getId())) {
+            Item item = itemService.getItemById(itemId);
+            Long sellerId = item.getSeller().getId();
+            if (security(sellerId)) {
+                log.warn("Seller with id={} tried to update ItemsAtStorage with id={} from someone else's path", sellerId, id);
                 return "redirect:/welcome";
             }
             itemsAtStorageService.updateItemsAtStorage(id, count);

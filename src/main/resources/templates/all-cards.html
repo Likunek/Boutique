@@ -101,7 +101,7 @@
     }
 
     .search-container {
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       text-align: center;
     }
 
@@ -150,6 +150,46 @@
       font-weight: 500;
     }
 
+    /* Блок сортировки */
+    .sort-container {
+      text-align: right;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .sort-label {
+      font-size: 14px;
+      color: #495057;
+      font-weight: 500;
+    }
+    .sort-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .sort-btn {
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 40px;
+      padding: 6px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.2s;
+      color: #495057;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .sort-btn.active {
+      background: #8aaE7a;
+      border-color: #8aaE7a;
+      color: white;
+    }
+    .sort-btn:hover {
+      background: #e9ecef;
+    }
+
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -159,6 +199,7 @@
     .card {
       background: white;
       border-radius: 24px;
+      border: 2px solid #8aaE7a;
       box-shadow: 0 10px 30px rgba(0,0,0,0.06);
       overflow: hidden;
       transition: all 0.3s ease;
@@ -301,6 +342,9 @@
       .search-btn {
         padding: 10px;
       }
+      .sort-container {
+        justify-content: center;
+      }
     }
 
     </style>
@@ -318,20 +362,39 @@
 
 <div class="container">
     <h1 class="page-title">🛍️ Item Cards <span th:text="${name}"></span></h1>
-    <div th:if="${seller == false}" class="search-container">
+
+    <div th:if="${seller == false}">
         <div class="search-container">
             <form th:action="@{/item-card}" method="get" class="search-form">
                 <input type="hidden" name="role" th:value="${role}">
+                <input type="hidden" name="sortBy" th:value="${sortBy}">
+                <input type="hidden" name="sort" th:value="${sort}">
                 <input type="text" name="search" th:value="${searchQuery}"
                        placeholder="Search by name or description..." class="search-input">
                 <button type="submit" class="search-btn">🔍 Search</button>
             </form>
             <div th:if="${searchQuery != null and !searchQuery.isEmpty()}" class="search-info">
                 Results for: <strong th:text="${searchQuery}"></strong>
-                <a th:href="@{/item-card(role=${role})}" class="clear-search">✖ Clear</a>
+                <a th:href="@{/item-card(role=${role}, sortBy=${sortBy}, sort=${sort})}" class="clear-search">✖
+                    Clear</a>
+            </div>
+        </div>
+
+        <div class="sort-container">
+            <span class="sort-label">Sort by:</span>
+            <div class="sort-buttons">
+                <a th:href="@{/item-card(role=${role}, search=${searchQuery}, sortBy='price', sort='asc')}"
+                   class="sort-btn" th:classappend="${sortBy == 'price' and sort == 'asc'} ? 'active' : ''">Price ↑</a>
+                <a th:href="@{/item-card(role=${role}, search=${searchQuery}, sortBy='price', sort='desc')}"
+                   class="sort-btn" th:classappend="${sortBy == 'price' and sort == 'desc'} ? 'active' : ''">Price ↓</a>
+                <a th:href="@{/item-card(role=${role}, search=${searchQuery}, sortBy='rating', sort='desc')}"
+                   class="sort-btn" th:classappend="${sortBy == 'rating' and sort == 'desc'} ? 'active' : ''">Rating ↓</a>
+                <a th:href="@{/item-card(role=${role}, search=${searchQuery}, sortBy='rating', sort='asc')}"
+                   class="sort-btn" th:classappend="${sortBy == 'rating' and sort == 'asc'} ? 'active' : ''">Rating ↑</a>
             </div>
         </div>
     </div>
+
     <div class="cards-grid">
         <div th:each="card : ${itemCardsPage.content}"
              class="card"
@@ -370,9 +433,9 @@
     </div>
 
     <div class="pagination" th:if="${itemCardsPage.totalPages > 1}">
-        <a th:href="@{/item-card(page=${itemCardsPage.number - 1}, size=${itemCardsPage.size}, search=${searchQuery}, role=${role})}"
+        <a th:href="@{/item-card(page=${itemCardsPage.number - 1}, size=${itemCardsPage.size}, search=${searchQuery}, role=${role}, sortBy=${sortBy}, sort=${sort})}"
            th:classappend="${itemCardsPage.number == 0 ? 'disabled' : ''}">←</a>
-        <a th:href="@{/item-card(page=${itemCardsPage.number + 1}, size=${itemCardsPage.size}, search=${searchQuery}, role=${role})}"
+        <a th:href="@{/item-card(page=${itemCardsPage.number + 1}, size=${itemCardsPage.size}, search=${searchQuery}, role=${role}, sortBy=${sortBy}, sort=${sort})}"
            th:classappend="${itemCardsPage.number + 1 >= itemCardsPage.totalPages ? 'disabled' : ''}">→</a>
     </div>
 </div>

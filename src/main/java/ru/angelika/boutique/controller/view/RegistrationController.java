@@ -2,6 +2,7 @@ package ru.angelika.boutique.controller.view;
 
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -23,20 +24,13 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
-@RequestMapping()
+@RequestMapping
+@RequiredArgsConstructor
 public class RegistrationController {
 
     private final UserService userService;
     private final SellerService sellerService;
     private final AuthenticationService authenticationService;
-
-    @Autowired
-    public RegistrationController(UserService userService, SellerService sellerService,
-                                  AuthenticationService authenticationService) {
-        this.userService = userService;
-        this.sellerService = sellerService;
-        this.authenticationService = authenticationService;
-    }
 
     @GetMapping("/login")
     public String login() {

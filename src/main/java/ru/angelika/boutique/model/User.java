@@ -4,6 +4,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Data
 @Entity
 @Table(schema = "public", name = "users")
@@ -22,6 +27,9 @@ public class User {
     @JoinColumn(name = "cart_id")
     private Cart cart;
     @Column(name = "balance")
-    @Min(0)
     private Double balance = 0.0;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_item",
+            inverseJoinColumns = @JoinColumn(name = "item_id"))
+    private Set<ItemCard> items = new HashSet<>();
 }
