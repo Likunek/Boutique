@@ -52,11 +52,11 @@ public class RegistrationController {
             return "registration";
         }
         try {
+            authenticationService.addAuthentication(UserMapper.toAuthentication(user));
             switch (user.getRole()) {
                 case USER -> userService.addUser(user);
                 case SELLER -> sellerService.addSeller(UserMapper.toSeller(user));
             }
-            authenticationService.addAuthentication(UserMapper.toAuthentication(user));
             model.addAttribute("successMessage", "You have successfully registered!");
             return "redirect:/login";
         } catch (Exception e) {

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="'Seller profile - ' + ${seller.name}">Seller profile</title>
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Seller profile - ' + ${seller.name}">Seller profile</title>
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -39,64 +39,66 @@
         }
 
         .btn-logout {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: white;
-    padding: 10px 22px;
-    border-radius: 60px;
-    color: #dc3545;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 14px;
-    border: 1px solid #dc3545;
-    box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 22px;
+            border-radius: 60px;
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            border: 1px solid #dc3545;
+            box-shadow: 0 6px 14px rgba(220, 53, 69, 0.15);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
 
-.btn-logout:hover {
-    background: #dc3545;
-    color: white;
-    border-color: #dc3545;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
-}
+        .btn-logout:hover {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+        }
+
         .back-nav {
-      position: fixed;
-      top: 40px;
-      left: 50px;
-      z-index: 1000;
-    }
+            position: fixed;
+            top: 40px;
+            left: 50px;
+            z-index: 1000;
+        }
 
-    .back-nav a {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: white;
-      padding: 10px 22px;
-      border-radius: 60px;
-      color: #4a5b3c;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 14px;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
-      border: 1px solid #adb5bd;
-      transition: all 0.2s ease;
-    }
+        .back-nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 22px;
+            border-radius: 60px;
+            color: #4a5b3c;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+            border: 1px solid #adb5bd;
+            transition: all 0.2s ease;
+        }
 
-    .back-nav a:hover {
-    background: #8aaE7a;
-    color: white;
-    border-color: #8aaE7a;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(138, 174, 122, 0.3);
-}
+        .back-nav a:hover {
+            background: #8aaE7a;
+            color: white;
+            border-color: #8aaE7a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(138, 174, 122, 0.3);
+        }
+
         .delete-container {
-           position: fixed;
-           bottom: 40px;
-           right: 50px;
-           z-index: 1000;
+            position: fixed;
+            bottom: 40px;
+            right: 50px;
+            z-index: 1000;
         }
 
         .account-container {
@@ -233,6 +235,40 @@
             font-weight: normal;
         }
 
+        .field-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #dee2e6;
+            border-radius: 16px;
+            font-size: 16px;
+            background: white;
+            outline: none;
+            font-family: inherit;
+            margin-top: 6px;
+        }
+
+        .field-input:focus {
+            border-color: #8aaE7a;
+            box-shadow: 0 0 0 3px rgba(138,174,122,0.2);
+        }
+
+        .alert {
+            border-radius: 18px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-error {
+            background: #ffe8e8;
+            color: #a12b2b;
+            border: 1px solid #f5c6c6;
+        }
+
         .footer-nav {
             margin-top: 0;
             text-align: center;
@@ -337,6 +373,7 @@
             text-decoration: underline;
             transform: none;
         }
+
         .btn-danger {
             background: #dc3545;
             border-color: #dc3545;
@@ -349,6 +386,13 @@
             border-color: #b02a37;
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+        }
+
+        .edit-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
         }
 
         @media (max-width: 800px) {
@@ -384,68 +428,128 @@
                 margin-left: 0;
             }
         }
+
     </style>
 </head>
 <body>
 <div class="back-nav">
-  <a href="/welcome">← Back to Home</a>
+    <a href="/welcome">← Back to Home</a>
 </div>
 <div class="logout-container">
-  <form th:action="@{/logout}" method="post" style="display:inline;">
-    <button type="submit" class="btn-logout">🚪 Logout</button>
-  </form>
+    <form th:action="@{/logout}" method="post" style="display:inline;">
+        <button type="submit" class="btn-logout">🚪 Logout</button>
+    </form>
 </div>
 
 <div class="delete-container">
-  <form th:action="@{/seller/profile/{id}(id=${seller.id})}" method="post"
-        onsubmit="return confirm('Are you sure you want to delete this account? This action cannot be undone.');">
-    <input type="hidden" name="_method" value="delete"/>
-    <button type="submit" class="btn btn-danger">🗑️ Delete Item</button>
-  </form>
+    <form th:action="@{/seller/profile/{id}(id=${seller.id})}" method="post"
+          onsubmit="return confirm('Are you sure you want to delete this account? This action cannot be undone.');">
+        <input type="hidden" name="_method" value="delete"/>
+        <button type="submit" class="btn btn-danger">🗑️ Delete Account</button>
+    </form>
 </div>
 
 <div class="account-container">
-  <div class="profile-wrapper">
-    <div class="profile-card">
-      <div class="profile-header">
-        <div class="avatar">
-          <span th:text="${seller.name != null ? seller.name.substring(0,1) : '?'}">👤</span>
-        </div>
-        <h1>
-          <span th:text="${seller.name}">Seller Name</span>
-          <span class="role-badge">SELLER</span>
-        </h1>
-        <div class="member-since">Seller account</div>
-      </div>
+    <div class="profile-wrapper">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="avatar">
+                    <span th:text="${seller.name != null ? seller.name.substring(0,1) : '?'}">👤</span>
+                </div>
+                <h1>
+                    <span th:text="${seller.name}">Seller Name</span>
+                    <span class="role-badge">SELLER</span>
+                </h1>
+                <div class="member-since">Seller account</div>
+            </div>
 
-      <div class="info-section">
-        <div class="info-grid">
-          <div class="info-card">
-            <div class="info-icon">📞</div>
-            <div class="info-title">PHONE NUMBER</div>
-            <div class="info-value" th:text="${seller.number}"></div>
-          </div>
-          <div class="info-card">
-            <div class="info-icon">✉️</div>
-            <div class="info-title">EMAIL ADDRESS</div>
-            <div class="info-value small" th:text="${seller.email != null ? seller.email : 'not specified'}"></div>
-          </div>
-        </div>
-      </div>
+            <div class="info-section" th:if="${successMessage != null or errorMessage != null}">
+                <div th:if="${errorMessage}" class="alert alert-error">
+                    <span>❌</span> <span th:text="${errorMessage}"></span>
+                </div>
+            </div>
 
-      <div class="footer-nav">
-        <div class="seller-id" th:text="'Seller ID: ' + ${seller.id}">Seller ID: </div>
-      </div>
+            <div id="profileViewMode">
+                <div class="info-section">
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <div class="info-icon">📞</div>
+                            <div class="info-title">PHONE NUMBER</div>
+                            <div class="info-value" th:text="${seller.number}"></div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-icon">✉️</div>
+                            <div class="info-title">EMAIL ADDRESS</div>
+                            <div class="info-value small"
+                                 th:text="${seller.email != null ? seller.email : 'not specified'}"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-nav">
+                    <button type="button" class="btn btn-primary" onclick="enableProfileEdit()">✏️ Edit Profile</button>
+                    <div class="seller-id" th:text="'Seller ID: ' + ${seller.id}">Seller ID:</div>
+                </div>
+            </div>
+
+            <div id="profileEditMode" style="display: none;">
+                <form th:action="@{/seller/profile/{id}(id=${seller.id})}" method="post">
+                    <input type="hidden" name="_method" value="put"/>
+                    <div class="info-section">
+                        <div class="info-grid">
+                            <div class="info-card">
+                                <div class="info-title">NAME</div>
+                                <input type="text" name="name" class="field-input" th:value="${seller.name}" required>
+                            </div>
+                            <div class="info-card">
+                                <div class="info-title">PHONE NUMBER</div>
+                                <input type="text" name="number" class="field-input" th:value="${seller.number}"
+                                       required>
+                            </div>
+                            <div class="info-card">
+                                <div class="info-title">EMAIL</div>
+                                <input type="email" name="email" class="field-input" th:value="${seller.email}">
+                            </div>
+                            <div class="info-card">
+                                <div class="info-title">OLD PASSWORD (required)</div>
+                                <input type="password" name="oldPassword" class="field-input" required>
+                            </div>
+                            <div class="info-card">
+                                <div class="info-title">NEW PASSWORD (optional)</div>
+                                <input type="password" name="newPassword" class="field-input">
+                            </div>
+                        </div>
+                        <div class="edit-actions">
+                            <button type="button" class="btn btn-secondary" onclick="cancelProfileEdit()">Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="side-panel">
-    <h3>🛠️ Actions</h3>
-    <a th:href="@{/seller/add-item}" class="btn btn-primary side-btn">➕ Add Item</a>
-    <a th:href="@{/seller/items}" class="btn btn-primary side-btn">📋 List Items</a>
-    <a th:href="@{/seller/send-to-storage}" class="btn btn-primary side-btn">📦 Send to Storage</a>
-    <a th:href="@{/seller/add-card}" class="btn btn-primary side-btn">🎀 Create Item's Card</a>
-  </div>
+    <div class="side-panel">
+        <h3>🛠️ Actions</h3>
+        <a th:href="@{/seller/add-item}" class="btn btn-primary side-btn">➕ Add Item</a>
+        <a th:href="@{/seller/items}" class="btn btn-primary side-btn">📋 List Items</a>
+        <a th:href="@{/seller/send-to-storage}" class="btn btn-primary side-btn">📦 Send to Storage</a>
+        <a th:href="@{/seller/add-card}" class="btn btn-primary side-btn">🎀 Create Item's Card</a>
+    </div>
 </div>
+
+<script>
+  function enableProfileEdit() {
+    document.getElementById('profileViewMode').style.display = 'none';
+    document.getElementById('profileEditMode').style.display = 'block';
+  }
+  function cancelProfileEdit() {
+    document.getElementById('profileEditMode').style.display = 'none';
+    document.getElementById('profileViewMode').style.display = 'block';
+    const form = document.querySelector('#profileEditMode form');
+    if (form) form.reset();
+  }
+
+</script>
 </body>
 </html>

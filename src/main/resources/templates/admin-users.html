@@ -239,7 +239,7 @@
                 </td>
                 <td th:text="${user.balance} + ' ₽'">0.00 ₽</td>
                 <td class="actions-col">
-                    <form th:action="@{/users/{id}(id=${user.id})}" method="post"
+                    <form th:action="@{/user/profile/{id}(id=${user.id})}" method="post"
                           onsubmit="return confirm('Are you sure you want to delete user ' + document.querySelector('[name=userName]').value + '?');">
                         <input type="hidden" name="_method" value="delete"/>
                         <input type="hidden" name="userName" th:value="${user.name}"/>

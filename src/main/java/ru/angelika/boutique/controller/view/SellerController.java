@@ -1,15 +1,21 @@
 package ru.angelika.boutique.controller.view;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import ru.angelika.boutique.dto.UpdateEntityDto;
 import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.service.SellerService;
+
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -18,7 +24,6 @@ import ru.angelika.boutique.service.SellerService;
 public class SellerController {
 
     private final SellerService sellerService;
-
 
     @GetMapping("/seller/profile/{id}")
     public String sellerPage(@PathVariable Long id, Model model) {
@@ -42,6 +47,30 @@ public class SellerController {
     public String getAllSellers(Model model) {
         model.addAttribute("sellers", sellerService.getAllSeller());
         return "admin-sellers";
+    }
+
+    @PutMapping("/seller/profile/{id}")
+    public String updateSeller(@PathVariable Long id, @Valid UpdateEntityDto updateEntityDto,
+                               BindingResult result, RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Please correct the errors: " +
+                    result.getAllErrors().stream()
+                            .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                            .collect(Collectors.joining(", ")));
+            return "redirect:/seller/profile/" + id;
+        }
+        try {
+            if (security(id)) {
+                log.warn("Seller tried to update /seller/profile/ with id={} from someone else's path", id);
+                return "redirect:/welcome";
+            }
+            sellerService.updateSeller(updateEntityDto, id);
+        } catch (Exception e) {
+            log.error("Error update seller profile id={}: {}", id, e.getMessage(), e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
+            return "redirect:/seller/profile/" + id;
+        }
+        return "redirect:/logout";
     }
 
     @DeleteMapping("/seller/profile/{id}")

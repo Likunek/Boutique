@@ -421,7 +421,7 @@
                 <div class="description-value" th:text="${itemCard.description ?: 'No description provided'}">Description text</div>
             </div>
             <div class="rating-summary">
-                <span class="rating-label">⭐ Overall rating:</span>
+                <span class="rating-label">⭐:</span>
                 <span class="rating-value" th:text="${#numbers.formatDecimal(itemCard.rating, 1, 1)}"></span>
                 <span>/ 5</span>
                 <span th:text="'(' + ${itemCard.feedbacks != null ? itemCard.feedbacks.size() : 0} + ' reviews)'"></span>
@@ -448,7 +448,7 @@
         </div>
     </div>
     <div class="reviews-block">
-        <div class="reviews-title">📝 Customer Reviews</div>
+        <div class="reviews-title">📝Reviews: </div>
         <div th:if="${itemCard.feedbacks == null or itemCard.feedbacks.isEmpty()}" class="no-reviews">
             No reviews yet. Be the first to write a review!
         </div>
@@ -456,7 +456,7 @@
             <div th:each="feedback : ${itemCard.feedbacks}" class="review-card">
                 <div class="review-header">
                     <div>
-                        <span style="font-weight: 600;" th:text="${feedback.user != null ? feedback.user.name : 'Anonymous'}">User</span>
+                        <span style="font-weight: 600;" th:text="${feedback.user != null ? feedback.user.name : 'Anonymous'}"></span>
                         <span class="review-rating" th:text="'⭐ ' + ${feedback.rating} + '/5'"></span>
                     </div>
                     <div class="review-date" th:text="${#temporals.format(feedback.date, 'dd.MM.yyyy')}"></div>

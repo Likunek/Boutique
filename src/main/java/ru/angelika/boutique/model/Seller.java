@@ -17,4 +17,7 @@ public class Seller {
     private String number;
     @Column(name = "email", unique = true)
     private String email;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "authentication_id")
+    private Authentication authentication;
 }

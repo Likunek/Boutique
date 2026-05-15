@@ -1,20 +1,23 @@
 package ru.angelika.boutique.controller.view;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import ru.angelika.boutique.dto.UpdateEntityDto;
 import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.service.UserService;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -43,6 +46,31 @@ public class UserController {
         model.addAttribute("users", userService.getAllUsers());
         return "admin-users";
     }
+
+    @PutMapping("/user/profile/{id}")
+    public String updateUser(@PathVariable Long id, @Valid UpdateEntityDto updateEntityDto,
+                               BindingResult result, RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Please correct the errors: " +
+                    result.getAllErrors().stream()
+                            .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                            .collect(Collectors.joining(", ")));
+            return "redirect:/user/profile/" + id;
+        }
+        try {
+            if (security(id)) {
+                log.warn("User tried to update /user/profile/ with id={} from someone else's path", id);
+                return "redirect:/welcome";
+            }
+            userService.updateUser(updateEntityDto, id);
+        } catch (Exception e) {
+            log.error("Error update user profile id={}: {}", id, e.getMessage(), e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
+            return "redirect:/user/profile/" + id;
+        }
+        return "redirect:/logout";
+    }
+
 
     @DeleteMapping("/users/{id}")
     public String getAllUsers(@PathVariable Long id, Model model) {

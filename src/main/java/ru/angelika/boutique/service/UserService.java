@@ -3,6 +3,8 @@ package ru.angelika.boutique.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.angelika.boutique.dto.AuthenticationDto;
+import ru.angelika.boutique.dto.UpdateEntityDto;
 import ru.angelika.boutique.dto.UserDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
@@ -91,7 +93,7 @@ public class UserService {
                 .toList();
     }
 
-    public void updateUser(UserDto userDto, Long id) {
+    public void updateUser(UpdateEntityDto userDto, Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> {
             log.error("User not found for update, id={}", id);
             return new ResourceNotFoundException(User.class, id);
@@ -117,6 +119,11 @@ public class UserService {
             }
             user.setEmail(userDto.getEmail());
         }
+        authenticationService.updateData(AuthenticationDto.builder()
+                .oldPassword(userDto.getOldPassword())
+                .newPassword(userDto.getNewPassword())
+                .number(userDto.getNumber())
+                .build(), user.getAuthentication());
         userRepository.save(user);
         log.info("Update user by id={}", id);
     }

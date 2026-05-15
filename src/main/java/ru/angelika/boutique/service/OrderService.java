@@ -2,7 +2,6 @@ package ru.angelika.boutique.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.OrderDto;
 import ru.angelika.boutique.exception.ResourceNotFoundException;

@@ -3,7 +3,9 @@ package ru.angelika.boutique.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.angelika.boutique.dto.SellerDto;
+import ru.angelika.boutique.dto.AuthenticationDto;
+import ru.angelika.boutique.dto.UpdateEntityDto;
+import org.springframework.transaction.annotation.Transactional;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.model.Seller;
@@ -33,6 +35,7 @@ public class SellerService {
             log.error("Seller with email={} already exists", seller.getEmail());
             throw new ResourceExistsException(Seller.class, seller.getEmail());
         }
+        seller.setAuthentication(authenticationService.findByNumber(seller.getNumber()));
         sellerRepository.save(seller);
         log.info("Add new seller: name={}, number={}, email={}",
                 seller.getName(), seller.getNumber(), seller.getEmail());
@@ -70,7 +73,8 @@ public class SellerService {
         return sellerRepository.findAll();
     }
 
-    public void updateSeller(SellerDto sellerDto, Long id) {
+    @Transactional
+    public void updateSeller(UpdateEntityDto sellerDto, Long id) {
         Seller seller = sellerRepository.findById(id).orElseThrow(() -> {
             log.error("Seller not found for update, id={}", id);
             return new ResourceNotFoundException(Seller.class, id);
@@ -96,6 +100,11 @@ public class SellerService {
             }
             seller.setEmail(sellerDto.getEmail());
         }
+        authenticationService.updateData(AuthenticationDto.builder()
+                .oldPassword(sellerDto.getOldPassword())
+                .newPassword(sellerDto.getNewPassword())
+                .number(sellerDto.getNumber())
+                .build(), seller.getAuthentication());
         sellerRepository.save(seller);
         log.info("Update seller by id={}", id);
     }

@@ -10,6 +10,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.angelika.boutique.dto.AuthenticationDto;
+import ru.angelika.boutique.exception.PasswordInvalidException;
+import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.model.Authentication;
 import ru.angelika.boutique.repository.AuthenticationRepository;
@@ -35,11 +38,32 @@ public class AuthenticationService implements UserDetailsService {
 
     public Authentication findByNumber(String number) {
         Authentication authentication = authenticationRepository.findByNumber(number);
-        if (authentication == null) {
-            log.error("Authentication not found by number ={}", number);
-            throw new ResourceNotFoundException(Authentication.class, number);
+        if (authentication ==  null) {
+            log.error("Authentication not found by number={}", number);
+            throw  new ResourceNotFoundException(Authentication.class, number);
         }
         return authentication;
+    }
+
+    public void updateData(AuthenticationDto dto, Authentication authentication) {
+        if (passwordEncoder.matches(dto.getOldPassword(), authentication.getPassword())) {
+            if (!dto.getNewPassword().isBlank()) {
+                authentication.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+            }
+            if (!authentication.getNumber().equals(dto.getNumber())) {
+                if (authenticationRepository.findByNumber(dto.getNumber()) != null) {
+                    log.error("Authentication with number={} already exists", dto.getNumber());
+                    throw new ResourceExistsException(Authentication.class, dto.getNumber());
+                }
+                authentication.setNumber(dto.getNumber());
+            }
+            authenticationRepository.save(authentication);
+            log.info("Update data authentication: id={}, number={}, role={}",
+                    authentication.getId(), authentication.getNumber(), authentication.getRole());
+        } else {
+            log.error("Password is incorrect, profile with id={}", authentication.getId());
+            throw new PasswordInvalidException("Your password is incorrect");
+        }
     }
 
     public void deleteAuthentication(String number) {
