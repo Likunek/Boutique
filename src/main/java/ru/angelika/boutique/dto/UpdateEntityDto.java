@@ -1,9 +1,11 @@
 package ru.angelika.boutique.dto;
 
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class UpdateEntityDto {
     @NotNull
     private String name;

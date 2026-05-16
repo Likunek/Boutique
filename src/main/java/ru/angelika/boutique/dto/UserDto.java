@@ -1,10 +1,12 @@
 package ru.angelika.boutique.dto;
 
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 import ru.angelika.boutique.model.Role;
 
 @Data
+@Builder
 public class UserDto {
     @NotNull
     private String name;

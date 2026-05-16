@@ -3,7 +3,6 @@ package ru.angelika.boutique.controller.view;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,7 +33,7 @@ public class UserController {
             return "redirect:/welcome";
         }
         User user = userService.getById(id);
-        Set<Long> feedbacksId = userService.checkOwnFeedbacks(id);
+        Set<Long> feedbacksId = userService.checkItemIdWithOwnFeedbacks(id);
         model.addAttribute("feedbacksId", feedbacksId);
         model.addAttribute("orders", userService.getOrders(id));
         model.addAttribute("user", user);

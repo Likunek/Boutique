@@ -3,6 +3,7 @@ package ru.angelika.boutique.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.angelika.boutique.dto.AuthenticationDto;
 import ru.angelika.boutique.dto.UpdateEntityDto;
 import ru.angelika.boutique.dto.UserDto;
@@ -27,21 +28,23 @@ public class UserService {
     private final FeedbackRepository feedbackRepository;
     private final AuthenticationService authenticationService;
 
-    public void addUser(UserDto user) {
-        if (userRepository.findByName(user.getName()) != null) {
-            log.error("User with name={} already exists", user.getName());
-            throw new ResourceExistsException(User.class, user.getName());
+    public void addUser(UserDto userDto) {
+        if (userRepository.findByName(userDto.getName()) != null) {
+            log.error("User with name={} already exists", userDto.getName());
+            throw new ResourceExistsException(User.class, userDto.getName());
         }
-        if (userRepository.findByNumber(user.getNumber()) != null) {
-            log.error("User with number={} already exists", user.getNumber());
-            throw new ResourceExistsException(User.class, user.getNumber());
+        if (userRepository.findByNumber(userDto.getNumber()) != null) {
+            log.error("User with number={} already exists", userDto.getNumber());
+            throw new ResourceExistsException(User.class, userDto.getNumber());
         }
-        if (userRepository.findByEmail(user.getEmail()) != null) {
-            log.error("User with email={} already exists", user.getEmail());
-            throw new ResourceExistsException(User.class, user.getEmail());
+        if (userRepository.findByEmail(userDto.getEmail()) != null) {
+            log.error("User with email={} already exists", userDto.getEmail());
+            throw new ResourceExistsException(User.class, userDto.getEmail());
         }
         Cart cart = cartRepository.save(new Cart());
-        userRepository.save(UserMapper.toUser(user, cart));
+        User user = UserMapper.toUser(userDto, cart);
+        user.setAuthentication(authenticationService.findByNumber(user.getNumber()));
+        userRepository.save(user);
         log.info("Add new user: name={}, number={}, email={}, cartId={}",
                 user.getName(), user.getNumber(), user.getEmail(), cart.getId());
     }
@@ -54,7 +57,7 @@ public class UserService {
         });
     }
 
-    public Set<Long> checkOwnFeedbacks(Long id) {
+    public Set<Long> checkItemIdWithOwnFeedbacks(Long id) {
         User user = userRepository.findByIdWithItemsAndFeedbacks(id);
         if (user == null) {
             log.error("User not found for get, id={}", id);
@@ -93,6 +96,7 @@ public class UserService {
                 .toList();
     }
 
+    @Transactional
     public void updateUser(UpdateEntityDto userDto, Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> {
             log.error("User not found for update, id={}", id);
@@ -143,10 +147,9 @@ public class UserService {
                 itemCardRepository.save(itemCard);
             }
         }
-        feedbackRepository.deleteAll();
+        feedbackRepository.deleteAll(feedbacks);
         userRepository.deleteById(id);
         log.info("Delete user by id={}", id);
     }
-
 
 }
