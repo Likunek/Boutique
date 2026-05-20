@@ -39,7 +39,7 @@ public class ItemCardController {
     @GetMapping("/seller/add-card")
     public String getFormNewCard(Model model) {
         Seller seller = getAuthSeller();
-        List<Item> items = itemService.getItemBySellerId(seller.getId());
+        List<Item> items = itemService.getBySellerId(seller.getId());
         model.addAttribute("items", items);
         model.addAttribute("id", seller.getId());
         return "add-card";
@@ -50,7 +50,7 @@ public class ItemCardController {
         try {
             Seller seller = getAuthSeller();
             itemCardService.addItemCard(itemCardDto, seller.getName());
-            List<Item> items = itemService.getItemBySellerId(seller.getId());
+            List<Item> items = itemService.getBySellerId(seller.getId());
             model.addAttribute("items", items);
             model.addAttribute("id", seller.getId());
             model.addAttribute("successMessage", "Card successfully add!");
@@ -66,7 +66,7 @@ public class ItemCardController {
                              @Valid ItemCardUpdateDto itemCardUpdateDto, RedirectAttributes redirectAttributes) {
         try {
             String sellerName = getAuthSeller().getName();
-            if (!itemService.getItemById(itemId).getSeller().getName().equals(sellerName)) {
+            if (!itemService.getById(itemId).getSeller().getName().equals(sellerName)) {
                 log.warn("Seller with name={} tried to update itemCard with id={} from someone else's path", sellerName, itemId);
                 return "redirect:/welcome";
             }

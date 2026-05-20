@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -36,7 +35,7 @@ public class ItemsAtStorageController {
     public String addItemsAtStorage(@Valid ItemsAtStorageDto itemsAtStorageDto, Model model) {
         try {
             Seller seller = getAuthSeller();
-            List<Item> items = itemService.getItemBySellerId(seller.getId());
+            List<Item> items = itemService.getBySellerId(seller.getId());
             List<Storage> storages = storageService.getAllStorages();
 
             model.addAttribute("items", items);
@@ -55,7 +54,7 @@ public class ItemsAtStorageController {
     @GetMapping("/seller/send-to-storage")
     public String getFormItemsAtStorage(Model model) {
         Seller seller = getAuthSeller();
-        List<Item> items = itemService.getItemBySellerId(seller.getId());
+        List<Item> items = itemService.getBySellerId(seller.getId());
         List<Storage> storages = storageService.getAllStorages();
 
         model.addAttribute("items", items);
@@ -73,7 +72,7 @@ public class ItemsAtStorageController {
     public String updateFormItemsAtStorage(@PathVariable Long id, @RequestParam Long itemId,
                                            @Min(0) Long count, RedirectAttributes redirectAttributes) {
         try {
-            Item item = itemService.getItemById(itemId);
+            Item item = itemService.getById(itemId);
             Long sellerId = item.getSeller().getId();
             if (security(sellerId)) {
                 log.warn("Seller with id={} tried to update ItemsAtStorage with id={} from someone else's path", sellerId, id);

@@ -23,30 +23,30 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final ItemCardRepository itemCardRepository;
 
-    public void addItem(ItemDto itemDto, Seller seller) {
+    public void add(ItemDto itemDto, Seller seller) {
         checkDuplicate(seller.getId(), itemDto.getName(), null);
         itemRepository.save(ItemMapper.toItem(itemDto, seller));
         log.info("Add new item: name={}, price={}, weight={}, square ={}, sellerId={}",
                 itemDto.getName(), itemDto.getCostPrice(), itemDto.getWeight(), itemDto.getSquare(), seller.getId());
     }
 
-    public List<Item> getAllItems() {
+    public List<Item> getAll() {
         return itemRepository.findAll();
     }
 
-    public List<Item> getAllItemVerifyFalse() {
+    public List<Item> getAllVerifyFalse() {
         return itemRepository.findByVerifyFalse();
     }
 
-    public List<Item> getItemBySellerId(Long id) {
+    public List<Item> getBySellerId(Long id) {
         return itemRepository.findBySellerIdAndVerifyTrue(id);
     }
 
-    public List<Item> getAllItemBySeller(Seller seller) {
+    public List<Item> getAllBySellerWithStorages(Seller seller) {
         return itemRepository.findBySellerWithStorages(seller);
     }
 
-    public Item getItemById(Long id) {
+    public Item getById(Long id) {
         log.debug("Get item by id={}", id);
         return itemRepository.findById(id)
                 .orElseThrow(() -> {
@@ -55,7 +55,7 @@ public class ItemService {
                 });
     }
 
-    public Item getItemByCardId(Long id) {
+    public Item getByCardId(Long id) {
         Item item = itemRepository.findByItemCardId(id);
          if (item == null) {
              log.error("Item not found for get, id={}", id);
@@ -64,21 +64,21 @@ public class ItemService {
          return item;
     }
 
-    public void addCardItem(Item item) {
+    public void addItemCard(Item item) {
         log.info("Update Item's ItemCard field: itemId={}, itemCardId={}",
                 item.getId(), item.getItemCard().getId());
         itemRepository.save(item);
     }
 
     public void updateVerify(Long id, boolean verify) {
-        Item item = getItemById(id);
+        Item item = getById(id);
         item.setVerify(verify);
         itemRepository.save(item);
         log.info("Update verify Item: itemId={}, verify={}",
                 item.getId(), verify);
     }
 
-    public void updateItem(ItemDto itemDto, Long id, Long sellerId) {
+    public void update(ItemDto itemDto, Long id, Long sellerId) {
         checkDuplicate(sellerId, itemDto.getName(), id);
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> {
@@ -100,21 +100,18 @@ public class ItemService {
         log.info("Update item by id={}", id);
     }
 
-    public void deleteItem(Long id) {
-        itemRepository.findById(id).orElseThrow(() -> {
-            log.error("Item not found for delete, id={}", id);
-            return new ResourceNotFoundException(Item.class, id);
-        });
+    public void delete(Long id) {
+        getById(id);
         itemRepository.deleteById(id);
         log.info("Delete item by id={}", id);
     }
 
     public void deleteBySellerId(Long id) {
-        itemRepository.findBySellerId(id).forEach(item -> deleteItem(item.getId()));
+        itemRepository.findBySellerId(id).forEach(item -> delete(item.getId()));
     }
 
     public void deleteItemCard(Long itemCardId) {
-        Item item = itemRepository.findByItemCardId(itemCardId);
+        Item item = getByCardId(itemCardId);
         item.setItemCard(null);
         itemRepository.save(item);
         log.info("Delete item's itemCard. itemId={}", item.getId());

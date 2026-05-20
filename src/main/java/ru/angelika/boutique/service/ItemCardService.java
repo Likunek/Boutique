@@ -3,7 +3,6 @@ package ru.angelika.boutique.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.FeedbackDto;
@@ -32,14 +31,14 @@ public class ItemCardService {
 
     public void addItemCard(ItemCardDto itemCardDto, String seller) {
         checkDuplicate(seller, itemCardDto.getName(), itemCardDto.getDescription(), null);
-        Item item = itemService.getItemById(itemCardDto.getItemId());
+        Item item = itemService.getById(itemCardDto.getItemId());
         if (item.getItemCard() != null) {
             log.error("ItemCard by itemId={} already exists", item.getId());
             throw new ResourceExistsException(ItemCard.class, " itemId : " + item.getId());
         }
         ItemCard itemCard = itemCardRepository.save(ItemCardMapper.toItemCard(itemCardDto, item.getCostPrice(), seller));
         item.setItemCard(itemCard);
-        itemService.addCardItem(item);
+        itemService.addItemCard(item);
         log.info("Add new ItemCard: name={}, description={}, itemId={}",
                 itemCardDto.getName(), itemCardDto.getDescription(), itemCardDto.getItemId());
     }
