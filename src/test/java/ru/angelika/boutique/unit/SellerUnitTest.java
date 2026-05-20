@@ -65,7 +65,7 @@ class SellerUnitTest {
     }
 
     @Test
-    void addSeller_Success() {
+    void add_Success() {
         when(sellerRepository.findByName(seller.getName())).thenReturn(null);
         when(sellerRepository.findByNumber(seller.getNumber())).thenReturn(null);
         when(sellerRepository.findByEmail(seller.getEmail())).thenReturn(null);
@@ -77,7 +77,7 @@ class SellerUnitTest {
     }
 
     @Test
-    void addSeller_DuplicateName_ThrowsException() {
+    void add_DuplicateName_ThrowsException() {
         when(sellerRepository.findByName(seller.getName())).thenReturn(seller);
 
         ResourceExistsException exception = assertThrows(ResourceExistsException.class,
@@ -89,7 +89,7 @@ class SellerUnitTest {
     }
 
     @Test
-    void addSeller_DuplicateNumber_ThrowsException() {
+    void add_DuplicateNumber_ThrowsException() {
         when(sellerRepository.findByName(seller.getName())).thenReturn(null);
         when(sellerRepository.findByNumber(seller.getNumber())).thenReturn(seller);
 
@@ -99,7 +99,7 @@ class SellerUnitTest {
     }
 
     @Test
-    void addSeller_DuplicateEmail_ThrowsException() {
+    void add_DuplicateEmail_ThrowsException() {
         when(sellerRepository.findByName(seller.getName())).thenReturn(null);
         when(sellerRepository.findByNumber(seller.getNumber())).thenReturn(null);
         when(sellerRepository.findByEmail(seller.getEmail())).thenReturn(seller);
@@ -110,7 +110,7 @@ class SellerUnitTest {
     }
 
     @Test
-    void addSeller_AuthenticationNotFound_ThrowsException() {
+    void add_AuthenticationNotFound_ThrowsException() {
         when(sellerRepository.findByName(seller.getName())).thenReturn(null);
         when(sellerRepository.findByNumber(seller.getNumber())).thenReturn(null);
         when(sellerRepository.findByEmail(seller.getEmail())).thenReturn(null);
@@ -163,7 +163,7 @@ class SellerUnitTest {
     }
 
     @Test
-    void getBySellerName_Success() {
+    void getByName_Success() {
         when(sellerRepository.findByName(seller.getName())).thenReturn(seller);
         Seller result = sellerService.getByName(seller.getName());
 
@@ -173,7 +173,7 @@ class SellerUnitTest {
     }
 
     @Test
-    void getBySellerName_NotFound_ThrowsException() {
+    void getByName_NotFound_ThrowsException() {
         when(sellerRepository.findByName(falseName)).thenReturn(null);
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
@@ -183,7 +183,7 @@ class SellerUnitTest {
     }
 
     @Test
-    void getAllSeller_Success() {
+    void getAll_Success() {
         when(sellerRepository.findAll()).thenReturn(List.of(seller));
 
         List<Seller> result = sellerService.getAll();
@@ -192,21 +192,21 @@ class SellerUnitTest {
     }
 
     @Test
-    void updateSeller_Success() {
+    void update_Success() {
         when(sellerRepository.findById(id)).thenReturn(Optional.of(seller));
         when(sellerRepository.findByName(updateDto.getName())).thenReturn(null);
         when(sellerRepository.findByNumber(updateDto.getNumber())).thenReturn(null);
         when(sellerRepository.findByEmail(updateDto.getEmail())).thenReturn(null);
-        doNothing().when(authenticationService).updateData(any(AuthenticationDto.class), any());
+        doNothing().when(authenticationService).update(any(AuthenticationDto.class), any());
 
         assertDoesNotThrow(() -> sellerService.update(updateDto, id));
 
         verify(sellerRepository).save(seller);
-        verify(authenticationService).updateData(any(AuthenticationDto.class), any());
+        verify(authenticationService).update(any(AuthenticationDto.class), any());
     }
 
     @Test
-    void updateSeller_EntitiesEquals_Success() {
+    void update_EntitiesEquals_Success() {
         UpdateEntityDto sameDto = UpdateEntityDto.builder()
                 .name(seller.getName())
                 .number(seller.getNumber())
@@ -214,7 +214,7 @@ class SellerUnitTest {
                 .oldPassword("oldPass")
                 .build();
         when(sellerRepository.findById(id)).thenReturn(Optional.of(seller));
-        doNothing().when(authenticationService).updateData(any(AuthenticationDto.class), any());
+        doNothing().when(authenticationService).update(any(AuthenticationDto.class), any());
 
         assertDoesNotThrow(() -> sellerService.update(sameDto, id));
 
@@ -222,11 +222,11 @@ class SellerUnitTest {
         verify(sellerRepository, never()).findByNumber(any());
         verify(sellerRepository, never()).findByEmail(any());
         verify(sellerRepository).save(seller);
-        verify(authenticationService).updateData(any(AuthenticationDto.class), any());
+        verify(authenticationService).update(any(AuthenticationDto.class), any());
     }
 
     @Test
-    void updateSeller_NameAlreadyExists_ThrowsException() {
+    void update_NameAlreadyExists_ThrowsException() {
         Seller existingSeller = new Seller();
         existingSeller.setName(seller.getName());
         when(sellerRepository.findById(id)).thenReturn(Optional.of(seller));
@@ -235,11 +235,11 @@ class SellerUnitTest {
         assertThrows(ResourceExistsException.class, () -> sellerService.update(updateDto, id));
 
         verify(sellerRepository, never()).save(any());
-        verify(authenticationService, never()).updateData(any(), any());
+        verify(authenticationService, never()).update(any(), any());
     }
 
     @Test
-    void updateSeller_NumberAlreadyExists_ThrowsException() {
+    void update_NumberAlreadyExists_ThrowsException() {
         Seller existingSeller = new Seller();
         existingSeller.setNumber(seller.getNumber());
         when(sellerRepository.findById(id)).thenReturn(Optional.of(seller));
@@ -249,11 +249,11 @@ class SellerUnitTest {
         assertThrows(ResourceExistsException.class, () -> sellerService.update(updateDto, id));
 
         verify(sellerRepository, never()).save(any());
-        verify(authenticationService, never()).updateData(any(), any());
+        verify(authenticationService, never()).update(any(), any());
     }
 
     @Test
-    void updateSeller_EmailAlreadyExists_ThrowsException() {
+    void update_EmailAlreadyExists_ThrowsException() {
         Seller existingSeller = new Seller();
         existingSeller.setEmail(seller.getEmail());
         when(sellerRepository.findById(id)).thenReturn(Optional.of(seller));
@@ -264,17 +264,17 @@ class SellerUnitTest {
         assertThrows(ResourceExistsException.class, () -> sellerService.update(updateDto, id));
 
         verify(sellerRepository, never()).save(any());
-        verify(authenticationService, never()).updateData(any(), any());
+        verify(authenticationService, never()).update(any(), any());
     }
 
     @Test
-    void updateSeller_PasswordInvalid_ThrowsException() {
+    void update_PasswordInvalid_ThrowsException() {
         when(sellerRepository.findById(id)).thenReturn(Optional.of(seller));
         when(sellerRepository.findByName(updateDto.getName())).thenReturn(null);
         when(sellerRepository.findByNumber(updateDto.getNumber())).thenReturn(null);
         when(sellerRepository.findByEmail(updateDto.getEmail())).thenReturn(null);
         doThrow(new PasswordInvalidException("Your password is incorrect"))
-                .when(authenticationService).updateData(any(AuthenticationDto.class), any());
+                .when(authenticationService).update(any(AuthenticationDto.class), any());
 
         assertThrows(PasswordInvalidException.class, () -> sellerService.update(updateDto, id));
 
@@ -282,23 +282,23 @@ class SellerUnitTest {
     }
 
     @Test
-    void deleteSeller_Success() {
+    void delete_Success() {
         when(sellerRepository.findById(id)).thenReturn(Optional.of(seller));
-        doNothing().when(authenticationService).deleteAuthentication(seller.getNumber());
+        doNothing().when(authenticationService).delete(seller.getNumber());
         doNothing().when(itemService).deleteBySellerId(id);
 
         assertDoesNotThrow(() -> sellerService.delete(id));
 
-        verify(authenticationService).deleteAuthentication(seller.getNumber());
+        verify(authenticationService).delete(seller.getNumber());
         verify(itemService).deleteBySellerId(id);
         verify(sellerRepository).deleteById(id);
     }
 
     @Test
-    void deleteSeller_AuthenticationNotFound_ThrowsException() {
+    void delete_AuthenticationNotFound_ThrowsException() {
         when(sellerRepository.findById(id)).thenReturn(Optional.of(seller));
         doThrow(new ResourceNotFoundException(Authentication.class, seller.getNumber()))
-                .when(authenticationService).deleteAuthentication(seller.getNumber());
+                .when(authenticationService).delete(seller.getNumber());
 
         assertThrows(ResourceNotFoundException.class, () -> sellerService.delete(id));
 
@@ -307,14 +307,14 @@ class SellerUnitTest {
     }
 
     @Test
-    void deleteSeller_NotFound_ThrowsException() {
+    void delete_NotFound_ThrowsException() {
         when(sellerRepository.findById(falseId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                 () -> sellerService.delete(falseId));
 
         assertEquals("class ru.angelika.boutique.model.Seller not found with id: " + falseId, exception.getMessage());
-        verify(authenticationService, never()).deleteAuthentication(any());
+        verify(authenticationService, never()).delete(any());
         verify(itemService, never()).deleteBySellerId(any());
         verify(sellerRepository, never()).deleteById(any());
     }

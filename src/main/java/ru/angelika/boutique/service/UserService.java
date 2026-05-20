@@ -123,7 +123,7 @@ public class UserService {
             }
             user.setEmail(userDto.getEmail());
         }
-        authenticationService.updateData(AuthenticationDto.builder()
+        authenticationService.update(AuthenticationDto.builder()
                 .oldPassword(userDto.getOldPassword())
                 .newPassword(userDto.getNewPassword())
                 .number(userDto.getNumber())
@@ -137,7 +137,7 @@ public class UserService {
             log.error("User not found for delete, id={}", id);
             return new ResourceNotFoundException(User.class, id);
         });
-        authenticationService.deleteAuthentication(user.getNumber());
+        authenticationService.delete(user.getNumber());
         orderRepository.deleteAll(orderRepository.findByUserId(id));
         List<Feedback> feedbacks = feedbackRepository.findByUserId(id);
         for (Feedback feedback : feedbacks) {

@@ -51,7 +51,7 @@ public class RegistrationController {
             return "registration";
         }
         try {
-            authenticationService.addAuthentication(UserMapper.toAuthentication(user));
+            authenticationService.add(UserMapper.toAuthentication(user));
             switch (user.getRole()) {
                 case USER -> userService.add(user);
                 case SELLER -> sellerService.add(UserMapper.toSeller(user));

@@ -100,7 +100,7 @@ public class SellerService {
             }
             seller.setEmail(sellerDto.getEmail());
         }
-        authenticationService.updateData(AuthenticationDto.builder()
+        authenticationService.update(AuthenticationDto.builder()
                 .oldPassword(sellerDto.getOldPassword())
                 .newPassword(sellerDto.getNewPassword())
                 .number(sellerDto.getNumber())
@@ -114,7 +114,7 @@ public class SellerService {
             log.error("Seller not found for delete, id={}", id);
             return new ResourceNotFoundException(Seller.class, id);
         });
-        authenticationService.deleteAuthentication(seller.getNumber());
+        authenticationService.delete(seller.getNumber());
         itemService.deleteBySellerId(seller.getId());
         sellerRepository.deleteById(id);
         log.info("Delete seller by id={}", id);
