@@ -49,7 +49,7 @@ public class ItemCardController {
     public String addItemCard(@Valid ItemCardDto itemCardDto, Model model) {
         try {
             Seller seller = getAuthSeller();
-            itemCardService.addItemCard(itemCardDto, seller.getName());
+            itemCardService.add(itemCardDto, seller.getName());
             List<Item> items = itemService.getBySellerId(seller.getId());
             model.addAttribute("items", items);
             model.addAttribute("id", seller.getId());
@@ -70,7 +70,7 @@ public class ItemCardController {
                 log.warn("Seller with name={} tried to update itemCard with id={} from someone else's path", sellerName, itemId);
                 return "redirect:/welcome";
             }
-            itemCardService.updateItemCard(itemCardUpdateDto, id, sellerName);
+            itemCardService.update(itemCardUpdateDto, id, sellerName);
             redirectAttributes.addFlashAttribute("successMessage", "Card successfully update!");
         } catch (Exception e) {
             log.error("Error update itemCard id {} : {}", id, e.getMessage(), e);
@@ -103,17 +103,17 @@ public class ItemCardController {
         }
         if (seller) {
             String sellerName = sellerService.getById(sellerId).getName();
-            model.addAttribute("itemCardsPage", itemCardService.getAllItemCardBySeller(pageable, sellerName));
+            model.addAttribute("itemCardsPage", itemCardService.getAllBySeller(pageable, sellerName));
             model.addAttribute("role", role);
             model.addAttribute("name", "by " + sellerName);
             return "all-cards";
         }
         if (!search.isBlank()) {
-            model.addAttribute("itemCardsPage", itemCardService.getAllItemCardBySearch(pageable, search));
+            model.addAttribute("itemCardsPage", itemCardService.getAllBySearch(pageable, search));
             model.addAttribute("role", role);
             return "all-cards";
         }
-        model.addAttribute("itemCardsPage", itemCardService.getAllItemCard(pageable));
+        model.addAttribute("itemCardsPage", itemCardService.getAll(pageable));
         model.addAttribute("role", role);
         return "all-cards";
     }
@@ -121,7 +121,7 @@ public class ItemCardController {
     @GetMapping("/item-card/{id}")
     public String getItemCardById(@PathVariable Long id, @RequestParam String role, Model model) {
         boolean isOwner = false;
-        ItemCard itemCard = itemCardService.getItemCard(id);
+        ItemCard itemCard = itemCardService.get(id);
         switch (role) {
             case "ROLE_SELLER" -> isOwner = getAuthSeller().getName().equals(itemCard.getSeller());
             case "ROLE_ADMIN" -> isOwner = true;
@@ -140,9 +140,9 @@ public class ItemCardController {
 
     @DeleteMapping("/item-card/{id}")
     public String deleteItemCardById(@PathVariable Long id, @RequestParam String role, Model model) {
-        ItemCard itemCard = itemCardService.getItemCard(id);
+        ItemCard itemCard = itemCardService.get(id);
         if (role.equals("ROLE_ADMIN") || security(itemCard.getSeller())) {
-            itemCardService.deleteItemCard(id);
+            itemCardService.delete(id);
         }
         return "redirect:/welcome";
     }

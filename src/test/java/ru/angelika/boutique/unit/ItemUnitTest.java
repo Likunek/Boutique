@@ -258,7 +258,7 @@ class ItemUnitTest {
     }
 
     @Test
-    void deleteItemCard_ItemNotFound_DoesNothing() {
+    void deleteItemCard_ItemNotFound_Success() {
         when(itemRepository.findByItemCardId(CARD_ID)).thenReturn(null);
         assertThrows(ResourceNotFoundException.class, () -> itemService.deleteItemCard(CARD_ID));
         verify(itemRepository, never()).save(any());

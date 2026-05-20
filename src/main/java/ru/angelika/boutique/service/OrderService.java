@@ -26,7 +26,7 @@ public class OrderService {
     public void addOrder(OrderDto orderDto, User user, Long cartId) {
         List<ItemCard> cards = orderDto.getItemCards()
                 .parallelStream()
-                .map(itemCardService::getItemCard)
+                .map(itemCardService::get)
                 .toList();
         user.setBalance(user.getBalance() - cards.stream().mapToDouble(ItemCard::getPrice).sum());
         PickupPoint point = pickupPointService.getPickupPoint(orderDto.getPointId());
@@ -39,7 +39,7 @@ public class OrderService {
     public double checkPaymentUser(OrderDto orderDto, User user) {
         List<ItemCard> cards = orderDto.getItemCards()
                 .parallelStream()
-                .map(itemCardService::getItemCard)
+                .map(itemCardService::get)
                 .toList();
         return user.getBalance() - cards.stream().mapToDouble(ItemCard::getPrice).sum();
     }

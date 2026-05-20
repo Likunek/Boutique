@@ -27,7 +27,7 @@ public class CartService {
     }
 
     public void addCardInCart(Long cartId, Long itemCardId) {
-        ItemCard itemCard = itemCardService.getItemCard(itemCardId);
+        ItemCard itemCard = itemCardService.get(itemCardId);
         Cart cart = getCartById(cartId);
         if (cart.getItemCards().stream().anyMatch(card -> card.getId().equals(itemCardId))) {
             log.debug("itemCard already added. itemCardId={}, cartId={}", itemCardId, cartId);
@@ -52,7 +52,7 @@ public class CartService {
     public void deleteCardFromCart(Long cartId, Long itemCardId) {
         Cart cart = getCartById(cartId);
         cart.getItemCards().removeIf(card -> card.getId().equals(itemCardId));
-        cart.setTotalPrice(cart.getTotalPrice() - itemCardService.getItemCard(itemCardId).getPrice());
+        cart.setTotalPrice(cart.getTotalPrice() - itemCardService.get(itemCardId).getPrice());
         cartRepository.save(cart);
         log.info("Delete itemCard from cart. itemCardId={}, cartId={}", itemCardId, cartId);
     }
