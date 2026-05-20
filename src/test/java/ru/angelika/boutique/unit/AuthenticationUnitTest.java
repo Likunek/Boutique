@@ -16,6 +16,9 @@ import ru.angelika.boutique.model.Authentication;
 import ru.angelika.boutique.model.Role;
 import ru.angelika.boutique.repository.AuthenticationRepository;
 import ru.angelika.boutique.service.AuthenticationService;
+
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -162,16 +165,13 @@ class AuthenticationUnitTest {
     @Test
     void delete_Success() {
         when(authenticationRepository.findByNumber(NUMBER)).thenReturn(authentication);
-
         authenticationService.delete(NUMBER);
-
         verify(authenticationRepository).deleteById(ID);
     }
 
     @Test
     void delete_NotFound_ThrowsException() {
-        when(authenticationRepository.findByNumber(NUMBER))
-                .thenThrow(new ResourceNotFoundException(Authentication.class, NUMBER));
+        when(authenticationRepository.findByNumber(NUMBER)).thenReturn(null);;
 
         assertThrows(ResourceNotFoundException.class,
                 () -> authenticationService.delete(NUMBER));
@@ -192,8 +192,7 @@ class AuthenticationUnitTest {
 
     @Test
     void loadUserByUsername_UserNotFound_ThrowsException() {
-        when(authenticationRepository.findByNumber(NUMBER))
-                .thenThrow(new ResourceNotFoundException(Authentication.class, NUMBER));
+        when(authenticationRepository.findByNumber(NUMBER)).thenReturn(null);
 
         assertThrows(ResourceNotFoundException.class,
                 () ->  authenticationService.loadUserByUsername(NUMBER));

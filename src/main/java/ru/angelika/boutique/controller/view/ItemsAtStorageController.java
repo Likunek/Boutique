@@ -41,7 +41,7 @@ public class ItemsAtStorageController {
             model.addAttribute("items", items);
             model.addAttribute("storages", storages);
             model.addAttribute("id", seller.getId());
-            itemsAtStorageService.addItemsAtStorage(itemsAtStorageDto);
+            itemsAtStorageService.add(itemsAtStorageDto);
             model.addAttribute("successMessage", "Item successfully sent to storage!");
         } catch (Exception e) {
             log.error("Error add itemAtStorage: itemId={}, storageId={}: {}",
@@ -64,7 +64,7 @@ public class ItemsAtStorageController {
     }
     @GetMapping("admin/item-at-storage")
     public String getAllItemsAtStorage(Model model) {
-        model.addAttribute("itemsAtStorages", itemsAtStorageService.getAllItemsAtStorage());
+        model.addAttribute("itemsAtStorages", itemsAtStorageService.getAll());
         return "admin-items-at-storage";
     }
 
@@ -78,7 +78,7 @@ public class ItemsAtStorageController {
                 log.warn("Seller with id={} tried to update ItemsAtStorage with id={} from someone else's path", sellerId, id);
                 return "redirect:/welcome";
             }
-            itemsAtStorageService.updateItemsAtStorage(id, count);
+            itemsAtStorageService.update(id, count);
             redirectAttributes.addFlashAttribute("successMessage", "Item successfully sent to storage!");
         } catch (Exception e) {
             log.error("Error update itemsAtStorage id={}: {}", id, e.getMessage(), e);

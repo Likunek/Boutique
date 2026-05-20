@@ -141,7 +141,7 @@ class ItemCardUnitTest {
 
     @Test
     void addFeedback_ItemCardNotFound_ThrowsException() {
-        when(itemCardRepository.findById(FALSE_ID)).thenThrow(new ResourceNotFoundException(ItemCard.class, ITEM_CARD_ID));
+        when(itemCardRepository.findById(FALSE_ID)).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> itemCardService.addFeedback(feedbackDto, FALSE_ID));
         verify(itemCardRepository, never()).save(itemCard);
         verify(userService, never()).getById(USER_ID);
@@ -242,7 +242,7 @@ class ItemCardUnitTest {
 
     @Test
     void delete_ItemCardNotFound_ThrowsException() {
-        when(itemCardRepository.findById(FALSE_ID)).thenThrow(new ResourceNotFoundException(ItemCard.class, ITEM_CARD_ID));
+        when(itemCardRepository.findById(FALSE_ID)).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> itemCardService.delete(FALSE_ID));
         verify(itemService, never()).deleteItemCard(any());
     }

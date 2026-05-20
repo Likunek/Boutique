@@ -55,8 +55,8 @@ public class StorageService {
             log.error("Storage not found for delete, id={}", id);
             return new ResourceNotFoundException(Storage.class, id);
         });
-        itemsAtStorageService.getItemsAtStorageByStorageId(id)
-                .forEach(s -> itemsAtStorageService.deleteItemsAtStorage(s.getId()));
+        itemsAtStorageService.getByStorageId(id)
+                .forEach(s -> itemsAtStorageService.delete(s.getId()));
         replaceStorage(id);
         storageRepository.deleteById(id);
         log.info("Delete storage by id={}", id);

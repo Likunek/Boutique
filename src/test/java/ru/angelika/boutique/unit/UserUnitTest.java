@@ -142,9 +142,7 @@ class UserUnitTest {
     @Test
     void getById_Success() {
         when(userRepository.findById(ID)).thenReturn(Optional.of(user));
-
         User result = userService.getById(ID);
-
         assertNotNull(result);
         assertEquals(user.getId(), result.getId());
     }
@@ -152,10 +150,8 @@ class UserUnitTest {
     @Test
     void getById_NotFound_ThrowsException() {
         when(userRepository.findById(FALSE_ID)).thenReturn(Optional.empty());
-
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                 () -> userService.getById(FALSE_ID));
-
         assertEquals("class ru.angelika.boutique.model.User not found with ID: " + FALSE_ID, exception.getMessage());
     }
 
@@ -189,16 +185,13 @@ class UserUnitTest {
     @Test
     void checkOwnFeedbacks_ItemsEmpty_Success() {
         when(userRepository.findByIdWithItemsAndFeedbacks(ID)).thenReturn(user);
-
         Set<Long> result = userService.checkItemIdWithOwnFeedbacks(ID);
-
         assertEquals(0, result.size());
     }
 
     @Test
     void checkOwnFeedbacks_UserNotFound_ThrowsException() {
         when(userRepository.findByIdWithItemsAndFeedbacks(FALSE_ID)).thenReturn(null);
-
         assertThrows(ResourceNotFoundException.class,
                 () -> userService.checkItemIdWithOwnFeedbacks(FALSE_ID));
     }
@@ -206,9 +199,7 @@ class UserUnitTest {
     @Test
     void getByNumber_Success() {
         when(userRepository.findByNumber(userDto.getNumber())).thenReturn(user);
-
         User result = userService.getByNumber(userDto.getNumber());
-
         assertNotNull(result);
         assertEquals(user.getNumber(), result.getNumber());
     }
@@ -216,16 +207,13 @@ class UserUnitTest {
     @Test
     void getByNumber_NotFound_ThrowsException() {
         when(userRepository.findByNumber(FALSE_NUMBER)).thenReturn(null);
-
         assertThrows(ResourceNotFoundException.class, () -> userService.getByNumber(FALSE_NUMBER));
     }
 
     @Test
     void getOrders_Success() {
         when(orderRepository.findByUserIdAndStatusNot(ID, Status.RECEIVED)).thenReturn(List.of(new Order()));
-
         List<Order> result = userService.getOrders(ID);
-
         assertEquals(1, result.size());
     }
 

@@ -159,7 +159,7 @@ class ItemUnitTest {
 
     @Test
     void updateVerify_ItemNotFound_ThrowsException() {
-        when(itemRepository.findById(FALSE_ID)).thenThrow(new ResourceNotFoundException(Item.class, ITEM_ID));
+        when(itemRepository.findById(FALSE_ID)).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> itemService.updateVerify(FALSE_ID, true));
     }
 
@@ -194,7 +194,7 @@ class ItemUnitTest {
         item.setItemCard(itemCard);
         when(itemRepository.findBySellerIdAndName(SELLER_ID, ITEM_NAME)).thenReturn(null);
         when(itemRepository.findById(ITEM_ID)).thenReturn(Optional.of(item));
-        when(itemCardRepository.findById(ITEM_ID)).thenThrow(new ResourceNotFoundException(Item.class, ITEM_ID));
+        when(itemCardRepository.findById(ITEM_ID)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> itemService.update(itemDto, ITEM_ID, SELLER_ID));
 
@@ -204,7 +204,7 @@ class ItemUnitTest {
 
     @Test
     void update_ItemNotFound_ThrowsException() {
-        when(itemRepository.findById(FALSE_ID)).thenThrow(new ResourceNotFoundException(Item.class, ITEM_ID));
+        when(itemRepository.findById(FALSE_ID)).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> itemService.updateVerify(FALSE_ID, true));
     }
 
@@ -229,7 +229,7 @@ class ItemUnitTest {
 
     @Test
     void delete_NotFound_ThrowsException() {
-        when(itemRepository.findById(FALSE_ID)).thenThrow(new ResourceNotFoundException(Item.class, ITEM_ID));
+        when(itemRepository.findById(FALSE_ID)).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> itemService.delete(FALSE_ID));
         verify(itemRepository, never()).deleteById(any());
     }
