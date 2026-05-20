@@ -45,7 +45,7 @@ public class SellerController {
     }
     @GetMapping("/admin/sellers")
     public String getAllSellers(Model model) {
-        model.addAttribute("sellers", sellerService.getAllSeller());
+        model.addAttribute("sellers", sellerService.getAll());
         return "admin-sellers";
     }
 
@@ -64,7 +64,7 @@ public class SellerController {
                 log.warn("Seller tried to update /seller/profile/ with id={} from someone else's path", id);
                 return "redirect:/welcome";
             }
-            sellerService.updateSeller(updateEntityDto, id);
+            sellerService.update(updateEntityDto, id);
         } catch (Exception e) {
             log.error("Error update seller profile id={}: {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
@@ -79,7 +79,7 @@ public class SellerController {
             log.warn("Seller tried to delete /seller/profile/ with id={} from someone else's path", id);
             return "redirect:/welcome";
         }
-        sellerService.deleteSeller(id);
+        sellerService.delete(id);
         return "redirect:/registration";
     }
 

@@ -28,7 +28,7 @@ public class UserService {
     private final FeedbackRepository feedbackRepository;
     private final AuthenticationService authenticationService;
 
-    public void addUser(UserDto userDto) {
+    public void add(UserDto userDto) {
         if (userRepository.findByName(userDto.getName()) != null) {
             log.error("User with name={} already exists", userDto.getName());
             throw new ResourceExistsException(User.class, userDto.getName());
@@ -84,7 +84,7 @@ public class UserService {
         return orderRepository.findByUserIdAndStatusNot(userId, Status.RECEIVED);
     }
 
-    public List<User> getAllUsers() {
+    public List<User> getAll() {
         return userRepository.findAll();
     }
 
@@ -97,7 +97,7 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUser(UpdateEntityDto userDto, Long id) {
+    public void update(UpdateEntityDto userDto, Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> {
             log.error("User not found for update, id={}", id);
             return new ResourceNotFoundException(User.class, id);
@@ -132,7 +132,7 @@ public class UserService {
         log.info("Update user by id={}", id);
     }
 
-    public void deleteUser(Long id) {
+    public void delete(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> {
             log.error("User not found for delete, id={}", id);
             return new ResourceNotFoundException(User.class, id);

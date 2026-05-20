@@ -86,7 +86,7 @@ class UserUnitTest {
         when(cartRepository.save(new Cart())).thenReturn(cart);
         when(authenticationService.findByNumber(userDto.getNumber())).thenReturn(new Authentication());
 
-        assertDoesNotThrow(() -> userService.addUser(userDto));
+        assertDoesNotThrow(() -> userService.add(userDto));
 
         verify(cartRepository).save(any(Cart.class));
         verify(userRepository).save(any(User.class));
@@ -97,7 +97,8 @@ class UserUnitTest {
         when(userRepository.findByName(userDto.getName())).thenReturn(user);
 
         ResourceExistsException exception = assertThrows(ResourceExistsException.class,
-                () -> userService.addUser(userDto));
+                () -> userService.add(userDto));
+
         assertEquals("class ru.angelika.boutique.model.User with data "
                 + userDto.getName() + " already exists", exception.getMessage());
         verify(userRepository, never()).save(any(User.class));
@@ -108,7 +109,8 @@ class UserUnitTest {
         when(userRepository.findByName(userDto.getName())).thenReturn(null);
         when(userRepository.findByNumber(userDto.getNumber())).thenReturn(user);
 
-        assertThrows(ResourceExistsException.class, () -> userService.addUser(userDto));
+        assertThrows(ResourceExistsException.class, () -> userService.add(userDto));
+
         verify(userRepository, never()).save(any(User.class));
     }
 
@@ -118,7 +120,8 @@ class UserUnitTest {
         when(userRepository.findByNumber(userDto.getNumber())).thenReturn(null);
         when(userRepository.findByEmail(userDto.getEmail())).thenReturn(user);
 
-        assertThrows(ResourceExistsException.class, () -> userService.addUser(userDto));
+        assertThrows(ResourceExistsException.class, () -> userService.add(userDto));
+
         verify(userRepository, never()).save(any(User.class));
     }
 
@@ -130,7 +133,8 @@ class UserUnitTest {
         when(authenticationService.findByNumber(userDto.getNumber()))
                 .thenThrow(new ResourceNotFoundException(Authentication.class, userDto.getNumber()));
 
-        assertThrows(ResourceNotFoundException.class, () -> userService.addUser(userDto));
+        assertThrows(ResourceNotFoundException.class, () -> userService.add(userDto));
+
         verify(userRepository, never()).save(any(User.class));
         verify(cartRepository).save(any(Cart.class));
     }
@@ -138,7 +142,9 @@ class UserUnitTest {
     @Test
     void getById_Success() {
         when(userRepository.findById(id)).thenReturn(Optional.of(user));
+
         User result = userService.getById(id);
+
         assertNotNull(result);
         assertEquals(user.getId(), result.getId());
     }
@@ -146,7 +152,10 @@ class UserUnitTest {
     @Test
     void getById_NotFound_ThrowsException() {
         when(userRepository.findById(falseId)).thenReturn(Optional.empty());
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> userService.getById(falseId));
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> userService.getById(falseId));
+
         assertEquals("class ru.angelika.boutique.model.User not found with id: " + falseId, exception.getMessage());
     }
 
@@ -189,13 +198,17 @@ class UserUnitTest {
     @Test
     void checkOwnFeedbacks_UserNotFound_ThrowsException() {
         when(userRepository.findByIdWithItemsAndFeedbacks(falseId)).thenReturn(null);
-        assertThrows(ResourceNotFoundException.class, () -> userService.checkItemIdWithOwnFeedbacks(falseId));
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> userService.checkItemIdWithOwnFeedbacks(falseId));
     }
 
     @Test
     void getByNumber_Success() {
         when(userRepository.findByNumber(userDto.getNumber())).thenReturn(user);
+
         User result = userService.getByNumber(userDto.getNumber());
+
         assertNotNull(result);
         assertEquals(user.getNumber(), result.getNumber());
     }
@@ -203,20 +216,25 @@ class UserUnitTest {
     @Test
     void getByNumber_NotFound_ThrowsException() {
         when(userRepository.findByNumber(falseNumber)).thenReturn(null);
+
         assertThrows(ResourceNotFoundException.class, () -> userService.getByNumber(falseNumber));
     }
 
     @Test
     void getOrders_Success() {
         when(orderRepository.findByUserIdAndStatusNot(id, Status.RECEIVED)).thenReturn(List.of(new Order()));
+
         List<Order> result = userService.getOrders(id);
+
         assertEquals(1, result.size());
     }
 
     @Test
     void getAllUsers_Success() {
         when(userRepository.findAll()).thenReturn(List.of(user));
-        List<User> result = userService.getAllUsers();
+
+        List<User> result = userService.getAll();
+
         assertEquals(1, result.size());
     }
 
@@ -228,6 +246,7 @@ class UserUnitTest {
         when(userRepository.findByNumber(userDto.getNumber())).thenReturn(user);
 
         List<Long> result = userService.getCardsId(userDto.getNumber());
+
         assertEquals(1, result.size());
         assertTrue(result.contains(itemCard.getId()));
     }
@@ -237,14 +256,17 @@ class UserUnitTest {
         when(userRepository.findByNumber(userDto.getNumber())).thenReturn(user);
 
         List<Long> result = userService.getCardsId(userDto.getNumber());
+
         assertEquals(0, result.size());
     }
 
     @Test
     void getCardsId_UserNotFound_ThrowsException() {
         when(userRepository.findByNumber(falseNumber)).thenReturn(null);
+
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                 () -> userService.getCardsId(falseNumber));
+
         assertEquals("class ru.angelika.boutique.model.User not found with data: " + falseNumber , exception.getMessage());
     }
 
@@ -256,7 +278,8 @@ class UserUnitTest {
         when(userRepository.findByEmail(updateDto.getEmail())).thenReturn(null);
         doNothing().when(authenticationService).updateData(any(AuthenticationDto.class), any());
 
-        assertDoesNotThrow(() -> userService.updateUser(updateDto, id));
+        assertDoesNotThrow(() -> userService.update(updateDto, id));
+
         verify(userRepository).save(user);
         verify(authenticationService).updateData(any(AuthenticationDto.class), any());
     }
@@ -272,7 +295,7 @@ class UserUnitTest {
         when(userRepository.findById(id)).thenReturn(Optional.of(user));
         doNothing().when(authenticationService).updateData(any(AuthenticationDto.class), any());
 
-        assertDoesNotThrow(() -> userService.updateUser(dto, id));
+        assertDoesNotThrow(() -> userService.update(dto, id));
 
         verify(userRepository, never()).findByName(any());
         verify(userRepository, never()).findByNumber(any());
@@ -288,7 +311,8 @@ class UserUnitTest {
         when(userRepository.findById(id)).thenReturn(Optional.of(user));
         when(userRepository.findByName(updateDto.getName())).thenReturn(existingUser);
 
-        assertThrows(ResourceExistsException.class, () -> userService.updateUser(updateDto, id));
+        assertThrows(ResourceExistsException.class, () -> userService.update(updateDto, id));
+
         verify(userRepository, never()).save(any());
         verify(authenticationService, never()).updateData(any(), any());
     }
@@ -301,7 +325,8 @@ class UserUnitTest {
         when(userRepository.findByName(updateDto.getName())).thenReturn(null);
         when(userRepository.findByNumber(updateDto.getNumber())).thenReturn(existingUser);
 
-        assertThrows(ResourceExistsException.class, () -> userService.updateUser(updateDto, id));
+        assertThrows(ResourceExistsException.class, () -> userService.update(updateDto, id));
+
         verify(userRepository, never()).save(any());
         verify(authenticationService, never()).updateData(any(), any());
     }
@@ -315,14 +340,13 @@ class UserUnitTest {
         when(userRepository.findByNumber(updateDto.getNumber())).thenReturn(null);
         when(userRepository.findByEmail(updateDto.getEmail())).thenReturn(existingUser);
 
-        assertThrows(ResourceExistsException.class, () -> userService.updateUser(updateDto, id));
+        assertThrows(ResourceExistsException.class, () -> userService.update(updateDto, id));
+
         verify(userRepository, never()).save(any());
         verify(authenticationService, never()).updateData(any(AuthenticationDto.class), any());
     }
     @Test
     void updateUser_PasswordInvalid_ThrowsException() {
-        User existingUser = new User();
-        existingUser.setEmail(updateDto.getEmail());
         when(userRepository.findById(id)).thenReturn(Optional.of(user));
         when(userRepository.findByName(updateDto.getName())).thenReturn(null);
         when(userRepository.findByNumber(updateDto.getNumber())).thenReturn(null);
@@ -330,7 +354,8 @@ class UserUnitTest {
         doThrow(new PasswordInvalidException("Your password is incorrect"))
                 .when(authenticationService).updateData(any(AuthenticationDto.class), any());
 
-        assertThrows(PasswordInvalidException.class, () -> userService.updateUser(updateDto, id));
+        assertThrows(PasswordInvalidException.class, () -> userService.update(updateDto, id));
+
         verify(userRepository, never()).save(any());
     }
 
@@ -349,7 +374,8 @@ class UserUnitTest {
         when(feedbackRepository.findByUserId(id)).thenReturn(List.of(feedback));
         when(itemCardRepository.findItemByFeedbackId(feedback.getId())).thenReturn(itemCard);
 
-        assertDoesNotThrow(() -> userService.deleteUser(id));
+        assertDoesNotThrow(() -> userService.delete(id));
+
         assertEquals(0, itemCard.getFeedbacks().size());
         verify(userRepository).deleteById(id);
         verify(feedbackRepository).deleteAll(anyList());
@@ -369,7 +395,8 @@ class UserUnitTest {
         when(feedbackRepository.findByUserId(id)).thenReturn(List.of(feedback));
         when(itemCardRepository.findItemByFeedbackId(feedback.getId())).thenReturn(null);
 
-        assertDoesNotThrow(() -> userService.deleteUser(id));
+        assertDoesNotThrow(() -> userService.delete(id));
+
         verify(itemCardRepository, never()).save(any());
         verify(userRepository).deleteById(id);
         verify(feedbackRepository).deleteAll(anyList());
@@ -378,13 +405,13 @@ class UserUnitTest {
 
     @Test
     void deleteUser_FeedbacksEmpty_Success() {
-
         when(userRepository.findById(id)).thenReturn(Optional.of(user));
         doNothing().when(authenticationService).deleteAuthentication(user.getNumber());
         when(orderRepository.findByUserId(id)).thenReturn(List.of(new Order()));
         when(feedbackRepository.findByUserId(id)).thenReturn(List.of());
 
-        assertDoesNotThrow(() -> userService.deleteUser(id));
+        assertDoesNotThrow(() -> userService.delete(id));
+
         verify(itemCardRepository, never()).findItemByFeedbackId(any());
         verify(userRepository).deleteById(id);
         verify(feedbackRepository).deleteAll(anyList());
@@ -392,8 +419,26 @@ class UserUnitTest {
     }
 
     @Test
+    void deleteUser_AuthenticationNotFound_ThrowsException() {
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+        doThrow(new ResourceNotFoundException(Authentication.class, user.getNumber()))
+                .when(authenticationService).deleteAuthentication(user.getNumber());
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.delete(id));
+
+        verify(userRepository, never()).deleteById(id);
+        verify(feedbackRepository, never()).deleteAll(anyList());
+        verify(orderRepository, never()).deleteAll(anyList());
+    }
+
+    @Test
     void deleteUser_UserNotFound_ThrowsException() {
         when(userRepository.findById(falseId)).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> userService.deleteUser(falseId));
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.delete(falseId));
+
+        verify(userRepository, never()).deleteById(id);
+        verify(feedbackRepository, never()).deleteAll(anyList());
+        verify(orderRepository, never()).deleteAll(anyList());
     }
 }

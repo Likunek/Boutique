@@ -42,7 +42,7 @@ public class UserController {
 
     @GetMapping("/admin/users")
     public String getAllUsers(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("users", userService.getAll());
         return "admin-users";
     }
 
@@ -61,7 +61,7 @@ public class UserController {
                 log.warn("User tried to update /user/profile/ with id={} from someone else's path", id);
                 return "redirect:/welcome";
             }
-            userService.updateUser(updateEntityDto, id);
+            userService.update(updateEntityDto, id);
         } catch (Exception e) {
             log.error("Error update user profile id={}: {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
@@ -77,7 +77,7 @@ public class UserController {
             log.warn("User tried to delete /user/profile/ with id={} from someone else's path", id);
             return "redirect:/welcome";
         }
-        userService.deleteUser(id);
+        userService.delete(id);
         return "redirect:/admin/users";
     }
 

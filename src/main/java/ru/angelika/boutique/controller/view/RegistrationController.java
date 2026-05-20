@@ -4,7 +4,6 @@ package ru.angelika.boutique.controller.view;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,8 +53,8 @@ public class RegistrationController {
         try {
             authenticationService.addAuthentication(UserMapper.toAuthentication(user));
             switch (user.getRole()) {
-                case USER -> userService.addUser(user);
-                case SELLER -> sellerService.addSeller(UserMapper.toSeller(user));
+                case USER -> userService.add(user);
+                case SELLER -> sellerService.add(UserMapper.toSeller(user));
             }
             model.addAttribute("successMessage", "You have successfully registered!");
             return "redirect:/login";

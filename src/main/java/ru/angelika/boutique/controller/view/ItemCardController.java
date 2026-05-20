@@ -3,9 +3,6 @@ package ru.angelika.boutique.controller.view;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.valves.rewrite.InternalRewriteMap;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -133,7 +130,7 @@ public class ItemCardController {
                 model.addAttribute("cardsId", userService.getCardsId(auth.getName()));
             }
         }
-        Long sellerId = sellerService.getBySellerName(itemCard.getSeller()).getId();
+        Long sellerId = sellerService.getByName(itemCard.getSeller()).getId();
         model.addAttribute("isOwner", isOwner);
         model.addAttribute("role", role);
         model.addAttribute("itemCard", itemCard);
