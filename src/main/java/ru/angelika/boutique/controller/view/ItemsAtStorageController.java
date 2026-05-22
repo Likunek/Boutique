@@ -36,7 +36,7 @@ public class ItemsAtStorageController {
         try {
             Seller seller = getAuthSeller();
             List<Item> items = itemService.getBySellerId(seller.getId());
-            List<Storage> storages = storageService.getAllStorages();
+            List<Storage> storages = storageService.getAll();
 
             model.addAttribute("items", items);
             model.addAttribute("storages", storages);
@@ -55,7 +55,7 @@ public class ItemsAtStorageController {
     public String getFormItemsAtStorage(Model model) {
         Seller seller = getAuthSeller();
         List<Item> items = itemService.getBySellerId(seller.getId());
-        List<Storage> storages = storageService.getAllStorages();
+        List<Storage> storages = storageService.getAll();
 
         model.addAttribute("items", items);
         model.addAttribute("storages", storages);

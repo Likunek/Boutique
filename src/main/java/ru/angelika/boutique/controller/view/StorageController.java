@@ -3,7 +3,6 @@ package ru.angelika.boutique.controller.view;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,7 +31,7 @@ public class StorageController {
             return "admin-add-storage";
         }
         try {
-            storageService.addStorage(storageDto);
+            storageService.add(storageDto);
             model.addAttribute("successMessage", "Storage added successfully!");
         } catch (Exception e) {
             log.error("Error add Storage '{}, {}': {}", storageDto.getCity(), storageDto.getAddress(), e.getMessage(), e);
@@ -47,17 +46,17 @@ public class StorageController {
 
     @GetMapping
     public String getAllStorage(Model model) {
-        model.addAttribute("storages", storageService.getAllStorages());
+        model.addAttribute("storages", storageService.getAll());
         return "admin-storages";
     }
     @PutMapping("{id}")
     public String updateStorage(StorageDto storageDto, @PathVariable Long id) {
-        storageService.updateStorage(storageDto, id);
+        storageService.update(storageDto, id);
         return "redirect:/admin/storages";
     }
     @DeleteMapping("{id}")
     public String deleteStorage(@PathVariable Long id) {
-        storageService.deleteStorage(id);
+        storageService.delete(id);
         return "redirect:/admin/storages";
     }
 }

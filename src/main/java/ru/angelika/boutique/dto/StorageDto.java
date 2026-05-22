@@ -1,9 +1,11 @@
 package ru.angelika.boutique.dto;
 
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class StorageDto {
     @NotBlank(message = "Address is required")
     @Size(max = 50, message = "Address must be up to 50 characters")

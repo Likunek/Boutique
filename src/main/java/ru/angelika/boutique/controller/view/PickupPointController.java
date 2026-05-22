@@ -45,14 +45,14 @@ public class PickupPointController {
 
     @GetMapping("/add")
     public String getFormNewPoint(Model model) {
-        model.addAttribute("storages", storageService.getAllStorages());
+        model.addAttribute("storages", storageService.getAll());
         return "admin-add-point";
     }
 
     @GetMapping
     public String getAllPoints(Model model) {
         model.addAttribute("points", pickupPointService.getAll());
-        model.addAttribute("storages", storageService.getAllStorages());
+        model.addAttribute("storages", storageService.getAll());
         return "admin-points";
     }
 
