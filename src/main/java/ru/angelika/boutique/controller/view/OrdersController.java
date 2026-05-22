@@ -57,9 +57,9 @@ public class OrdersController {
         }
         model.addAttribute("cartId", cartId);
         model.addAttribute("userBalance", user.getBalance());
-        model.addAttribute("totalPrice", cartService.getCartById(cartId).getTotalPrice());
+        model.addAttribute("totalPrice", cartService.getById(cartId).getTotalPrice());
         model.addAttribute("pickupPoints", pickupPointService.getAll());
-        model.addAttribute("items", cartService.getCartById(cartId).getItemCards());
+        model.addAttribute("items", cartService.getById(cartId).getItemCards());
         return "user-order";
     }
 

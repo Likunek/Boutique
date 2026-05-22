@@ -2,13 +2,11 @@ package ru.angelika.boutique.controller.view;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.angelika.boutique.model.ItemCard;
 import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.service.CartService;
 import ru.angelika.boutique.service.UserService;
@@ -30,7 +28,7 @@ public class CartController {
             log.warn("User with id={} tried to view cart from someone else's path", user.getId());
             return "redirect:/welcome";
         }
-        model.addAttribute("cart", cartService.getCartById(id));
+        model.addAttribute("cart", cartService.getById(id));
         return "user-cart";
     }
 
