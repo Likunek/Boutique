@@ -23,7 +23,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final PickupPointService pickupPointService;
 
-    public void addOrder(OrderDto orderDto, User user, Long cartId) {
+    public void add(OrderDto orderDto, User user, Long cartId) {
         List<ItemCard> cards = orderDto.getItemCards()
                 .parallelStream()
                 .map(itemCardService::get)
@@ -44,7 +44,11 @@ public class OrderService {
         return user.getBalance() - cards.stream().mapToDouble(ItemCard::getPrice).sum();
     }
 
-    public List<Order> getOrdersByStatus(Status status) {
+    public List<Order> getAll() {
+        return orderRepository.findAll();
+    }
+
+    public List<Order> getAllByStatus(Status status) {
         log.debug("Get orders by status={}", status);
         return orderRepository.findByStatus(status);
     }
@@ -52,7 +56,6 @@ public class OrderService {
     @Transactional
     public void updateStatus(Order order, Status status) {
         order.setStatus(status);
-        orderRepository.save(order);
         log.info("Update order by id={}, new status={}", order.getId(), status);
         if (status == Status.RECEIVED) {
             User user = userRepository.findById(order.getUser().getId())
@@ -64,9 +67,6 @@ public class OrderService {
             userRepository.save(user);
             log.info("Update user's purchase history id={}", order.getUser().getId());
         }
-    }
-
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+        orderRepository.save(order);
     }
 }

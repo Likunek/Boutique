@@ -31,7 +31,7 @@ public class SupplyService {
 
     @Scheduled(cron = "0 0 23 * * ?")
     public void addSupply() {
-        List<Order> orders = orderService.getOrdersByStatus(Status.NEW);
+        List<Order> orders = orderService.getAllByStatus(Status.NEW);
         Set<Long> orderPointIds = orders.stream()
                 .map(order -> order.getPoint().getId())
                 .collect(Collectors.toSet());

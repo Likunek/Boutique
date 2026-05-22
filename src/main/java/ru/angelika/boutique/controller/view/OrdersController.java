@@ -38,13 +38,13 @@ public class OrdersController {
             redirectAttributes.addFlashAttribute("errorMessage", "Insufficient funds!");
             return "redirect:/user/order/" + cartId;
         }
-        orderService.addOrder(orderDto, user, cartId);
+        orderService.add(orderDto, user, cartId);
         return "redirect:/user/cart/" + cartId;
     }
 
     @GetMapping("/admin/orders")
     public String getAllOrders(Model model) {
-        model.addAttribute("orders", orderService.getAllOrders());
+        model.addAttribute("orders", orderService.getAll());
         return "admin-orders";
     }
 
