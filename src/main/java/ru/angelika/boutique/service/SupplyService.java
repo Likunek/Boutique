@@ -35,7 +35,7 @@ public class SupplyService {
         Set<Long> orderPointIds = orders.stream()
                 .map(order -> order.getPoint().getId())
                 .collect(Collectors.toSet());
-        List<PickupPoint> points = pickupPointService.getAllPoints()
+        List<PickupPoint> points = pickupPointService.getAll()
                 .stream()
                 .filter(point -> orderPointIds.contains(point.getId()))
                 .toList();

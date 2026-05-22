@@ -63,11 +63,11 @@ public class StorageService {
     }
 
     private void replaceStorage(Long id) {
-        List<PickupPoint> points = pickupPointService.getAllPointsByStorage(id);
+        List<PickupPoint> points = pickupPointService.getAllByStorage(id);
         for (PickupPoint point : points) {
             List<Storage> storages = storageRepository.findByCity(point.getCity());
             if (storages.size() == 0) {
-                pickupPointService.deletePickupPoint(point.getId());
+                pickupPointService.delete(point.getId());
             } else {
                 storages.stream()
                         .filter(s -> !s.getId().equals(id))
@@ -77,7 +77,7 @@ public class StorageService {
                                     point.setStorage(storage);
                                     pickupPointService.updateStorage(point);
                                 },
-                                () -> pickupPointService.deletePickupPoint(point.getId())
+                                () -> pickupPointService.delete(point.getId())
                         );
             }
         }

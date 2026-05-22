@@ -29,7 +29,7 @@ public class OrderService {
                 .map(itemCardService::get)
                 .toList();
         user.setBalance(user.getBalance() - cards.stream().mapToDouble(ItemCard::getPrice).sum());
-        PickupPoint point = pickupPointService.getPickupPoint(orderDto.getPointId());
+        PickupPoint point = pickupPointService.get(orderDto.getPointId());
         orderRepository.save(OrderMapper.toOrder(user, point, cards));
         cartService.deleteCardsFromCart(cartId, orderDto.getItemCards());
         log.info("Add new order: userId={}, pointId={}, countItems={}",
