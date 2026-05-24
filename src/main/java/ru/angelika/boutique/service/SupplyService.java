@@ -23,22 +23,17 @@ public class SupplyService {
     private final SupplyRepository supplyRepository;
     private final OrderService orderService;
     private final SupplyTransactionalService service;
-    private final PickupPointService pickupPointService;
 
-    public List<Supply> getAllSupplies() {
+    public List<Supply> getAll() {
         return supplyRepository.findAll();
     }
 
     @Scheduled(cron = "0 0 23 * * ?")
     public void addSupply() {
         List<Order> orders = orderService.getAllByStatus(Status.NEW);
-        Set<Long> orderPointIds = orders.stream()
-                .map(order -> order.getPoint().getId())
+        Set<PickupPoint> points = orders.stream()
+                .map(Order::getPoint)
                 .collect(Collectors.toSet());
-        List<PickupPoint> points = pickupPointService.getAll()
-                .stream()
-                .filter(point -> orderPointIds.contains(point.getId()))
-                .toList();
         points.forEach(point -> handlerPoint(point, orders));
     }
 
@@ -61,7 +56,6 @@ public class SupplyService {
                 if (supply.getItems().size() > 0) {
                     saveSupply(supply, point);
                 }
-
             } catch (Exception e) {
                 throw new SupplyException("An error occurred when forming supply");
             }

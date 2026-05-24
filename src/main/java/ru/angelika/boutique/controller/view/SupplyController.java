@@ -13,7 +13,7 @@ public class SupplyController {
 
     @GetMapping("/admin/supplies")
     public String getAllSupplies(Model model) {
-        model.addAttribute("supplies", supplyService.getAllSupplies());
+        model.addAttribute("supplies", supplyService.getAll());
         return "admin-supplies";
     }
 
