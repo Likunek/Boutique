@@ -33,6 +33,9 @@ public class SpringSecurityConfig {
                         .usernameParameter("number")
                         .defaultSuccessUrl("/welcome", true)
                         .permitAll())
+                .exceptionHandling(exceptions -> exceptions
+                        .accessDeniedPage("/access-denied")
+                )
                 .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }

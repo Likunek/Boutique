@@ -37,20 +37,20 @@ public class SellerController {
     }
 
     @GetMapping("/public-seller/{id}")
-    public String getSeller(@PathVariable Long id, @RequestParam String role, Model model) {
+    public String get(@PathVariable Long id, @RequestParam String role, Model model) {
         Seller seller = sellerService.getById(id);
         model.addAttribute("role", role);
         model.addAttribute("seller", seller);
         return "public-seller";
     }
     @GetMapping("/admin/sellers")
-    public String getAllSellers(Model model) {
+    public String getAll(Model model) {
         model.addAttribute("sellers", sellerService.getAll());
         return "admin-sellers";
     }
 
     @PutMapping("/seller/profile/{id}")
-    public String updateSeller(@PathVariable Long id, @Valid UpdateEntityDto updateEntityDto,
+    public String update(@PathVariable Long id, @Valid UpdateEntityDto updateEntityDto,
                                BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Please correct the errors: " +
@@ -74,7 +74,7 @@ public class SellerController {
     }
 
     @DeleteMapping("/seller/profile/{id}")
-    public String deleteSeller(@PathVariable Long id) {
+    public String delete(@PathVariable Long id) {
         if (security(id)) {
             log.warn("Seller tried to delete /seller/profile/ with id={} from someone else's path", id);
             return "redirect:/welcome";

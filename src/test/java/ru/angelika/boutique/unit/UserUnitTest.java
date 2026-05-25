@@ -152,7 +152,7 @@ class UserUnitTest {
         when(userRepository.findById(FALSE_ID)).thenReturn(Optional.empty());
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                 () -> userService.getById(FALSE_ID));
-        assertEquals("class ru.angelika.boutique.model.User not found with ID: " + FALSE_ID, exception.getMessage());
+        assertEquals("class ru.angelika.boutique.model.User not found with id: " + FALSE_ID, exception.getMessage());
     }
 
     @Test
