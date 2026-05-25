@@ -89,6 +89,11 @@ public class RegistrationController {
         return "welcome";
     }
 
+    @GetMapping("/access-denied")
+    public String accessDenied() {
+        return "access-denied";
+    }
+
     @GetMapping("/admin/profile/1")
     public String adminPage() {
         return "admin";
