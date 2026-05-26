@@ -30,6 +30,12 @@ public class ItemController {
     private boolean isAdmin;
 
 
+    @GetMapping("/seller/add-item")
+    public String getFormNewItem(Model model) {
+        addData(model);
+        return "add-item";
+    }
+
     @PostMapping("/seller/add-item")
     public String add(@Valid ItemDto itemDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
@@ -40,20 +46,14 @@ public class ItemController {
                             .collect(Collectors.joining(", ")));
             return "add-item";
         }
+        Seller seller = addData(model);
         try {
-            Seller seller = addData(model);
             itemService.add(itemDto, seller);
             model.addAttribute("successMessage", "Item '" + itemDto.getName() + "' added successfully!");
         } catch (Exception e) {
             log.error("Error add item '{}': {}", itemDto.getName(), e.getMessage(), e);
             model.addAttribute("errorMessage", "Error saving item: " + e.getMessage());
         }
-        return "add-item";
-    }
-
-    @GetMapping("/seller/add-item")
-    public String getFormNewItem(Model model) {
-        addData(model);
         return "add-item";
     }
 
@@ -94,13 +94,21 @@ public class ItemController {
     }
 
     @PutMapping("/items/{id}")
-    public String update(@PathVariable Long id, @Valid ItemDto itemDto, RedirectAttributes redirectAttributes) {
+    public String update(@PathVariable Long id, @Valid ItemDto itemDto,
+                         BindingResult result, RedirectAttributes redirectAttributes) {
+        Long sellerId = itemService.getById(id).getSeller().getId();
+        if (security(sellerId)) {
+            log.warn("Seller with id={} tried to update item with id={} from someone else's path", sellerId, id);
+            return "redirect:/welcome";
+        }
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Please correct the errors: " +
+                    result.getAllErrors().stream()
+                            .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                            .collect(Collectors.joining(", ")));
+            return "redirect:/items/" + id;
+        }
         try {
-            Long sellerId = itemService.getById(id).getSeller().getId();
-            if (security(sellerId)) {
-                log.warn("Seller with id={} tried to update item with id={} from someone else's path", sellerId, id);
-                return "redirect:/welcome";
-            }
             itemService.update(itemDto, id, sellerId);
             redirectAttributes.addFlashAttribute("successMessage", "Item successfully update!");
         } catch (Exception e) {
@@ -114,8 +122,8 @@ public class ItemController {
     public String delete(@PathVariable Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String roleName = auth.getAuthorities().iterator().next().getAuthority();
-        Long sellerId = itemService.getById(id).getSeller().getId();
         if (roleName.equals("ROLE_SELLER")) {
+            Long sellerId = itemService.getById(id).getSeller().getId();
             if (!sellerService.getByNumber(auth.getName()).getId().equals(sellerId)) {
                 log.warn("Seller with id={} tried to delete item with id={} from someone else's path", sellerId, id);
                 return "redirect:/welcome";

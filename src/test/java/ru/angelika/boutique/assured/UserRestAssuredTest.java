@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.angelika.boutique.dto.UpdateEntityDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
+import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.service.UserService;
 
@@ -313,6 +314,29 @@ class UserRestAssuredTest {
                 .then()
                 .statusCode(302)
                 .header("Location", "/logout");
+    }
+
+    @Test
+    @WithMockUser(username = NUMBER, roles = USER_ROLE)
+    void delete_UserNotFoundByNumber_ThrowsException() {
+        when(userService.getByNumber(NUMBER)).thenThrow(new ResourceNotFoundException(User.class, NUMBER));
+        given()
+                .when()
+                .delete("/users/{id}", USER_ID)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    @WithMockUser(username = NUMBER, roles = USER_ROLE)
+    void delete_UserNotFoundById_ThrowsException() {
+        when(userService.getByNumber(NUMBER)).thenReturn(testUser);
+        doThrow(new ResourceNotFoundException(User.class, USER_ID)).when(userService).delete(USER_ID);
+        given()
+                .when()
+                .delete("/users/{id}", USER_ID)
+                .then()
+                .statusCode(404);
     }
 
     @Test

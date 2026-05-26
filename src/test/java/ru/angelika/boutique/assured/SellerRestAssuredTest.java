@@ -98,7 +98,7 @@ class SellerRestAssuredTest {
     @Test
     @WithMockUser(username = NUMBER, roles = SELLER_ROLE)
     void sellerPage_SellerNotFoundByNumber_ThrowsException() {
-        when(sellerService.getByNumber(NUMBER)).thenThrow(new ResourceNotFoundException(Seller.class, SELLER_ID));
+        when(sellerService.getByNumber(NUMBER)).thenThrow(new ResourceNotFoundException(Seller.class, NUMBER));
         given()
                 .when()
                 .get("/seller/profile/{id}", SELLER_ID)
