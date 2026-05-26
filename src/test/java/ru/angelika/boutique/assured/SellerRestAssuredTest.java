@@ -310,6 +310,25 @@ class SellerRestAssuredTest {
 
     @Test
     @WithMockUser(username = NUMBER, roles = SELLER_ROLE)
+    void update_ValidationFailure_NewPasswordLong() {
+        when(sellerService.getByNumber(NUMBER)).thenReturn(testSeller);
+        given()
+                .param("name", "new_name")
+                .param("number", NUMBER)
+                .param("email", "new@mail.com")
+                .param("oldPassword", "1234")
+                .param("newPassword", "12345678900")
+                .param("_method", "put")
+                .when()
+                .post("/seller/profile/{id}", SELLER_ID)
+                .then()
+                .statusCode(302)
+                .header("Location", "/seller/profile/1");
+        verify(sellerService, never()).update(any(), any());
+    }
+
+    @Test
+    @WithMockUser(username = NUMBER, roles = SELLER_ROLE)
     void update_SellerNotFound_ThrowsException() {
         when(sellerService.getByNumber(NUMBER)).thenThrow(new ResourceNotFoundException(Seller.class, NUMBER));
 

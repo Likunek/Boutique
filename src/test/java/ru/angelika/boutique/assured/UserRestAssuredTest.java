@@ -220,6 +220,25 @@ class UserRestAssuredTest {
 
     @Test
     @WithMockUser(username = NUMBER, roles = USER_ROLE)
+    void update_ValidationFailure_NewPasswordLong() {
+        when(userService.getByNumber(NUMBER)).thenReturn(testUser);
+        given()
+                .param("name", "new_name")
+                .param("number", NUMBER)
+                .param("email", "new@mail.com")
+                .param("oldPassword", "1234")
+                .param("newPassword", "12345678900")
+                .param("_method", "put")
+                .when()
+                .post("/user/profile/{id}", USER_ID)
+                .then()
+                .statusCode(302)
+                .header("Location", "/user/profile/1");
+        verify(userService, never()).update(any(), any());
+    }
+
+    @Test
+    @WithMockUser(username = NUMBER, roles = USER_ROLE)
     void update_UserNotFound_ThrowsException() {
         when(userService.getByNumber(NUMBER)).thenThrow(new ResourceNotFoundException(User.class, ""));
 
