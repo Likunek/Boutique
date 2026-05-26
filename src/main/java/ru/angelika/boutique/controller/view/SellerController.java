@@ -75,7 +75,7 @@ public class SellerController {
         return "redirect:/logout";
     }
 
-    @DeleteMapping("/seller/profile/{id}")
+    @DeleteMapping("/sellers/{id}")
     public String delete(@PathVariable Long id) {
         if (security(id)) {
             log.warn("Seller tried to delete /seller/profile/ with id={} from someone else's path", id);

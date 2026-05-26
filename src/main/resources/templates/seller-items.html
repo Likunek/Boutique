@@ -377,7 +377,7 @@
                     <tr th:each="item : ${items}">
                         <td th:text="${item.id}">1</td>
                         <td>
-                            <a th:href="@{/seller/items/{id}(id=${item.id})}"
+                            <a th:href="@{/items/{id}(id=${item.id})}"
                                th:text="${item.name}"
                                class="item-link">
                                 Item Name

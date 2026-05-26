@@ -73,7 +73,7 @@ public class UserController {
     }
 
 
-    @DeleteMapping("/user/profile/{id}")
+    @DeleteMapping("/users/{id}")
     public String delete(@PathVariable Long id, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String roleName = auth.getAuthorities().iterator().next().getAuthority();

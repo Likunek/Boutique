@@ -136,9 +136,8 @@ class UserRestAssuredTest {
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
                 .param("newPassword", "5678")
-                .param("_method", "put")
                 .when()
-                .post("/user/profile/{id}", USER_ID)
+                .put("/user/profile/{id}", USER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/user/profile/1");
@@ -154,9 +153,8 @@ class UserRestAssuredTest {
                 .param("number", "4354")
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
-                .param("_method", "put")
                 .when()
-                .post("/user/profile/{id}", USER_ID)
+                .put("/user/profile/{id}", USER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/user/profile/1");
@@ -172,9 +170,8 @@ class UserRestAssuredTest {
                 .param("number", NUMBER)
                 .param("email", "invalid-email")
                 .param("oldPassword", "1234")
-                .param("_method", "put")
                 .when()
-                .post("/user/profile/{id}", USER_ID)
+                .put("/user/profile/{id}", USER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/user/profile/1");
@@ -190,9 +187,8 @@ class UserRestAssuredTest {
                 .param("number", NUMBER)
                 .param("email", "new@mail.com")
                 .param("oldPassword", "")
-                .param("_method", "put")
                 .when()
-                .post("/user/profile/{id}", USER_ID)
+                .put("/user/profile/{id}", USER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/user/profile/1");
@@ -209,9 +205,8 @@ class UserRestAssuredTest {
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
                 .param("newPassword", "123")
-                .param("_method", "put")
                 .when()
-                .post("/user/profile/{id}", USER_ID)
+                .put("/user/profile/{id}", USER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/user/profile/1");
@@ -228,9 +223,8 @@ class UserRestAssuredTest {
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
                 .param("newPassword", "12345678900")
-                .param("_method", "put")
                 .when()
-                .post("/user/profile/{id}", USER_ID)
+                .put("/user/profile/{id}", USER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/user/profile/1");
@@ -247,9 +241,8 @@ class UserRestAssuredTest {
                 .param("number", NUMBER)
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
-                .param("_method", "put")
                 .when()
-                .post("/user/profile/{id}", USER_ID)
+                .put("/user/profile/{id}", USER_ID)
                 .then()
                 .statusCode(404);
         verify(userService, never()).update(any(), any());
@@ -268,9 +261,8 @@ class UserRestAssuredTest {
                 .param("number", NUMBER)
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
-                .param("_method", "put")
                 .when()
-                .post("/user/profile/{id}", USER_ID)
+                .put("/user/profile/{id}", USER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/user/profile/1");;
@@ -288,9 +280,8 @@ class UserRestAssuredTest {
                 .param("number", NUMBER)
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
-                .param("_method", "put")
                 .when()
-                .post("/user/profile/{id}", USER_ID)
+                .put("/user/profile/{id}", USER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/welcome");
@@ -305,9 +296,8 @@ class UserRestAssuredTest {
                 .param("email", "new@example.com")
                 .param("oldPassword", "1234")
                 .param("newPassword", "5678")
-                .param("_method", "put")
                 .when()
-                .post("/user/profile/{id}", USER_ID)
+                .put("/user/profile/{id}", USER_ID)
                 .then()
                 .statusCode(403);
     }
@@ -318,9 +308,8 @@ class UserRestAssuredTest {
         when(userService.getByNumber(NUMBER)).thenReturn(testUser);
         doNothing().when(userService).delete(USER_ID);
         given()
-                .param("_method", "delete")
                 .when()
-                .post("/user/profile/{id}", USER_ID)
+                .delete("/users/{id}", USER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/logout");
@@ -331,9 +320,8 @@ class UserRestAssuredTest {
     void delete_AdminSuccess() {
         doNothing().when(userService).delete(USER_ID);
         given()
-                .param("_method", "delete")
                 .when()
-                .post("/user/profile/{id}", USER_ID)
+                .delete("/users/{id}", USER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/admin/users");
@@ -343,9 +331,8 @@ class UserRestAssuredTest {
     @WithMockUser(username = NUMBER, roles = SELLER_ROLE)
     void delete_Seller_ShouldReturnForbidden() {
         given()
-                .param("_method", "delete")
                 .when()
-                .post("/user/profile/{id}", USER_ID)
+                .delete("/users/{id}", USER_ID)
                 .then()
                 .statusCode(403);
     }
@@ -355,9 +342,8 @@ class UserRestAssuredTest {
     void delete_UserTryingDeleteAnother_RedirectToWelcome() {
         when(userService.getByNumber(NUMBER)).thenReturn(testUser);
         given()
-                .param("_method", "delete")
                 .when()
-                .post("/user/profile/{id}", 0L)
+                .delete("/users/{id}", 0L)
                 .then()
                 .statusCode(302)
                 .header("Location", "/welcome");

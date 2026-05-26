@@ -172,9 +172,8 @@ class SellerRestAssuredTest {
                 .param("number", NUMBER)
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
-                .param("_method", "put")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .put("/seller/profile/{id}", SELLER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/logout");
@@ -192,9 +191,8 @@ class SellerRestAssuredTest {
                 .param("number", NUMBER)
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
-                .param("_method", "put")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .put("/seller/profile/{id}", SELLER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/welcome");
@@ -210,9 +208,8 @@ class SellerRestAssuredTest {
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
                 .param("newPassword", "5678")
-                .param("_method", "put")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .put("/seller/profile/{id}", SELLER_ID)
                 .then()
                 .statusCode(403);
     }
@@ -226,9 +223,8 @@ class SellerRestAssuredTest {
                 .param("number", NUMBER)
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
-                .param("_method", "put")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .put("/seller/profile/{id}", SELLER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/seller/profile/1");
@@ -244,9 +240,8 @@ class SellerRestAssuredTest {
                 .param("number", "123")
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
-                .param("_method", "put")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .put("/seller/profile/{id}", SELLER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/seller/profile/1");
@@ -262,9 +257,8 @@ class SellerRestAssuredTest {
                 .param("number", NUMBER)
                 .param("email", "invalid-email")
                 .param("oldPassword", "1234")
-                .param("_method", "put")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .put("/seller/profile/{id}", SELLER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/seller/profile/1");
@@ -280,9 +274,8 @@ class SellerRestAssuredTest {
                 .param("number", NUMBER)
                 .param("email", "new@mail.com")
                 .param("oldPassword", "")
-                .param("_method", "put")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .put("/seller/profile/{id}", SELLER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/seller/profile/1");
@@ -299,9 +292,8 @@ class SellerRestAssuredTest {
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
                 .param("newPassword", "123")
-                .param("_method", "put")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .put("/seller/profile/{id}", SELLER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/seller/profile/1");
@@ -318,9 +310,8 @@ class SellerRestAssuredTest {
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
                 .param("newPassword", "12345678900")
-                .param("_method", "put")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .put("/seller/profile/{id}", SELLER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/seller/profile/1");
@@ -337,9 +328,8 @@ class SellerRestAssuredTest {
                 .param("number", NUMBER)
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
-                .param("_method", "put")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .put("/seller/profile/{id}", SELLER_ID)
                 .then()
                 .statusCode(404);
         verify(sellerService, never()).update(any(), any());
@@ -357,9 +347,8 @@ class SellerRestAssuredTest {
                 .param("number", NUMBER)
                 .param("email", "new@mail.com")
                 .param("oldPassword", "1234")
-                .param("_method", "put")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .put("/seller/profile/{id}", SELLER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/seller/profile/1");
@@ -372,9 +361,8 @@ class SellerRestAssuredTest {
         doNothing().when(sellerService).delete(SELLER_ID);
 
         given()
-                .param("_method", "delete")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .delete("/sellers/{id}", SELLER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/registration");
@@ -388,9 +376,8 @@ class SellerRestAssuredTest {
         when(sellerService.getByNumber(NUMBER)).thenReturn(otherSeller);
 
         given()
-                .param("_method", "delete")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .delete("/sellers/{id}", SELLER_ID)
                 .then()
                 .statusCode(302)
                 .header("Location", "/welcome");
@@ -401,9 +388,8 @@ class SellerRestAssuredTest {
     @WithMockUser(username = NUMBER, roles = USER_ROLE)
     void delete_UserRole_ShouldReturnForbidden() {
         given()
-                .param("_method", "delete")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .delete("/sellers/{id}", SELLER_ID)
                 .then()
                 .statusCode(403);
     }
@@ -413,9 +399,8 @@ class SellerRestAssuredTest {
     void delete_SellerNotFound_ThrowsException() {
         when(sellerService.getByNumber(NUMBER)).thenThrow(new ResourceNotFoundException(Seller.class, NUMBER));
         given()
-                .param("_method", "delete")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .delete("/sellers/{id}", SELLER_ID)
                 .then()
                 .statusCode(404);
         verify(sellerService, never()).delete(any());
@@ -429,9 +414,8 @@ class SellerRestAssuredTest {
                 .when(sellerService)
                 .delete(eq(SELLER_ID));
         given()
-                .param("_method", "delete")
                 .when()
-                .post("/seller/profile/{id}", SELLER_ID)
+                .delete("/sellers/{id}", SELLER_ID)
                 .then()
                 .statusCode(404);
     }

@@ -61,12 +61,15 @@ public class ItemCardController {
         return "add-card";
     }
 
-    @PutMapping("/seller/add-card/{id}")
+    @PutMapping("/cards/{id}")
     public String updateCard(@PathVariable Long id, @RequestParam Long itemId,
                              @Valid ItemCardUpdateDto itemCardUpdateDto, RedirectAttributes redirectAttributes) {
         try {
-            String sellerName = getAuthSeller().getName();
-            if (!itemService.getById(itemId).getSeller().getName().equals(sellerName)) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String roleName = auth.getAuthorities().iterator().next().getAuthority();
+            String sellerName = itemCardService.get(id).getSeller();
+            if (roleName.equals("ROLE_SELLER")
+                    && !sellerService.getByNumber(auth.getName()).getName().equals(sellerName)) {
                 log.warn("Seller with name={} tried to update itemCard with id={} from someone else's path", sellerName, itemId);
                 return "redirect:/welcome";
             }
@@ -76,7 +79,7 @@ public class ItemCardController {
             log.error("Error update itemCard id {} : {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
-        return "redirect:/seller/items/" + itemId;
+        return "redirect:/items/" + itemId;
     }
 
     @PostMapping("/user/item-card/feedback/{id}")
@@ -138,7 +141,7 @@ public class ItemCardController {
         return "item-card";
     }
 
-    @DeleteMapping("/item-card/{id}")
+    @DeleteMapping("/cards/{id}")
     public String deleteItemCardById(@PathVariable Long id, @RequestParam String role, Model model) {
         ItemCard itemCard = itemCardService.get(id);
         if (role.equals("ROLE_ADMIN") || security(itemCard.getSeller())) {

@@ -68,7 +68,7 @@ public class ItemsAtStorageController {
         return "admin-items-at-storage";
     }
 
-    @PutMapping("/seller/send-to-storage/{id}")
+    @PutMapping("/send-to-storage/{id}")
     public String updateFormItemsAtStorage(@PathVariable Long id, @RequestParam Long itemId,
                                            @Min(0) Long count, RedirectAttributes redirectAttributes) {
         try {
@@ -84,7 +84,7 @@ public class ItemsAtStorageController {
             log.error("Error update itemsAtStorage id={}: {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
-        return "redirect:/seller/items/" + itemId;
+        return "redirect:/items/" + itemId;
     }
 
     private Seller getAuthSeller() {

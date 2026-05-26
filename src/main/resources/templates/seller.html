@@ -442,7 +442,7 @@
 </div>
 
 <div class="delete-container">
-    <form th:action="@{/seller/profile/{id}(id=${seller.id})}" method="post"
+    <form th:action="@{/sellers/{id}(id=${seller.id})}" method="post"
           onsubmit="return confirm('Are you sure you want to delete this account? This action cannot be undone.');">
         <input type="hidden" name="_method" value="delete"/>
         <button type="submit" class="btn btn-danger">🗑️ Delete Account</button>

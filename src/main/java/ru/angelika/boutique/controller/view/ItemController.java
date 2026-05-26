@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 public class ItemController {
     private final ItemService itemService;
     private final SellerService sellerService;
-    private boolean isAdmin = true;
+    private boolean isAdmin;
 
 
     @PostMapping("/seller/add-item")
-    public String addItem(@Valid ItemDto itemDto, BindingResult result, Model model) {
+    public String add(@Valid ItemDto itemDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
             log.error("Error add Item {}", itemDto.getName());
             model.addAttribute("errorMessage", "Please correct the errors: " +
@@ -65,10 +65,11 @@ public class ItemController {
         return "seller-items";
     }
 
-    @GetMapping("/seller/items/{id}")
-    public String getItemById(@PathVariable Long id, Model model) {
+    @GetMapping("/items/{id}")
+    public String getById(@PathVariable Long id, Model model) {
         Item item = itemService.getById(id);
         Long sellerId = item.getSeller().getId();
+        isAdmin = true;
         if (security(sellerId)) {
             log.warn("Seller with id={} tried to view item with id={} from someone else's path", sellerId, id);
             return "redirect:/welcome";
@@ -78,7 +79,7 @@ public class ItemController {
         return "item";
     }
     @GetMapping("/admin/items")
-    public String getAllItems(@RequestParam(defaultValue = "true") boolean unverified, Model model) {
+    public String getAll(@RequestParam(defaultValue = "true") boolean unverified, Model model) {
         if (unverified) {
             model.addAttribute("items", itemService.getAll());
         } else {
@@ -92,8 +93,8 @@ public class ItemController {
         return "redirect:/admin/items";
     }
 
-    @PutMapping("/seller/items/{id}")
-    public String updateItem(@PathVariable Long id, @Valid ItemDto itemDto, RedirectAttributes redirectAttributes) {
+    @PutMapping("/items/{id}")
+    public String update(@PathVariable Long id, @Valid ItemDto itemDto, RedirectAttributes redirectAttributes) {
         try {
             Long sellerId = itemService.getById(id).getSeller().getId();
             if (security(sellerId)) {
@@ -106,13 +107,24 @@ public class ItemController {
             log.error("Error update item id={}: {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
-        return "redirect:/seller/items/" + id;
+        return "redirect:/items/" + id;
     }
 
-    @DeleteMapping("/seller/items/{id}")
-    public String deleteItem(@PathVariable Long id) {
+    @DeleteMapping("/items/{id}")
+    public String delete(@PathVariable Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String roleName = auth.getAuthorities().iterator().next().getAuthority();
+        Long sellerId = itemService.getById(id).getSeller().getId();
+        if (roleName.equals("ROLE_SELLER")) {
+            if (!sellerService.getByNumber(auth.getName()).getId().equals(sellerId)) {
+                log.warn("Seller with id={} tried to delete item with id={} from someone else's path", sellerId, id);
+                return "redirect:/welcome";
+            }
+            itemService.delete(id);
+            return "redirect:/seller/items";
+        }
         itemService.delete(id);
-        return "redirect:/seller/items";
+        return "redirect:/admin/items";
     }
 
     private Seller addData(Model model) {
