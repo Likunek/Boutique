@@ -32,12 +32,11 @@ public class ItemsAtStorageController {
     private final ItemsAtStorageService itemsAtStorageService;
 
     @PostMapping("/seller/send-to-storage")
-    public String addItemsAtStorage(@Valid ItemsAtStorageDto itemsAtStorageDto, Model model) {
-        try {
-            Seller seller = getAuthSeller();
-            List<Item> items = itemService.getBySellerId(seller.getId());
-            List<Storage> storages = storageService.getAll();
-
+    public String add(@Valid ItemsAtStorageDto itemsAtStorageDto, Model model) {
+        Seller seller = getAuthSeller();
+        List<Item> items = itemService.getBySellerId(seller.getId());
+        List<Storage> storages = storageService.getAll()
+        try {;
             model.addAttribute("items", items);
             model.addAttribute("storages", storages);
             model.addAttribute("id", seller.getId());
@@ -63,13 +62,13 @@ public class ItemsAtStorageController {
         return "send-to-storage";
     }
     @GetMapping("admin/item-at-storage")
-    public String getAllItemsAtStorage(Model model) {
+    public String getAll(Model model) {
         model.addAttribute("itemsAtStorages", itemsAtStorageService.getAll());
         return "admin-items-at-storage";
     }
 
     @PutMapping("/send-to-storage/{id}")
-    public String updateFormItemsAtStorage(@PathVariable Long id, @RequestParam Long itemId,
+    public String updateForm(@PathVariable Long id, @RequestParam Long itemId,
                                            @Min(0) Long count, RedirectAttributes redirectAttributes) {
         try {
             Item item = itemService.getById(itemId);
