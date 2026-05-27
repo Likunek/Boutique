@@ -11,6 +11,7 @@ public class FeedbackDto {
 
     @NotNull
     private Long userId;
+    @NotNull
     @Range(min = 1, max = 5)
     private Integer rating;
     private String text;

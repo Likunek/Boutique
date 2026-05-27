@@ -1,5 +1,6 @@
 package ru.angelika.boutique.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +10,7 @@ import lombok.Data;
 public class ItemCardDto {
     @NotNull
     private Long itemId;
-    @NotNull
+    @NotBlank
     private String name;
     private String description;
 }

@@ -46,10 +46,10 @@ public class ItemCardController {
     }
 
     @PostMapping("/seller/add-card")
-    public String addItemCard(@Valid ItemCardDto itemCardDto, Model model) {
+    public String add(@Valid ItemCardDto itemCardDto, Model model) {
+        Seller seller = getAuthSeller();
+        itemCardService.add(itemCardDto, seller.getName());
         try {
-            Seller seller = getAuthSeller();
-            itemCardService.add(itemCardDto, seller.getName());
             List<Item> items = itemService.getBySellerId(seller.getId());
             model.addAttribute("items", items);
             model.addAttribute("id", seller.getId());
@@ -62,17 +62,17 @@ public class ItemCardController {
     }
 
     @PutMapping("/cards/{id}")
-    public String updateCard(@PathVariable Long id, @RequestParam Long itemId,
-                             @Valid ItemCardUpdateDto itemCardUpdateDto, RedirectAttributes redirectAttributes) {
+    public String update(@PathVariable Long id, @RequestParam Long itemId,
+                         @Valid ItemCardUpdateDto itemCardUpdateDto, RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String roleName = auth.getAuthorities().iterator().next().getAuthority();
+        String sellerName = itemCardService.get(id).getSeller();
+        if (roleName.equals("ROLE_SELLER")
+                && !sellerService.getByNumber(auth.getName()).getName().equals(sellerName)) {
+            log.warn("Seller with name={} tried to update itemCard with id={} from someone else's path", sellerName, itemId);
+            return "redirect:/welcome";
+        }
         try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String roleName = auth.getAuthorities().iterator().next().getAuthority();
-            String sellerName = itemCardService.get(id).getSeller();
-            if (roleName.equals("ROLE_SELLER")
-                    && !sellerService.getByNumber(auth.getName()).getName().equals(sellerName)) {
-                log.warn("Seller with name={} tried to update itemCard with id={} from someone else's path", sellerName, itemId);
-                return "redirect:/welcome";
-            }
             itemCardService.update(itemCardUpdateDto, id, sellerName);
             redirectAttributes.addFlashAttribute("successMessage", "Card successfully update!");
         } catch (Exception e) {
@@ -89,14 +89,14 @@ public class ItemCardController {
     }
 
     @GetMapping("/item-card")
-    public String getAllItemCard(@RequestParam(defaultValue = "0") int page,
-                                 @RequestParam(defaultValue = "12") int size, @RequestParam String role,
-                                 @RequestParam(defaultValue = "false") boolean seller,
-                                 @RequestParam(required = false) Long sellerId,
-                                 @RequestParam(defaultValue = "") String search,
-                                 @RequestParam(defaultValue = "id") String sortBy,
-                                 @RequestParam(defaultValue = "asc") String sort, Model model) {
-        Sort.Direction direction  = sort.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+    public String getAll(@RequestParam(defaultValue = "0") int page,
+                         @RequestParam(defaultValue = "12") int size, @RequestParam String role,
+                         @RequestParam(defaultValue = "false") boolean seller,
+                         @RequestParam(required = false) Long sellerId,
+                         @RequestParam(defaultValue = "") String search,
+                         @RequestParam(defaultValue = "id") String sortBy,
+                         @RequestParam(defaultValue = "asc") String sort, Model model) {
+        Sort.Direction direction = sort.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         model.addAttribute("seller", seller);
         model.addAttribute("searchQuery", search);
@@ -122,7 +122,7 @@ public class ItemCardController {
     }
 
     @GetMapping("/item-card/{id}")
-    public String getItemCardById(@PathVariable Long id, @RequestParam String role, Model model) {
+    public String getById(@PathVariable Long id, @RequestParam String role, Model model) {
         boolean isOwner = false;
         ItemCard itemCard = itemCardService.get(id);
         switch (role) {
@@ -142,7 +142,7 @@ public class ItemCardController {
     }
 
     @DeleteMapping("/cards/{id}")
-    public String deleteItemCardById(@PathVariable Long id, @RequestParam String role, Model model) {
+    public String delete(@PathVariable Long id, @RequestParam String role, Model model) {
         ItemCard itemCard = itemCardService.get(id);
         if (role.equals("ROLE_ADMIN") || security(itemCard.getSeller())) {
             itemCardService.delete(id);
