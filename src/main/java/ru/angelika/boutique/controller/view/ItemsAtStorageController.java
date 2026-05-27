@@ -35,8 +35,13 @@ public class ItemsAtStorageController {
     public String add(@Valid ItemsAtStorageDto itemsAtStorageDto, Model model) {
         Seller seller = getAuthSeller();
         List<Item> items = itemService.getBySellerId(seller.getId());
-        List<Storage> storages = storageService.getAll()
-        try {;
+        List<Storage> storages = storageService.getAll();
+        Item item = itemService.getById(itemsAtStorageDto.getItemId());
+        if (!item.getSeller().getId().equals(seller.getId())) {
+            log.warn("Seller with id={} tried to add ItemsAtStorage from someone else's path", seller.getId());
+            return "redirect:/welcome";
+        }
+        try {
             model.addAttribute("items", items);
             model.addAttribute("storages", storages);
             model.addAttribute("id", seller.getId());
@@ -70,13 +75,13 @@ public class ItemsAtStorageController {
     @PutMapping("/send-to-storage/{id}")
     public String updateForm(@PathVariable Long id, @RequestParam Long itemId,
                                            @Min(0) Long count, RedirectAttributes redirectAttributes) {
+        Item item = itemService.getById(itemId);
+        Long sellerId = item.getSeller().getId();
+        if (security(sellerId)) {
+            log.warn("Seller with id={} tried to update ItemsAtStorage with id={} from someone else's path", sellerId, id);
+            return "redirect:/welcome";
+        }
         try {
-            Item item = itemService.getById(itemId);
-            Long sellerId = item.getSeller().getId();
-            if (security(sellerId)) {
-                log.warn("Seller with id={} tried to update ItemsAtStorage with id={} from someone else's path", sellerId, id);
-                return "redirect:/welcome";
-            }
             itemsAtStorageService.update(id, count);
             redirectAttributes.addFlashAttribute("successMessage", "Item successfully sent to storage!");
         } catch (Exception e) {

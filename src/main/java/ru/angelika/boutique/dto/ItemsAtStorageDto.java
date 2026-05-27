@@ -10,10 +10,8 @@ import lombok.Data;
 @Builder
 public class ItemsAtStorageDto {
     @NotNull
-    @Min(1)
     private Long itemId;
     @NotNull
-    @Min(1)
     private Long storageId;
     @NotNull
     @Min(1)
