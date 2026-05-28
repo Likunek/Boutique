@@ -382,8 +382,8 @@
             </form>
             <div th:if="${searchQuery != null and !searchQuery.isEmpty()}" class="search-info">
                 Results for: <strong th:text="${searchQuery}"></strong>
-                <a th:href="@{/item-card(role=${role}, sortBy=${sortBy}, sort=${sort})}" class="clear-search">✖
-                    Clear</a>
+                <a th:href="@{/item-card(role=${role}, sortBy=${sortBy}, sort=${sort})}" class="clear-search">
+                    ✖ Clear</a>
             </div>
         </div>
 

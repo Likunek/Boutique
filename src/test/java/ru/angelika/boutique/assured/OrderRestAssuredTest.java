@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-class OrdersRestAssuredTest {
+class OrderRestAssuredTest {
 
     @Autowired
     private MockMvc mockMvc;
