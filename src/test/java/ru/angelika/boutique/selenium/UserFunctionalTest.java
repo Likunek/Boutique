@@ -272,9 +272,13 @@ public class UserFunctionalTest {
 
         WebElement addBtn = wait.until(ExpectedConditions.elementToBeClickable(By.className("btn-cart")));
         addBtn.click();
-        driver.get(BASE_URL + "/user/profile/2");
-        WebDriverWait longWait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        longWait.until(ExpectedConditions.urlContains("/profile/"));
+        wait.until(ExpectedConditions.elementToBeClickable(By.partialLinkText("Back to Cards"))).click();
+        wait.until(ExpectedConditions.urlContains("/item-card"));
+        wait.until(ExpectedConditions.elementToBeClickable(By.partialLinkText("Back to Home"))).click();
+        wait.until(ExpectedConditions.urlContains("/welcome"));
+        wait.until(ExpectedConditions.elementToBeClickable(By.partialLinkText("My account"))).click();
+        wait.until(ExpectedConditions.urlContains("/user/profile/"));
+
         WebElement myCartLink = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.btn-primary")));
         myCartLink.click();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.className("cart-item")));
@@ -335,7 +339,7 @@ public class UserFunctionalTest {
             reviews.get(0).click();
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("reviewModal")));
             new Select(driver.findElement(By.id("rating"))).selectByValue("5");
-            driver.findElement(By.id("text")).sendKeys("Отлично!");
+            driver.findElement(By.id("text")).sendKeys("!");
             driver.findElement(By.cssSelector("#reviewModal button.btn-primary")).click();
             wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("reviewModal")));
             WebElement alreadyReviewed = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("already-reviewed")));

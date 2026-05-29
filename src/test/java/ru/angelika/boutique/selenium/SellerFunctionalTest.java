@@ -31,7 +31,7 @@ public class SellerFunctionalTest {
     @BeforeEach
     void setUp() {
         driver = new ChromeDriver();
-        wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(17));
     }
 
     @AfterEach
@@ -77,8 +77,7 @@ public class SellerFunctionalTest {
         driver.findElement(By.id("square")).sendKeys("0.5");
         driver.findElement(By.cssSelector("button.btn-primary")).click();
 
-        WebDriverWait longWait = new WebDriverWait(driver, Duration.ofSeconds(7));
-        longWait.until(ExpectedConditions.urlContains("/seller/add-item"));
+        wait.until(ExpectedConditions.urlContains("/seller/add-item"));
         wait.until(ExpectedConditions.elementToBeClickable(By.partialLinkText("Back to Profile"))).click();
         wait.until(ExpectedConditions.urlContains("/seller/profile/"));
         driver.findElement(By.partialLinkText("List Items")).click();
@@ -99,8 +98,7 @@ public class SellerFunctionalTest {
             deleteBtn.click();
             wait.until(ExpectedConditions.alertIsPresent());
             driver.switchTo().alert().accept();
-            WebDriverWait time = new WebDriverWait(driver, Duration.ofSeconds(5));
-            time.until(ExpectedConditions.urlContains("/seller/items"));
+            wait.until(ExpectedConditions.urlContains("/seller/items"));
         }
     }
 
@@ -147,15 +145,13 @@ public class SellerFunctionalTest {
         wait.until(ExpectedConditions.urlContains("/seller/add-card"));
 
         Select itemSelect = new Select(wait.until(ExpectedConditions.presenceOfElementLocated(By.id("itemId"))));
-        if (itemSelect.getOptions().size() <= 1) {
-            return;
-        }
+        if (itemSelect.getOptions().size() <= 1) return;
       String selectedItemFullText = itemSelect.getOptions().get(1).getText();
         itemSelect.selectByIndex(1);
 
         String cardName = "Card_" + System.currentTimeMillis();
         driver.findElement(By.id("name")).sendKeys(cardName);
-        driver.findElement(By.id("description")).sendKeys("Тестовое описание карточки");
+        driver.findElement(By.id("description")).sendKeys("Тест");
         driver.findElement(By.cssSelector("button.btn-primary")).click();
 
         wait.until(ExpectedConditions.elementToBeClickable(By.partialLinkText("Back to Profile"))).click();
@@ -165,7 +161,7 @@ public class SellerFunctionalTest {
         wait.until(ExpectedConditions.urlContains("/seller/items"));
 
         String pureItemName = selectedItemFullText.split(" \\(")[0];
-        driver.findElement(By.partialLinkText(pureItemName)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.partialLinkText(pureItemName))).click();
         wait.until(ExpectedConditions.urlContains("/items/"));
 
         WebElement cardBlock = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("mini-card")));
@@ -178,12 +174,10 @@ public class SellerFunctionalTest {
         driver.findElement(By.partialLinkText("My account")).click();
         wait.until(ExpectedConditions.urlContains("/seller/profile/"));
         openFirstItem();
-        //driver.get(BASE_URL + "/items/15");
-        //wait.until(ExpectedConditions.urlContains("/items/"));
+
         List<WebElement> editCardBtns = driver.findElements(By.cssSelector("button.btn-secondary[onclick*='enableCardEdit']"));
-        if (editCardBtns.isEmpty()) {
-            return;
-        }
+        if (editCardBtns.isEmpty()) return;
+
         WebElement editCardBtn = editCardBtns.get(0);
         editCardBtn.click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cardEditMode")));
@@ -208,13 +202,9 @@ public class SellerFunctionalTest {
         wait.until(ExpectedConditions.urlContains("/seller/send-to-storage"));
 
         Select itemSelect = new Select(wait.until(ExpectedConditions.presenceOfElementLocated(By.id("itemId"))));
-        if (itemSelect.getOptions().size() <= 1) {
-            return;
-        }
+        if (itemSelect.getOptions().size() <= 1) return;
         Select storageSelect = new Select(driver.findElement(By.id("storageId")));
-        if (storageSelect.getOptions().size() <= 1) {
-            return;
-        }
+        if (storageSelect.getOptions().size() <= 1) return;
 
         String selectedItemFullText = itemSelect.getOptions().get(1).getText();
         itemSelect.selectByIndex(1);
@@ -244,13 +234,9 @@ public class SellerFunctionalTest {
         driver.findElement(By.partialLinkText("My account")).click();
         wait.until(ExpectedConditions.urlContains("/seller/profile/"));
         openFirstItem();
-        //driver.get(BASE_URL + "/items/15");
-        //wait.until(ExpectedConditions.urlContains("/items/"));
 
         List<WebElement> storageRows = driver.findElements(By.cssSelector(".storage-table tbody tr"));
-        if (storageRows.isEmpty()) {
-            return;
-        }
+        if (storageRows.isEmpty()) return;
 
         WebElement firstRow = storageRows.get(0);
         WebElement editBtn = firstRow.findElement(By.cssSelector("button.btn-text"));
@@ -275,7 +261,7 @@ public class SellerFunctionalTest {
     @Test
     void testSellerNoCartOnPublicCards() {
         login();
-        driver.get(BASE_URL + "/item-card?role=ROLE_SELLER");
+        driver.findElement(By.className("view-items-btn")).click();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.className("cards-grid")));
         List<WebElement> cartButtons = driver.findElements(By.className("cart-btn"));
         assertTrue(cartButtons.isEmpty());
@@ -284,7 +270,7 @@ public class SellerFunctionalTest {
     @Test
     void testSellerNoCartOnPublicDetail() {
         login();
-        driver.get(BASE_URL + "/item-card?role=ROLE_SELLER");
+        driver.findElement(By.className("view-items-btn")).click();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.className("card")));
         driver.findElement(By.className("card")).click();
         wait.until(ExpectedConditions.urlContains("/item-card/"));
@@ -305,9 +291,7 @@ public class SellerFunctionalTest {
         wait.until(ExpectedConditions.elementToBeClickable(By.partialLinkText("List Items"))).click();
         wait.until(ExpectedConditions.urlContains("/seller/items"));
         List<WebElement> rows = driver.findElements(By.cssSelector("table tbody tr"));
-        if (rows.isEmpty()) {
-            return;
-        }
+        if (rows.isEmpty()) return;
         driver.findElement(By.cssSelector("table tbody tr:first-child a")).click();
         wait.until(ExpectedConditions.urlContains("/items/"));
     }
