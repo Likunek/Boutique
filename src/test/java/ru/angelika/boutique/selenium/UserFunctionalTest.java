@@ -77,7 +77,6 @@ public class UserFunctionalTest {
     @Test
     void testLogout() {
         login();
-        driver.findElement(By.linkText("My account")).click();
         driver.findElement(By.className("btn-logout")).click();
         wait.until(ExpectedConditions.urlContains("/login"));
         WebElement header = wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("h1")));

@@ -39,7 +39,7 @@ public class ItemCardController {
     @GetMapping("/seller/add-card")
     public String getFormNewCard(Model model) {
         Seller seller = getAuthSeller();
-        List<Item> items = itemService.getBySellerId(seller.getId());
+        List<Item> items = itemService.getBySellerIdItemCardNull(seller.getId());
         model.addAttribute("items", items);
         model.addAttribute("id", seller.getId());
         return "add-card";
@@ -50,7 +50,7 @@ public class ItemCardController {
         Seller seller = getAuthSeller();
         itemCardService.add(itemCardDto, seller.getName());
         try {
-            List<Item> items = itemService.getBySellerId(seller.getId());
+            List<Item> items = itemService.getBySellerIdItemCardNull(seller.getId());
             model.addAttribute("items", items);
             model.addAttribute("id", seller.getId());
             model.addAttribute("successMessage", "Card successfully add!");

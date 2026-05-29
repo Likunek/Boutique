@@ -98,14 +98,14 @@ class ItemCardRestAssuredTest {
     @WithMockUser(username = SELLER_NUMBER, roles = "SELLER")
     void getFormNewCard_Success() {
         when(sellerService.getByNumber(SELLER_NUMBER)).thenReturn(seller);
-        when(itemService.getBySellerId(SELLER_ID)).thenReturn(List.of(item));
+        when(itemService.getBySellerIdItemCardNull(SELLER_ID)).thenReturn(List.of(item));
 
         given()
                 .when()
                 .get("/seller/add-card")
                 .then()
                 .statusCode(200);
-        verify(itemService).getBySellerId(SELLER_ID);
+        verify(itemService).getBySellerIdItemCardNull(SELLER_ID);
     }
 
     @Test
@@ -127,7 +127,7 @@ class ItemCardRestAssuredTest {
                 .get("/seller/add-card")
                 .then()
                 .statusCode(403);
-        verify(itemService, never()).getBySellerId(any());
+        verify(itemService, never()).getBySellerIdItemCardNull(any());
     }
 
     @Test
@@ -145,7 +145,7 @@ class ItemCardRestAssuredTest {
     void addCard_Success() {
         when(sellerService.getByNumber(SELLER_NUMBER)).thenReturn(seller);
         doNothing().when(itemCardService).add(any(ItemCardDto.class), eq(seller.getName()));
-        when(itemService.getBySellerId(SELLER_ID)).thenReturn(List.of(item));
+        when(itemService.getBySellerIdItemCardNull(SELLER_ID)).thenReturn(List.of(item));
 
         given()
                 .param("itemId", itemCardDto.getItemId())
@@ -170,7 +170,7 @@ class ItemCardRestAssuredTest {
                 .post("/seller/add-card")
                 .then()
                 .statusCode(500);
-        verify(itemService, never()).getBySellerId(SELLER_ID);
+        verify(itemService, never()).getBySellerIdItemCardNull(SELLER_ID);
     }
 
     @Test
@@ -184,7 +184,7 @@ class ItemCardRestAssuredTest {
                 .post("/seller/add-card")
                 .then()
                 .statusCode(500);
-        verify(itemService, never()).getBySellerId(SELLER_ID);
+        verify(itemService, never()).getBySellerIdItemCardNull(SELLER_ID);
     }
 
     @Test
@@ -200,7 +200,7 @@ class ItemCardRestAssuredTest {
                 .post("/seller/add-card")
                 .then()
                 .statusCode(404);
-        verify(itemService, never()).getBySellerId(SELLER_ID);
+        verify(itemService, never()).getBySellerIdItemCardNull(SELLER_ID);
     }
 
     @Test

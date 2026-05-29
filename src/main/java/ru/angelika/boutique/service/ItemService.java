@@ -38,6 +38,10 @@ public class ItemService {
         return itemRepository.findByVerifyFalse();
     }
 
+    public List<Item> getBySellerIdItemCardNull(Long id) {
+        return itemRepository.findBySellerIdAndVerifyTrueAndItemCardIsNull(id);
+    }
+
     public List<Item> getBySellerId(Long id) {
         return itemRepository.findBySellerIdAndVerifyTrue(id);
     }

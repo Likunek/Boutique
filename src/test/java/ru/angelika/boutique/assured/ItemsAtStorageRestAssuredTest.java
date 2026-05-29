@@ -283,7 +283,7 @@ class ItemsAtStorageRestAssuredTest {
                 .then()
                 .statusCode(404);
 
-        verify(itemService, never()).getBySellerId(any());
+        verify(itemService, never()).getBySellerIdItemCardNull(any());
     }
 
     @Test

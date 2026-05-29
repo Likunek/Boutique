@@ -102,8 +102,8 @@ class ItemUnitTest {
 
     @Test
     void getBySellerId_Success() {
-        when(itemRepository.findBySellerIdAndVerifyTrue(SELLER_ID)).thenReturn(List.of(item));
-        List<Item> result = itemService.getBySellerId(SELLER_ID);
+        when(itemRepository.findBySellerIdAndVerifyTrueAndItemCardIsNull(SELLER_ID)).thenReturn(List.of(item));
+        List<Item> result = itemService.getBySellerIdItemCardNull(SELLER_ID);
         assertEquals(1, result.size());
     }
 
