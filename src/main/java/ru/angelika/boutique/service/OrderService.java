@@ -54,6 +54,16 @@ public class OrderService {
         return user.getBalance() - cards.stream().mapToDouble(ItemCard::getPrice).sum();
     }
 
+    @Transactional
+    public Order getWithPoint(Long id) {
+        Order order = orderRepository.findByIdWithPointAndItems(id);
+        if (order == null) {
+            log.error("Order not found for get, id={}", id);
+            throw  new ResourceNotFoundException(Order.class, id);
+        }
+        return order;
+    }
+
     public List<Order> getAll() {
         return orderRepository.findAll();
     }
@@ -62,6 +72,7 @@ public class OrderService {
         log.debug("Get orders by status={}", status);
         return orderRepository.findByStatus(status);
     }
+
 
     @Transactional
     public void updateStatus(Order order, Status status) {

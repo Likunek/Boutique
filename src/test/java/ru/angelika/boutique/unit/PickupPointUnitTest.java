@@ -113,6 +113,20 @@ class PickupPointUnitTest {
     }
 
     @Test
+    void getWithStorage_Success() {
+        when(pickupPointRepository.findByIdWithStorage(POINT_ID)).thenReturn(pickupPoint);
+        PickupPoint result = pickupPointService.getWithStorage(POINT_ID);
+        assertNotNull(result);
+        assertEquals(POINT_ID, result.getId());
+    }
+
+    @Test
+    void getWithStorage_NotFound_ThrowsException() {
+        when(pickupPointRepository.findByIdWithStorage(FALSE_ID)).thenReturn(null);
+        assertThrows(ResourceNotFoundException.class, () -> pickupPointService.getWithStorage(FALSE_ID));
+    }
+
+    @Test
     void getAllByStorage_Success() {
         when(pickupPointRepository.findByStorageId(STORAGE_ID)).thenReturn(List.of(pickupPoint));
         List<PickupPoint> result = pickupPointService.getAllByStorage(STORAGE_ID);

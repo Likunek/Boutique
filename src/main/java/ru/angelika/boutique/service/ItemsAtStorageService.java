@@ -61,7 +61,8 @@ public class ItemsAtStorageService {
         ItemsAtStorage itemsAtStorage = itemsAtStorageRepository.findByItemIdAndStorageId(itemId, storageId);
         if (itemsAtStorage == null) {
             log.error("ItemsAtStorage not found for get, itemId={}, storageId={}", itemId, storageId);
-            throw new ResourceNotFoundException(ItemsAtStorage.class, itemId.toString() + " " + storageId.toString());
+            throw new ResourceNotFoundException(ItemsAtStorage.class,
+                    "itemId: " + itemId.toString() + " storageId: " + storageId.toString());
         }
         return itemsAtStorage;
     }

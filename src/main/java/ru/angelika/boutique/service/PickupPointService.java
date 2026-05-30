@@ -3,6 +3,7 @@ package ru.angelika.boutique.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.angelika.boutique.dto.PickupPointDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
@@ -37,7 +38,20 @@ public class PickupPointService {
 
     public PickupPoint get(Long id) {
         return pickupPointRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(PickupPoint.class, id));
+                .orElseThrow(() -> {
+                    log.error("PickupPoint not found for get, id={}", id);
+                    return new ResourceNotFoundException(PickupPoint.class, id);
+                });
+    }
+
+    @Transactional
+    public PickupPoint getWithStorage(Long id) {
+        PickupPoint point = pickupPointRepository.findByIdWithStorage(id);
+        if (point == null) {
+            log.error("PickupPoint not found for get with Storage, id={}", id);
+            throw new ResourceNotFoundException(PickupPoint.class, id);
+        }
+        return point;
     }
 
     public List<PickupPoint> getAllByStorage(Long id) {
