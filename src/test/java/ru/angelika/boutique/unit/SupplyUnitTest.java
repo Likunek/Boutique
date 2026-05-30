@@ -10,11 +10,13 @@ import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.model.*;
 import ru.angelika.boutique.repository.SupplyRepository;
 import ru.angelika.boutique.service.OrderService;
+import ru.angelika.boutique.service.PickupPointService;
 import ru.angelika.boutique.service.SupplyService;
 import ru.angelika.boutique.service.SupplyTransactionalService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -30,13 +32,19 @@ class SupplyUnitTest {
     private OrderService orderService;
 
     @Mock
+    private PickupPointService pickupPointService;
+
+    @Mock
     private SupplyTransactionalService supplyTransactionalService;
 
     @InjectMocks
     private SupplyService supplyService;
 
     private static final Long STORAGE_ID = 10L;
+    private static final Long POINT_ID = 1L;
 
+    private PickupPoint point;
+    private Storage storage;
     private Order order1;
     private Order order2;
     private Item item1;
@@ -44,11 +52,11 @@ class SupplyUnitTest {
 
     @BeforeEach
     void setUp() {
-        Storage storage = new Storage();
+        storage = new Storage();
         storage.setId(STORAGE_ID);
 
-        PickupPoint point = new PickupPoint();
-        point.setId(1L);
+        point = new PickupPoint();
+        point.setId(POINT_ID);
         point.setStorage(storage);
 
         ItemCard itemCard1 = new ItemCard();
@@ -94,25 +102,31 @@ class SupplyUnitTest {
 
     @Test
     void addSupply_Success() throws InterruptedException {
-        List<Order> orders = new ArrayList<>(List.of(order1, order2));
+        List<Order> orders = List.of(order1, order2);
         when(orderService.getAllByStatus(Status.NEW)).thenReturn(orders);
+        when(pickupPointService.getWithStorage(POINT_ID)).thenReturn(point);
+        when(orderService.getWithPoint(order1.getId())).thenReturn(order1);
+        when(orderService.getWithPoint(order2.getId())).thenReturn(order2);
         when(supplyTransactionalService.checkCountOnStorage(order1, STORAGE_ID)).thenReturn(List.of(item1));
         when(supplyTransactionalService.checkCountOnStorage(order2, STORAGE_ID)).thenReturn(List.of(item2));
         doNothing().when(orderService).updateStatus(any(Order.class), eq(Status.WAY));
 
-        assertDoesNotThrow(() -> supplyService.addSupply());
+        supplyService.addSupply();
+
         Thread.sleep(300);
 
-        verify(supplyTransactionalService).checkCountOnStorage(order1, STORAGE_ID);
-        verify(supplyTransactionalService).checkCountOnStorage(order2, STORAGE_ID);
+        verify(supplyTransactionalService, times(1)).checkCountOnStorage(order1, STORAGE_ID);
+        verify(supplyTransactionalService, times(1)).checkCountOnStorage(order2, STORAGE_ID);
         verify(orderService, times(2)).updateStatus(any(Order.class), eq(Status.WAY));
-        verify(supplyRepository).save(any(Supply.class));
+        verify(supplyRepository, times(1)).save(any(Supply.class));
     }
 
     @Test
     void addSupply_NoNewOrders_DoesNothing() {
         when(orderService.getAllByStatus(Status.NEW)).thenReturn(new ArrayList<>());
         supplyService.addSupply();
+        verify(pickupPointService, never()).getWithStorage(any());
+        verify(orderService, never()).getWithPoint(any());
         verify(supplyTransactionalService, never()).checkCountOnStorage(any(), any());
         verify(supplyRepository, never()).save(any());
     }
@@ -121,6 +135,9 @@ class SupplyUnitTest {
     void addSupply_SecondOrderResourceNotFound_Success() throws InterruptedException {
         List<Order> orders = List.of(order1, order2);
         when(orderService.getAllByStatus(Status.NEW)).thenReturn(orders);
+        when(pickupPointService.getWithStorage(POINT_ID)).thenReturn(point);
+        when(orderService.getWithPoint(order1.getId())).thenReturn(order1);
+        when(orderService.getWithPoint(order2.getId())).thenReturn(order2);
         when(supplyTransactionalService.checkCountOnStorage(order1, STORAGE_ID)).thenReturn(List.of(item1));
         when(supplyTransactionalService.checkCountOnStorage(order2, STORAGE_ID))
                 .thenThrow(new ResourceNotFoundException(ItemsAtStorage.class, "items count = 0"));

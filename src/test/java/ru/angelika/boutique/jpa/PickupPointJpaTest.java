@@ -51,7 +51,7 @@ public class PickupPointJpaTest {
     @Test
     void findByStorageId_ShouldReturnPoints() {
         PickupPoint anotherPoint = new PickupPoint();
-        anotherPoint.setAddress("Pickup Point 2");
+        anotherPoint.setAddress("Point 2");
         anotherPoint.setCity("Central City");
         anotherPoint.setRating(4.0);
         anotherPoint.setStorage(testStorage);
