@@ -22,25 +22,25 @@ public class StorageService {
     private final PickupPointService pickupPointService;
 
 
-    public void addStorage(StorageDto storageDto) {
+    public void add(StorageDto storageDto) {
         checkDuplicate(storageDto.getAddress(), storageDto.getCity(), null);
         storageRepository.save(StorageMapper.toStorage(storageDto));
         log.info("Add new storage: address={}, city={}, MaxCapacity={}",
                 storageDto.getAddress(), storageDto.getCity(), storageDto.getMaxCapacity());
     }
 
-    public Storage getStorage(Long id) {
+    public Storage get(Long id) {
         return storageRepository.findById(id).orElseThrow(() -> {
             log.error("Storage not found for get, id={}", id);
             return new ResourceNotFoundException(Storage.class, id);
         });
     }
 
-    public List<Storage> getAllStorages() {
+    public List<Storage> getAll() {
         return storageRepository.findAll();
     }
 
-    public void updateStorage(StorageDto storageDto, Long id) {
+    public void update(StorageDto storageDto, Long id) {
         Storage storage = storageRepository.findById(id).orElseThrow(() -> {
             log.error("Storage not found for update, id={}", id);
             return new ResourceNotFoundException(Storage.class, id);
@@ -50,24 +50,24 @@ public class StorageService {
         log.info("Update storage by id={}", id);
     }
 
-    public void deleteStorage(Long id) {
+    public void delete(Long id) {
         storageRepository.findById(id).orElseThrow(() -> {
             log.error("Storage not found for delete, id={}", id);
             return new ResourceNotFoundException(Storage.class, id);
         });
-        itemsAtStorageService.getItemsAtStorageByStorageId(id)
-                .forEach(s -> itemsAtStorageService.deleteItemsAtStorage(s.getId()));
+        itemsAtStorageService.getByStorageId(id)
+                .forEach(s -> itemsAtStorageService.delete(s.getId()));
         replaceStorage(id);
         storageRepository.deleteById(id);
         log.info("Delete storage by id={}", id);
     }
 
     private void replaceStorage(Long id) {
-        List<PickupPoint> points = pickupPointService.getAllPointsByStorage(id);
+        List<PickupPoint> points = pickupPointService.getAllByStorage(id);
         for (PickupPoint point : points) {
             List<Storage> storages = storageRepository.findByCity(point.getCity());
             if (storages.size() == 0) {
-                pickupPointService.deletePickupPoint(point.getId());
+                pickupPointService.delete(point.getId());
             } else {
                 storages.stream()
                         .filter(s -> !s.getId().equals(id))
@@ -77,7 +77,7 @@ public class StorageService {
                                     point.setStorage(storage);
                                     pickupPointService.updateStorage(point);
                                 },
-                                () -> pickupPointService.deletePickupPoint(point.getId())
+                                () -> pickupPointService.delete(point.getId())
                         );
             }
         }

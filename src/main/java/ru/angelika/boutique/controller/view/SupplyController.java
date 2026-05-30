@@ -12,8 +12,8 @@ public class SupplyController {
     private final SupplyService supplyService;
 
     @GetMapping("/admin/supplies")
-    public String getAllSupplies(Model model) {
-        model.addAttribute("supplies", supplyService.getAllSupplies());
+    public String getAll(Model model) {
+        model.addAttribute("supplies", supplyService.getAll());
         return "admin-supplies";
     }
 

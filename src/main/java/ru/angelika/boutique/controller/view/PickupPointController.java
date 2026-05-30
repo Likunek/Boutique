@@ -3,7 +3,6 @@ package ru.angelika.boutique.controller.view;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,7 +34,7 @@ public class PickupPointController {
             return "redirect:/admin/points/add";
         }
         try {
-            pickupPointService.addPickupPoint(pointDto);
+            pickupPointService.add(pointDto);
             model.addAttribute("successMessage", "PointReceipt added successfully!");
         } catch (Exception e) {
             log.error("Error add PointReceipt '{}, {}': {}", pointDto.getCity(), pointDto.getAddress(), e.getMessage(), e);
@@ -46,26 +45,26 @@ public class PickupPointController {
 
     @GetMapping("/add")
     public String getFormNewPoint(Model model) {
-        model.addAttribute("storages", storageService.getAllStorages());
+        model.addAttribute("storages", storageService.getAll());
         return "admin-add-point";
     }
 
     @GetMapping
     public String getAllPoints(Model model) {
-        model.addAttribute("points", pickupPointService.getAllPoints());
-        model.addAttribute("storages", storageService.getAllStorages());
+        model.addAttribute("points", pickupPointService.getAll());
+        model.addAttribute("storages", storageService.getAll());
         return "admin-points";
     }
 
     @PutMapping("{id}")
     public String updatePoint(PickupPointDto pickupPointDto, @PathVariable Long id) {
-        pickupPointService.updatePickupPoint(id, pickupPointDto);
+        pickupPointService.update(id, pickupPointDto);
         return "redirect:/admin/points";
     }
 
     @DeleteMapping("{id}")
     public String deletePoint(@PathVariable Long id) {
-        pickupPointService.deletePickupPoint(id);
+        pickupPointService.delete(id);
         return "redirect:/admin/points";
     }
 }

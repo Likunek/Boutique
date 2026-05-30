@@ -18,7 +18,7 @@ public class CartService {
     private final ItemCardService itemCardService;
 
 
-    public Cart getCartById(Long id) {
+    public Cart getById(Long id) {
         log.debug("Cart get By id={}", id);
         return cartRepository.findById(id).orElseThrow(() -> {
             log.error("Cart not found for get, id={}", id);
@@ -27,10 +27,10 @@ public class CartService {
     }
 
     public void addCardInCart(Long cartId, Long itemCardId) {
-        ItemCard itemCard = itemCardService.getItemCard(itemCardId);
-        Cart cart = getCartById(cartId);
+        ItemCard itemCard = itemCardService.get(itemCardId);
+        Cart cart = getById(cartId);
         if (cart.getItemCards().stream().anyMatch(card -> card.getId().equals(itemCardId))) {
-            log.debug("itemCard already added. itemCardId={}, cartId={}", itemCardId, cartId);
+            log.debug("ItemCard already added. itemCardId={}, cartId={}", itemCardId, cartId);
             return;
         }
         cart.getItemCards().add(itemCard);
@@ -41,7 +41,7 @@ public class CartService {
     }
 
     public void deleteCardsFromCart(Long cartId, List<Long> itemCardId) {
-        Cart cart = getCartById(cartId);
+        Cart cart = getById(cartId);
         cart.getItemCards().removeIf(card -> itemCardId.contains(card.getId()));
         Double sum = cart.getItemCards().stream().mapToDouble(ItemCard::getPrice).sum();
         cart.setTotalPrice(sum);
@@ -50,9 +50,10 @@ public class CartService {
     }
 
     public void deleteCardFromCart(Long cartId, Long itemCardId) {
-        Cart cart = getCartById(cartId);
+        Cart cart = getById(cartId);
         cart.getItemCards().removeIf(card -> card.getId().equals(itemCardId));
-        cart.setTotalPrice(cart.getTotalPrice() - itemCardService.getItemCard(itemCardId).getPrice());
+        Double sum = cart.getItemCards().stream().mapToDouble(ItemCard::getPrice).sum();
+        cart.setTotalPrice(sum);
         cartRepository.save(cart);
         log.info("Delete itemCard from cart. itemCardId={}, cartId={}", itemCardId, cartId);
     }

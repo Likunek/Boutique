@@ -3,6 +3,7 @@ package ru.angelika.boutique.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.angelika.boutique.dto.PickupPointDto;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
@@ -24,7 +25,7 @@ public class PickupPointService {
     private final StorageRepository storageRepository;
 
 
-    public void addPickupPoint(PickupPointDto pickupPointDto) {
+    public void add(PickupPointDto pickupPointDto) {
         checkDuplicate(pickupPointDto.getAddress(), pickupPointDto.getCity(), null);
         Storage storage = storageRepository.findById(pickupPointDto.getStorageId()).orElseThrow(() -> {
             log.error("Storage not found for delete, id={}", pickupPointDto.getStorageId());
@@ -35,20 +36,33 @@ public class PickupPointService {
                 pickupPointDto.getAddress(), pickupPointDto.getCity());
     }
 
-    public PickupPoint getPickupPoint(Long id) {
+    public PickupPoint get(Long id) {
         return pickupPointRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(PickupPoint.class, id));
+                .orElseThrow(() -> {
+                    log.error("PickupPoint not found for get, id={}", id);
+                    return new ResourceNotFoundException(PickupPoint.class, id);
+                });
     }
 
-    public List<PickupPoint> getAllPointsByStorage(Long id) {
+    @Transactional
+    public PickupPoint getWithStorage(Long id) {
+        PickupPoint point = pickupPointRepository.findByIdWithStorage(id);
+        if (point == null) {
+            log.error("PickupPoint not found for get with Storage, id={}", id);
+            throw new ResourceNotFoundException(PickupPoint.class, id);
+        }
+        return point;
+    }
+
+    public List<PickupPoint> getAllByStorage(Long id) {
         return pickupPointRepository.findByStorageId(id);
     }
 
-    public List<PickupPoint> getAllPoints() {
+    public List<PickupPoint> getAll() {
         return pickupPointRepository.findAll();
     }
 
-    public void updatePickupPoint(Long id, PickupPointDto pickupPointDto) {
+    public void update(Long id, PickupPointDto pickupPointDto) {
         PickupPoint pointReceipt = pickupPointRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("PointReceipt not found for update, id={}", id);
@@ -69,7 +83,7 @@ public class PickupPointService {
                 point.getStorage().getCity() + " " + point.getStorage().getAddress());
     }
 
-    public void deletePickupPoint(Long id) {
+    public void delete(Long id) {
         pickupPointRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("PointReceipt not found for delete, id={}", id);

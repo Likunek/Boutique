@@ -29,7 +29,7 @@ public class AuthenticationService implements UserDetailsService {
     private final AuthenticationRepository authenticationRepository;
 
 
-    public void addAuthentication(Authentication authentication) {
+    public void add(Authentication authentication) {
         authentication.setPassword(passwordEncoder.encode(authentication.getPassword()));
         authenticationRepository.save(authentication);
         log.info("Add new profile authentication: number={}, role={}",
@@ -45,7 +45,7 @@ public class AuthenticationService implements UserDetailsService {
         return authentication;
     }
 
-    public void updateData(AuthenticationDto dto, Authentication authentication) {
+    public void update(AuthenticationDto dto, Authentication authentication) {
         if (passwordEncoder.matches(dto.getOldPassword(), authentication.getPassword())) {
             if (!dto.getNewPassword().isBlank()) {
                 authentication.setPassword(passwordEncoder.encode(dto.getNewPassword()));
@@ -66,15 +66,15 @@ public class AuthenticationService implements UserDetailsService {
         }
     }
 
-    public void deleteAuthentication(String number) {
-        Authentication authentication = authenticationRepository.findByNumber(number);
+    public void delete(String number) {
+        Authentication authentication = findByNumber(number);
         authenticationRepository.deleteById(authentication.getId());
         log.info("Delete authentication by id={}, number={}", authentication.getId(), number);
     }
 
     @Override
     public UserDetails loadUserByUsername(String number) throws UsernameNotFoundException {
-        Authentication authentication = authenticationRepository.findByNumber(number);
+        Authentication authentication = findByNumber(number);
         log.debug("Authorized profile: number={}, role={}", authentication.getNumber(), authentication.getRole());
         return new User(authentication.getNumber(), authentication.getPassword(), extractRoles(authentication));
     }

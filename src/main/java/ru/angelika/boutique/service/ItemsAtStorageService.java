@@ -24,7 +24,7 @@ public class ItemsAtStorageService {
     private final ItemRepository itemRepository;
     private final StorageRepository storageRepository;
 
-    public void addItemsAtStorage(ItemsAtStorageDto itemsAtStorageDto) {
+    public void add(ItemsAtStorageDto itemsAtStorageDto) {
         if (itemsAtStorageRepository.findByItemIdAndStorageId(itemsAtStorageDto.getItemId(),
                 itemsAtStorageDto.getStorageId()) != null) {
             log.error("ItemsAtStorage  with itemId={}, storageId={} already exists",
@@ -51,7 +51,7 @@ public class ItemsAtStorageService {
                 itemsAtStorageDto.getItemId(), itemsAtStorageDto.getStorageId(), itemsAtStorageDto.getCount());
     }
 
-    public List<ItemsAtStorage> getItemsAtStorageByStorageId(Long id) {
+    public List<ItemsAtStorage> getByStorageId(Long id) {
         log.debug("Get all itemsAtStorages by storageId={}", id);
         return itemsAtStorageRepository.findByStorageId(id);
     }
@@ -61,19 +61,23 @@ public class ItemsAtStorageService {
         ItemsAtStorage itemsAtStorage = itemsAtStorageRepository.findByItemIdAndStorageId(itemId, storageId);
         if (itemsAtStorage == null) {
             log.error("ItemsAtStorage not found for get, itemId={}, storageId={}", itemId, storageId);
-            throw new ResourceNotFoundException(ItemsAtStorage.class, itemId.toString() + " " + storageId.toString());
+            throw new ResourceNotFoundException(ItemsAtStorage.class,
+                    "itemId: " + itemId.toString() + " storageId: " + storageId.toString());
         }
         return itemsAtStorage;
     }
 
-    public List<ItemsAtStorage> getAllItemsAtStorage() {
+    public List<ItemsAtStorage> getAll() {
         log.debug("Get all itemsAtStorages");
         return itemsAtStorageRepository.findAll();
     }
 
-    public ItemsAtStorage getItemsAtStorage(Long id) {
+    public ItemsAtStorage get(Long id) {
         return itemsAtStorageRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(ItemsAtStorage.class, id));
+                .orElseThrow(() -> {
+                    log.error("ItemsAtStorage not found for update, id={}", id);
+                    return new ResourceNotFoundException(ItemsAtStorage.class, id);
+                });
     }
 
     public void updateCount(ItemsAtStorage itemsAtStorage) {
@@ -81,24 +85,16 @@ public class ItemsAtStorageService {
         log.info("Update count items from itemsAtStorage by id={}", itemsAtStorage.getId());
     }
 
-    public void updateItemsAtStorage(Long id, Long count) {
-        ItemsAtStorage itemsAtStorage = itemsAtStorageRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("ItemsAtStorage not found for update, id={}", id);
-                    return new ResourceNotFoundException(ItemsAtStorage.class, id);
-                });
-        if (count == 0) { deleteItemsAtStorage(id);return;}
+    public void update(Long id, Long count) {
+        ItemsAtStorage itemsAtStorage = get(id);
+        if (count == 0) { delete(id);return;}
         itemsAtStorage.setCount(count);
         itemsAtStorageRepository.save(itemsAtStorage);
         log.info("Update itemsAtStorage by id={}, count={}", id, count);
     }
 
-    public void deleteItemsAtStorage(Long id) {
-        itemsAtStorageRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("ItemsAtStorage not found for delete, id={}", id);
-                    return new ResourceNotFoundException(ItemsAtStorage.class, id);
-                });
+    public void delete(Long id) {
+        get(id);
         Item item = itemRepository.findItemByItemsAtStorageId(id);
         item.getItemsAtStorages().removeIf(s -> s.getId().equals(id));
         itemRepository.save(item);

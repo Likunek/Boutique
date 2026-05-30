@@ -1,13 +1,15 @@
 package ru.angelika.boutique.dto;
 
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class UpdateEntityDto {
-    @NotNull
+    @NotBlank
     private String name;
-    @Size(min = 11, max = 11, message = "Number must be exactly 8 characters")
+    @Size(min = 11, max = 11, message = "Number must be exactly 11 characters")
     private String number;
     @NotBlank
     private String oldPassword;

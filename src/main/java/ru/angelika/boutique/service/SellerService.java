@@ -22,7 +22,7 @@ public class SellerService {
     private final AuthenticationService authenticationService;
 
 
-    public void addSeller(Seller seller) {
+    public void add(Seller seller) {
         if (sellerRepository.findByName(seller.getName()) != null) {
             log.error("Seller with name={} already exists", seller.getName());
             throw new ResourceExistsException(Seller.class, seller.getName());
@@ -59,7 +59,7 @@ public class SellerService {
         return seller;
     }
 
-    public Seller getBySellerName(String name) {
+    public Seller getByName(String name) {
         log.debug("Get seller by name={}", name);
         Seller seller = sellerRepository.findByName(name);
         if (seller == null) {
@@ -69,12 +69,12 @@ public class SellerService {
         return seller;
     }
 
-    public List<Seller> getAllSeller() {
+    public List<Seller> getAll() {
         return sellerRepository.findAll();
     }
 
     @Transactional
-    public void updateSeller(UpdateEntityDto sellerDto, Long id) {
+    public void update(UpdateEntityDto sellerDto, Long id) {
         Seller seller = sellerRepository.findById(id).orElseThrow(() -> {
             log.error("Seller not found for update, id={}", id);
             return new ResourceNotFoundException(Seller.class, id);
@@ -100,7 +100,7 @@ public class SellerService {
             }
             seller.setEmail(sellerDto.getEmail());
         }
-        authenticationService.updateData(AuthenticationDto.builder()
+        authenticationService.update(AuthenticationDto.builder()
                 .oldPassword(sellerDto.getOldPassword())
                 .newPassword(sellerDto.getNewPassword())
                 .number(sellerDto.getNumber())
@@ -109,12 +109,12 @@ public class SellerService {
         log.info("Update seller by id={}", id);
     }
 
-    public void deleteSeller(Long id) {
+    public void delete(Long id) {
         Seller seller = sellerRepository.findById(id).orElseThrow(() -> {
             log.error("Seller not found for delete, id={}", id);
             return new ResourceNotFoundException(Seller.class, id);
         });
-        authenticationService.deleteAuthentication(seller.getNumber());
+        authenticationService.delete(seller.getNumber());
         itemService.deleteBySellerId(seller.getId());
         sellerRepository.deleteById(id);
         log.info("Delete seller by id={}", id);

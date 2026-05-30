@@ -248,7 +248,7 @@
           <span th:unless="${seller.email != null}">—</span>
         </td>
         <td class="actions-col">
-          <form th:action="@{/seller/profile/{id}(id=${seller.id})}" method="post"
+          <form th:action="@{/sellers/{id}(id=${seller.id})}" method="post"
                 onsubmit="return confirm('Are you sure you want to delete user ' + this.querySelector('[name=userName]').value + '?');">
             <input type="hidden" name="_method" value="delete"/>
             <input type="hidden" name="userName" th:value="${seller.name}"/>

@@ -3,7 +3,6 @@ package ru.angelika.boutique.controller.view;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,11 +27,17 @@ import java.util.stream.Collectors;
 public class ItemController {
     private final ItemService itemService;
     private final SellerService sellerService;
-    private boolean isAdmin = true;
+    private boolean isAdmin;
 
+
+    @GetMapping("/seller/add-item")
+    public String getFormNewItem(Model model) {
+        addData(model);
+        return "add-item";
+    }
 
     @PostMapping("/seller/add-item")
-    public String addItem(@Valid ItemDto itemDto, BindingResult result, Model model) {
+    public String add(@Valid ItemDto itemDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
             log.error("Error add Item {}", itemDto.getName());
             model.addAttribute("errorMessage", "Please correct the errors: " +
@@ -41,9 +46,9 @@ public class ItemController {
                             .collect(Collectors.joining(", ")));
             return "add-item";
         }
+        Seller seller = addData(model);
         try {
-            Seller seller = addData(model);
-            itemService.addItem(itemDto, seller);
+            itemService.add(itemDto, seller);
             model.addAttribute("successMessage", "Item '" + itemDto.getName() + "' added successfully!");
         } catch (Exception e) {
             log.error("Error add item '{}': {}", itemDto.getName(), e.getMessage(), e);
@@ -52,24 +57,19 @@ public class ItemController {
         return "add-item";
     }
 
-    @GetMapping("/seller/add-item")
-    public String getFormNewItem(Model model) {
-        addData(model);
-        return "add-item";
-    }
-
     @GetMapping("/seller/items")
     public String getAllItemsSeller(Model model) {
         Seller seller = addData(model);
-        List<Item> items = itemService.getAllItemBySeller(seller);
+        List<Item> items = itemService.getAllBySellerWithStorages(seller);
         model.addAttribute("items", items);
         return "seller-items";
     }
 
-    @GetMapping("/seller/items/{id}")
-    public String getItemById(@PathVariable Long id, Model model) {
-        Item item = itemService.getItemById(id);
+    @GetMapping("/items/{id}")
+    public String getById(@PathVariable Long id, Model model) {
+        Item item = itemService.getById(id);
         Long sellerId = item.getSeller().getId();
+        isAdmin = true;
         if (security(sellerId)) {
             log.warn("Seller with id={} tried to view item with id={} from someone else's path", sellerId, id);
             return "redirect:/welcome";
@@ -79,11 +79,11 @@ public class ItemController {
         return "item";
     }
     @GetMapping("/admin/items")
-    public String getAllItems(@RequestParam(defaultValue = "true") boolean unverified, Model model) {
+    public String getAll(@RequestParam(defaultValue = "true") boolean unverified, Model model) {
         if (unverified) {
-            model.addAttribute("items", itemService.getAllItems());
+            model.addAttribute("items", itemService.getAll());
         } else {
-            model.addAttribute("items", itemService.getAllItemVerifyFalse());
+            model.addAttribute("items", itemService.getAllVerifyFalse());
         }
         return "admin-items";
     }
@@ -93,27 +93,46 @@ public class ItemController {
         return "redirect:/admin/items";
     }
 
-    @PutMapping("/seller/items/{id}")
-    public String updateItem(@PathVariable Long id, @Valid ItemDto itemDto, RedirectAttributes redirectAttributes) {
+    @PutMapping("/items/{id}")
+    public String update(@PathVariable Long id, @Valid ItemDto itemDto,
+                         BindingResult result, RedirectAttributes redirectAttributes) {
+        Long sellerId = itemService.getById(id).getSeller().getId();
+        if (security(sellerId)) {
+            log.warn("Seller with id={} tried to update item with id={} from someone else's path", sellerId, id);
+            return "redirect:/welcome";
+        }
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Please correct the errors: " +
+                    result.getAllErrors().stream()
+                            .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                            .collect(Collectors.joining(", ")));
+            return "redirect:/items/" + id;
+        }
         try {
-            Long sellerId = itemService.getItemById(id).getSeller().getId();
-            if (security(sellerId)) {
-                log.warn("Seller with id={} tried to update item with id={} from someone else's path", sellerId, id);
-                return "redirect:/welcome";
-            }
-            itemService.updateItem(itemDto, id, sellerId);
+            itemService.update(itemDto, id, sellerId);
             redirectAttributes.addFlashAttribute("successMessage", "Item successfully update!");
         } catch (Exception e) {
             log.error("Error update item id={}: {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
-        return "redirect:/seller/items/" + id;
+        return "redirect:/items/" + id;
     }
 
-    @DeleteMapping("/seller/items/{id}")
-    public String deleteItem(@PathVariable Long id) {
-        itemService.deleteItem(id);
-        return "redirect:/seller/items";
+    @DeleteMapping("/items/{id}")
+    public String delete(@PathVariable Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String roleName = auth.getAuthorities().iterator().next().getAuthority();
+        if (roleName.equals("ROLE_SELLER")) {
+            Long sellerId = itemService.getById(id).getSeller().getId();
+            if (!sellerService.getByNumber(auth.getName()).getId().equals(sellerId)) {
+                log.warn("Seller with id={} tried to delete item with id={} from someone else's path", sellerId, id);
+                return "redirect:/welcome";
+            }
+            itemService.delete(id);
+            return "redirect:/seller/items";
+        }
+        itemService.delete(id);
+        return "redirect:/admin/items";
     }
 
     private Seller addData(Model model) {

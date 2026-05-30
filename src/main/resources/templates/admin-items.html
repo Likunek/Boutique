@@ -291,7 +291,7 @@
             <tr th:each="item : ${items}">
                 <td th:text="${item.id}"></td>
                 <td>
-                    <a th:href="@{/seller/items/{id}(id=${item.id})}" class="item-link" th:text="${item.name}"></a>
+                    <a th:href="@{/items/{id}(id=${item.id})}" class="item-link" th:text="${item.name}"></a>
                 </td>
                 <td th:text="${item.costPrice} + ' ₽'">0 ₽</td>
                 <td th:text="${item.weight != null ? item.weight + ' kg' : '-'}">- kg</td>

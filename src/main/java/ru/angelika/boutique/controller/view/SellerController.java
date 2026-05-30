@@ -12,6 +12,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.angelika.boutique.dto.UpdateEntityDto;
+import ru.angelika.boutique.exception.PasswordInvalidException;
+import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.model.Seller;
 import ru.angelika.boutique.service.SellerService;
 
@@ -37,21 +39,25 @@ public class SellerController {
     }
 
     @GetMapping("/public-seller/{id}")
-    public String getSeller(@PathVariable Long id, @RequestParam String role, Model model) {
+    public String getPublicPage(@PathVariable Long id, @RequestParam String role, Model model) {
         Seller seller = sellerService.getById(id);
         model.addAttribute("role", role);
         model.addAttribute("seller", seller);
         return "public-seller";
     }
     @GetMapping("/admin/sellers")
-    public String getAllSellers(Model model) {
-        model.addAttribute("sellers", sellerService.getAllSeller());
+    public String getAll(Model model) {
+        model.addAttribute("sellers", sellerService.getAll());
         return "admin-sellers";
     }
 
     @PutMapping("/seller/profile/{id}")
-    public String updateSeller(@PathVariable Long id, @Valid UpdateEntityDto updateEntityDto,
+    public String update(@PathVariable Long id, @Valid UpdateEntityDto updateEntityDto,
                                BindingResult result, RedirectAttributes redirectAttributes) {
+        if (security(id)) {
+            log.warn("Seller tried to update /seller/profile/ with id={} from someone else's path", id);
+            return "redirect:/welcome";
+        }
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Please correct the errors: " +
                     result.getAllErrors().stream()
@@ -60,12 +66,8 @@ public class SellerController {
             return "redirect:/seller/profile/" + id;
         }
         try {
-            if (security(id)) {
-                log.warn("Seller tried to update /seller/profile/ with id={} from someone else's path", id);
-                return "redirect:/welcome";
-            }
-            sellerService.updateSeller(updateEntityDto, id);
-        } catch (Exception e) {
+            sellerService.update(updateEntityDto, id);
+        } catch (PasswordInvalidException | ResourceExistsException e) {
             log.error("Error update seller profile id={}: {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
             return "redirect:/seller/profile/" + id;
@@ -73,13 +75,13 @@ public class SellerController {
         return "redirect:/logout";
     }
 
-    @DeleteMapping("/seller/profile/{id}")
-    public String deleteSeller(@PathVariable Long id) {
+    @DeleteMapping("/sellers/{id}")
+    public String delete(@PathVariable Long id) {
         if (security(id)) {
             log.warn("Seller tried to delete /seller/profile/ with id={} from someone else's path", id);
             return "redirect:/welcome";
         }
-        sellerService.deleteSeller(id);
+        sellerService.delete(id);
         return "redirect:/registration";
     }
 

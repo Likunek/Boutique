@@ -526,7 +526,7 @@
 </div>
 
 <div class="delete-container">
-    <form th:action="@{/seller/items/{id}(id=${item.id})}" method="post"
+    <form th:action="@{/items/{id}(id=${item.id})}" method="post"
           onsubmit="return confirm('Are you sure you want to delete this item? This action cannot be undone.');">
         <input type="hidden" name="_method" value="delete"/>
         <button type="submit" class="btn btn-danger">🗑️ Delete Item</button>
@@ -575,7 +575,7 @@
                 </div>
 
                 <div id="itemEditMode" style="display: none;">
-                    <form th:action="@{/seller/items/{id}(id=${item.id})}" method="post">
+                    <form th:action="@{/items/{id}(id=${item.id})}" method="post">
                         <input type="hidden" name="_method" value="put"/>
                         <div class="detail-grid">
                             <div class="info-card">
@@ -625,7 +625,7 @@
                         <td>
                             <span th:id="'countView-' + ${storageEntry.id}" th:text="${storageEntry.count}">0</span>
                             <form th:id="'countForm-' + ${storageEntry.id}" style="display: none;"
-                                  th:action="@{/seller/send-to-storage/{entryId}(entryId=${storageEntry.id})}"
+                                  th:action="@{/send-to-storage/{entryId}(entryId=${storageEntry.id})}"
                                   method="post">
                                 <input type="hidden" name="_method" value="put"/>
                                 <input type="hidden" name="itemId" th:value="${item.id}"/>
@@ -682,7 +682,7 @@
                         <h3 style="margin-top: 10px;">Edit Card Details</h3>
                     </div>
                     <div class="preview-card-body">
-                        <form th:action="@{/seller/add-card/{cardId}(cardId=${item.itemCard.id})}" method="post">
+                        <form th:action="@{/cards/{cardId}(cardId=${item.itemCard.id})}" method="post">
                             <input type="hidden" name="_method" value="put"/>
                             <input type="hidden" name="itemId" th:value="${item.id}"/>
                             <div style="text-align: left; margin-bottom: 15px;">

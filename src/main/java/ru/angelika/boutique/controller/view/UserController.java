@@ -3,7 +3,6 @@ package ru.angelika.boutique.controller.view;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +12,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.angelika.boutique.dto.UpdateEntityDto;
+import ru.angelika.boutique.exception.PasswordInvalidException;
+import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.service.UserService;
 
@@ -34,7 +35,7 @@ public class UserController {
             return "redirect:/welcome";
         }
         User user = userService.getById(id);
-        Set<Long> feedbacksId = userService.checkOwnFeedbacks(id);
+        Set<Long> feedbacksId = userService.checkItemIdWithOwnFeedbacks(id);
         model.addAttribute("feedbacksId", feedbacksId);
         model.addAttribute("orders", userService.getOrders(id));
         model.addAttribute("user", user);
@@ -42,14 +43,18 @@ public class UserController {
     }
 
     @GetMapping("/admin/users")
-    public String getAllUsers(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
+    public String getAll(Model model) {
+        model.addAttribute("users", userService.getAll());
         return "admin-users";
     }
 
     @PutMapping("/user/profile/{id}")
-    public String updateUser(@PathVariable Long id, @Valid UpdateEntityDto updateEntityDto,
-                               BindingResult result, RedirectAttributes redirectAttributes) {
+    public String update(@PathVariable Long id, @Valid UpdateEntityDto updateEntityDto,
+                         BindingResult result, RedirectAttributes redirectAttributes) {
+        if (security(id)) {
+            log.warn("User tried to update /user/profile/ with id={} from someone else's path", id);
+            return "redirect:/welcome";
+        }
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Please correct the errors: " +
                     result.getAllErrors().stream()
@@ -58,12 +63,8 @@ public class UserController {
             return "redirect:/user/profile/" + id;
         }
         try {
-            if (security(id)) {
-                log.warn("User tried to update /user/profile/ with id={} from someone else's path", id);
-                return "redirect:/welcome";
-            }
-            userService.updateUser(updateEntityDto, id);
-        } catch (Exception e) {
+            userService.update(updateEntityDto, id);
+        } catch (PasswordInvalidException | ResourceExistsException e) {
             log.error("Error update user profile id={}: {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
             return "redirect:/user/profile/" + id;
@@ -73,12 +74,18 @@ public class UserController {
 
 
     @DeleteMapping("/users/{id}")
-    public String getAllUsers(@PathVariable Long id, Model model) {
-        if (security(id)) {
-            log.warn("User tried to delete /user/profile/ with id={} from someone else's path", id);
-            return "redirect:/welcome";
+    public String delete(@PathVariable Long id, Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String roleName = auth.getAuthorities().iterator().next().getAuthority();
+        if (roleName.equals("ROLE_USER")) {
+            if (!userService.getByNumber(auth.getName()).getId().equals(id)) {
+                log.warn("User tried to delete /user/profile/ with id={} from someone else's path", id);
+                return "redirect:/welcome";
+            }
+            userService.delete(id);
+            return "redirect:/logout";
         }
-        userService.deleteUser(id);
+        userService.delete(id);
         return "redirect:/admin/users";
     }
 

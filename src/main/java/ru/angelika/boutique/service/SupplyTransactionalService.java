@@ -20,7 +20,7 @@ public class SupplyTransactionalService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<Item> checkCountOnStorage(Order order, Long storageId) {
         List<Item> items = order.getItems().stream()
-                .map(itemCard -> itemService.getItemByCardId(itemCard.getId())).toList();
+                .map(itemCard -> itemService.getByCardId(itemCard.getId())).toList();
         for (Item item : items) {
             ItemsAtStorage itemsAtStorage = itemsAtStorageService
                     .getByItemAndStorage(item.getId(), storageId);

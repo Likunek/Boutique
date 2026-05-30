@@ -19,6 +19,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByVerifyFalse();
 
     List<Item> findBySellerIdAndVerifyTrue(Long sellerId);
+    List<Item> findBySellerIdAndVerifyTrueAndItemCardIsNull(Long sellerId);
 
     @Query("SELECT i FROM Item i JOIN i.itemsAtStorages s WHERE s.id = :itemsAtStorageId")
     Item findItemByItemsAtStorageId(@Param("itemsAtStorageId") Long storageId);

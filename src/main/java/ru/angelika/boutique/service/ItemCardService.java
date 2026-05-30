@@ -3,7 +3,6 @@ package ru.angelika.boutique.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.FeedbackDto;
@@ -30,24 +29,23 @@ public class ItemCardService {
     private final UserService userService;
     private final ItemService itemService;
 
-    public void addItemCard(ItemCardDto itemCardDto, String seller) {
+    public void add(ItemCardDto itemCardDto, String seller) {
         checkDuplicate(seller, itemCardDto.getName(), itemCardDto.getDescription(), null);
-        Item item = itemService.getItemById(itemCardDto.getItemId());
+        Item item = itemService.getById(itemCardDto.getItemId());
         if (item.getItemCard() != null) {
             log.error("ItemCard by itemId={} already exists", item.getId());
             throw new ResourceExistsException(ItemCard.class, " itemId : " + item.getId());
         }
         ItemCard itemCard = itemCardRepository.save(ItemCardMapper.toItemCard(itemCardDto, item.getCostPrice(), seller));
         item.setItemCard(itemCard);
-        itemService.addCardItem(item);
+        itemService.addItemCard(item);
         log.info("Add new ItemCard: name={}, description={}, itemId={}",
                 itemCardDto.getName(), itemCardDto.getDescription(), itemCardDto.getItemId());
     }
 
     public void addFeedback(FeedbackDto feedbackDto, Long id) {
-        ItemCard itemCard = getItemCard(id);
+        ItemCard itemCard = get(id);
         User user = userService.getById(feedbackDto.getUserId());
-        itemCard.setFeedbacks(new ArrayList<>());
         itemCard.getFeedbacks().add(FeedbackMapper.toFeedback(feedbackDto, user));
         Double rating = itemCard.getFeedbacks().stream().mapToDouble(Feedback::getRating).average().orElse(0.0);
         itemCard.setRating(rating);
@@ -55,7 +53,7 @@ public class ItemCardService {
         log.info("Added new feedback, update rating={} itemCard by id={}", rating, id);
     }
 
-    public ItemCard getItemCard(Long id) {
+    public ItemCard get(Long id) {
         log.debug("Get itemCard by id={}", id);
         return itemCardRepository.findById(id).orElseThrow(() -> {
             log.error("ItemCard not found for get, id={}", id);
@@ -63,31 +61,28 @@ public class ItemCardService {
         });
     }
 
-    public Page<ItemCard> getAllItemCard(Pageable pageable) {
+    public Page<ItemCard> getAll(Pageable pageable) {
         return itemCardRepository.findAll(pageable);
     }
 
-    public Page<ItemCard> getAllItemCardBySearch(Pageable pageable, String text) {
+    public Page<ItemCard> getAllBySearch(Pageable pageable, String text) {
         return itemCardRepository.findByNameOrDescription(text.toLowerCase(), pageable);
     }
 
-    public Page<ItemCard> getAllItemCardBySeller(Pageable pageable, String seller) {
+    public Page<ItemCard> getAllBySeller(Pageable pageable, String seller) {
         return itemCardRepository.findBySeller(seller, pageable);
     }
 
-    public void updateItemCard(ItemCardUpdateDto itemCardDto, Long id, String seller) {
-        ItemCard itemCard = getItemCard(id);
+    public void update(ItemCardUpdateDto itemCardDto, Long id, String seller) {
+        ItemCard itemCard = get(id);
         checkDuplicate(seller, itemCardDto.getName(), itemCardDto.getDescription(), id);
         ItemCardMapper.toItemCardUpdate(itemCardDto, itemCard);
         itemCardRepository.save(itemCard);
         log.info("Update itemCard by id={}", id);
     }
 
-    public void deleteItemCard(Long id) {
-        itemCardRepository.findById(id).orElseThrow(() -> {
-            log.error("ItemCard not found for delete, id={}", id);
-            return new ResourceNotFoundException(ItemCard.class, id);
-        });
+    public void delete(Long id) {
+        get(id);
         itemService.deleteItemCard(id);
         itemCardRepository.deleteById(id);
         log.info("Delete itemCard by id={}", id);

@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -33,16 +32,20 @@ public class ItemsAtStorageController {
     private final ItemsAtStorageService itemsAtStorageService;
 
     @PostMapping("/seller/send-to-storage")
-    public String addItemsAtStorage(@Valid ItemsAtStorageDto itemsAtStorageDto, Model model) {
+    public String add(@Valid ItemsAtStorageDto itemsAtStorageDto, Model model) {
+        Seller seller = getAuthSeller();
+        List<Item> items = itemService.getBySellerId(seller.getId());
+        List<Storage> storages = storageService.getAll();
+        Item item = itemService.getById(itemsAtStorageDto.getItemId());
+        if (!item.getSeller().getId().equals(seller.getId())) {
+            log.warn("Seller with id={} tried to add ItemsAtStorage from someone else's path", seller.getId());
+            return "redirect:/welcome";
+        }
         try {
-            Seller seller = getAuthSeller();
-            List<Item> items = itemService.getItemBySellerId(seller.getId());
-            List<Storage> storages = storageService.getAllStorages();
-
             model.addAttribute("items", items);
             model.addAttribute("storages", storages);
             model.addAttribute("id", seller.getId());
-            itemsAtStorageService.addItemsAtStorage(itemsAtStorageDto);
+            itemsAtStorageService.add(itemsAtStorageDto);
             model.addAttribute("successMessage", "Item successfully sent to storage!");
         } catch (Exception e) {
             log.error("Error add itemAtStorage: itemId={}, storageId={}: {}",
@@ -55,8 +58,8 @@ public class ItemsAtStorageController {
     @GetMapping("/seller/send-to-storage")
     public String getFormItemsAtStorage(Model model) {
         Seller seller = getAuthSeller();
-        List<Item> items = itemService.getItemBySellerId(seller.getId());
-        List<Storage> storages = storageService.getAllStorages();
+        List<Item> items = itemService.getBySellerId(seller.getId());
+        List<Storage> storages = storageService.getAll();
 
         model.addAttribute("items", items);
         model.addAttribute("storages", storages);
@@ -64,28 +67,28 @@ public class ItemsAtStorageController {
         return "send-to-storage";
     }
     @GetMapping("admin/item-at-storage")
-    public String getAllItemsAtStorage(Model model) {
-        model.addAttribute("itemsAtStorages", itemsAtStorageService.getAllItemsAtStorage());
+    public String getAll(Model model) {
+        model.addAttribute("itemsAtStorages", itemsAtStorageService.getAll());
         return "admin-items-at-storage";
     }
 
-    @PutMapping("/seller/send-to-storage/{id}")
-    public String updateFormItemsAtStorage(@PathVariable Long id, @RequestParam Long itemId,
+    @PutMapping("/send-to-storage/{id}")
+    public String updateForm(@PathVariable Long id, @RequestParam Long itemId,
                                            @Min(0) Long count, RedirectAttributes redirectAttributes) {
+        Item item = itemService.getById(itemId);
+        Long sellerId = item.getSeller().getId();
+        if (security(sellerId)) {
+            log.warn("Seller with id={} tried to update ItemsAtStorage with id={} from someone else's path", sellerId, id);
+            return "redirect:/welcome";
+        }
         try {
-            Item item = itemService.getItemById(itemId);
-            Long sellerId = item.getSeller().getId();
-            if (security(sellerId)) {
-                log.warn("Seller with id={} tried to update ItemsAtStorage with id={} from someone else's path", sellerId, id);
-                return "redirect:/welcome";
-            }
-            itemsAtStorageService.updateItemsAtStorage(id, count);
+            itemsAtStorageService.update(id, count);
             redirectAttributes.addFlashAttribute("successMessage", "Item successfully sent to storage!");
         } catch (Exception e) {
             log.error("Error update itemsAtStorage id={}: {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
-        return "redirect:/seller/items/" + itemId;
+        return "redirect:/items/" + itemId;
     }
 
     private Seller getAuthSeller() {

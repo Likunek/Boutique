@@ -212,7 +212,7 @@
       <tbody>
       <tr th:each="entry : ${itemsAtStorages}">
         <td>
-          <a th:href="@{/seller/items/{id}(id=${entry.item.id})}" class="btn-link" th:text="${entry.item.id}">1</a>
+          <a th:href="@{/items/{id}(id=${entry.item.id})}" class="btn-link" th:text="${entry.item.id}">1</a>
         </td>
         <td th:text="${entry.storage.id}">1</td>
         <td th:text="${entry.storage.address}">Address</td>

@@ -20,6 +20,6 @@ public class AuthenticationRestController {
     }
     @PostMapping
     public void addAuthentication(@Valid @RequestBody Authentication authentication) {
-        authenticationService.addAuthentication(authentication);
+        authenticationService.add(authentication);
     }
 }

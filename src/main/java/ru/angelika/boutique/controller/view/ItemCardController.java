@@ -3,9 +3,6 @@ package ru.angelika.boutique.controller.view;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.valves.rewrite.InternalRewriteMap;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -42,18 +39,18 @@ public class ItemCardController {
     @GetMapping("/seller/add-card")
     public String getFormNewCard(Model model) {
         Seller seller = getAuthSeller();
-        List<Item> items = itemService.getItemBySellerId(seller.getId());
+        List<Item> items = itemService.getBySellerIdItemCardNull(seller.getId());
         model.addAttribute("items", items);
         model.addAttribute("id", seller.getId());
         return "add-card";
     }
 
     @PostMapping("/seller/add-card")
-    public String addItemCard(@Valid ItemCardDto itemCardDto, Model model) {
+    public String add(@Valid ItemCardDto itemCardDto, Model model) {
+        Seller seller = getAuthSeller();
+        itemCardService.add(itemCardDto, seller.getName());
         try {
-            Seller seller = getAuthSeller();
-            itemCardService.addItemCard(itemCardDto, seller.getName());
-            List<Item> items = itemService.getItemBySellerId(seller.getId());
+            List<Item> items = itemService.getBySellerIdItemCardNull(seller.getId());
             model.addAttribute("items", items);
             model.addAttribute("id", seller.getId());
             model.addAttribute("successMessage", "Card successfully add!");
@@ -64,22 +61,25 @@ public class ItemCardController {
         return "add-card";
     }
 
-    @PutMapping("/seller/add-card/{id}")
-    public String updateCard(@PathVariable Long id, @RequestParam Long itemId,
-                             @Valid ItemCardUpdateDto itemCardUpdateDto, RedirectAttributes redirectAttributes) {
+    @PutMapping("/cards/{id}")
+    public String update(@PathVariable Long id, @RequestParam Long itemId,
+                         @Valid ItemCardUpdateDto itemCardUpdateDto, RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String roleName = auth.getAuthorities().iterator().next().getAuthority();
+        String sellerName = itemCardService.get(id).getSeller();
+        if (roleName.equals("ROLE_SELLER")
+                && !sellerService.getByNumber(auth.getName()).getName().equals(sellerName)) {
+            log.warn("Seller with name={} tried to update itemCard with id={} from someone else's path", sellerName, itemId);
+            return "redirect:/welcome";
+        }
         try {
-            String sellerName = getAuthSeller().getName();
-            if (!itemService.getItemById(itemId).getSeller().getName().equals(sellerName)) {
-                log.warn("Seller with name={} tried to update itemCard with id={} from someone else's path", sellerName, itemId);
-                return "redirect:/welcome";
-            }
-            itemCardService.updateItemCard(itemCardUpdateDto, id, sellerName);
+            itemCardService.update(itemCardUpdateDto, id, sellerName);
             redirectAttributes.addFlashAttribute("successMessage", "Card successfully update!");
         } catch (Exception e) {
             log.error("Error update itemCard id {} : {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
-        return "redirect:/seller/items/" + itemId;
+        return "redirect:/items/" + itemId;
     }
 
     @PostMapping("/user/item-card/feedback/{id}")
@@ -89,14 +89,14 @@ public class ItemCardController {
     }
 
     @GetMapping("/item-card")
-    public String getAllItemCard(@RequestParam(defaultValue = "0") int page,
-                                 @RequestParam(defaultValue = "12") int size, @RequestParam String role,
-                                 @RequestParam(defaultValue = "false") boolean seller,
-                                 @RequestParam(required = false) Long sellerId,
-                                 @RequestParam(defaultValue = "") String search,
-                                 @RequestParam(defaultValue = "id") String sortBy,
-                                 @RequestParam(defaultValue = "asc") String sort, Model model) {
-        Sort.Direction direction  = sort.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+    public String getAll(@RequestParam(defaultValue = "0") int page,
+                         @RequestParam(defaultValue = "12") int size, @RequestParam String role,
+                         @RequestParam(defaultValue = "false") boolean seller,
+                         @RequestParam(required = false) Long sellerId,
+                         @RequestParam(defaultValue = "") String search,
+                         @RequestParam(defaultValue = "id") String sortBy,
+                         @RequestParam(defaultValue = "asc") String sort, Model model) {
+        Sort.Direction direction = sort.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         model.addAttribute("seller", seller);
         model.addAttribute("searchQuery", search);
@@ -106,25 +106,25 @@ public class ItemCardController {
         }
         if (seller) {
             String sellerName = sellerService.getById(sellerId).getName();
-            model.addAttribute("itemCardsPage", itemCardService.getAllItemCardBySeller(pageable, sellerName));
+            model.addAttribute("itemCardsPage", itemCardService.getAllBySeller(pageable, sellerName));
             model.addAttribute("role", role);
             model.addAttribute("name", "by " + sellerName);
             return "all-cards";
         }
         if (!search.isBlank()) {
-            model.addAttribute("itemCardsPage", itemCardService.getAllItemCardBySearch(pageable, search));
+            model.addAttribute("itemCardsPage", itemCardService.getAllBySearch(pageable, search));
             model.addAttribute("role", role);
             return "all-cards";
         }
-        model.addAttribute("itemCardsPage", itemCardService.getAllItemCard(pageable));
+        model.addAttribute("itemCardsPage", itemCardService.getAll(pageable));
         model.addAttribute("role", role);
         return "all-cards";
     }
 
     @GetMapping("/item-card/{id}")
-    public String getItemCardById(@PathVariable Long id, @RequestParam String role, Model model) {
+    public String getById(@PathVariable Long id, @RequestParam String role, Model model) {
         boolean isOwner = false;
-        ItemCard itemCard = itemCardService.getItemCard(id);
+        ItemCard itemCard = itemCardService.get(id);
         switch (role) {
             case "ROLE_SELLER" -> isOwner = getAuthSeller().getName().equals(itemCard.getSeller());
             case "ROLE_ADMIN" -> isOwner = true;
@@ -133,7 +133,7 @@ public class ItemCardController {
                 model.addAttribute("cardsId", userService.getCardsId(auth.getName()));
             }
         }
-        Long sellerId = sellerService.getBySellerName(itemCard.getSeller()).getId();
+        Long sellerId = sellerService.getByName(itemCard.getSeller()).getId();
         model.addAttribute("isOwner", isOwner);
         model.addAttribute("role", role);
         model.addAttribute("itemCard", itemCard);
@@ -141,11 +141,11 @@ public class ItemCardController {
         return "item-card";
     }
 
-    @DeleteMapping("/item-card/{id}")
-    public String deleteItemCardById(@PathVariable Long id, @RequestParam String role, Model model) {
-        ItemCard itemCard = itemCardService.getItemCard(id);
+    @DeleteMapping("/cards/{id}")
+    public String delete(@PathVariable Long id, @RequestParam String role, Model model) {
+        ItemCard itemCard = itemCardService.get(id);
         if (role.equals("ROLE_ADMIN") || security(itemCard.getSeller())) {
-            itemCardService.deleteItemCard(id);
+            itemCardService.delete(id);
         }
         return "redirect:/welcome";
     }
