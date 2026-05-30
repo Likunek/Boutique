@@ -37,7 +37,7 @@ public class UserJpaTest {
     void setUp() {
         Authentication authentication = new Authentication();
         authentication.setNumber("12345678900");
-        authentication.setPassword("encodedPassword");
+        authentication.setPassword("password");
         authentication.setRole(Role.USER);
         authentication = authenticationRepository.save(authentication);
 
