@@ -28,8 +28,10 @@ public class AuthenticationService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationRepository authenticationRepository;
 
-
     public void add(Authentication authentication) {
+        if (authenticationRepository.findByNumber(authentication.getNumber()) != null) {
+            throw new ResourceExistsException(Authentication.class, authentication.getNumber());
+        }
         authentication.setPassword(passwordEncoder.encode(authentication.getPassword()));
         authenticationRepository.save(authentication);
         log.info("Add new profile authentication: number={}, role={}",
@@ -38,7 +40,7 @@ public class AuthenticationService implements UserDetailsService {
 
     public Authentication findByNumber(String number) {
         Authentication authentication = authenticationRepository.findByNumber(number);
-        if (authentication ==  null) {
+        if (authentication == null) {
             log.error("Authentication not found by number={}", number);
             throw  new ResourceNotFoundException(Authentication.class, number);
         }
