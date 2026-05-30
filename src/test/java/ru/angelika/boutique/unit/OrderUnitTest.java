@@ -171,6 +171,21 @@ class OrderUnitTest {
     }
 
     @Test
+    void getWithPoint_Success() {
+        when(orderRepository.findByIdWithPointAndItems(ORDER_ID)).thenReturn(order);
+        Order orderCurrent = orderService.getWithPoint(ORDER_ID);
+        assertNotNull(orderCurrent);
+        assertEquals(ORDER_ID, orderCurrent.getId());
+        verify(orderRepository).findByIdWithPointAndItems(ORDER_ID);
+    }
+
+    @Test
+    void getWithPoint_OrderNotFound_ThrowsException() {
+        when(orderRepository.findByIdWithPointAndItems(ORDER_ID)).thenReturn(null);
+        assertThrows(ResourceNotFoundException.class, () ->  orderService.getWithPoint(ORDER_ID));
+    }
+
+    @Test
     void getAll_Success() {
         when(orderRepository.findAll()).thenReturn(List.of(order));
         List<Order> result = orderService.getAll();
