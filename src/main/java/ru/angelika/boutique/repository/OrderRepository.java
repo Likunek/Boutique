@@ -7,9 +7,12 @@ import ru.angelika.boutique.model.Status;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
+
+    Order findByCode(Integer code);
     List<Order> findByPointId(Long Id);
 
     List<Order> findByUserId(Long Id);
+
     List<Order> findByUserIdAndStatusNot(Long userId, Status status);
 
     List<Order> findByStatus(Status status);

@@ -12,6 +12,7 @@ import ru.angelika.boutique.repository.OrderRepository;
 import ru.angelika.boutique.repository.UserRepository;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @Service
@@ -30,8 +31,17 @@ public class OrderService {
                 .toList();
         user.setBalance(user.getBalance() - cards.stream().mapToDouble(ItemCard::getPrice).sum());
         PickupPoint point = pickupPointService.get(orderDto.getPointId());
-        orderRepository.save(OrderMapper.toOrder(user, point, cards));
+        Order order = OrderMapper.toOrder(user, point, cards);
+        boolean coincidence = true;
+        while (coincidence) {
+            Integer code = ThreadLocalRandom.current().nextInt(100000, 1000000);
+            if (orderRepository.findByCode(code) == null) {
+                coincidence = false;
+                order.setCode(code);
+            }
+        }
         cartService.deleteCardsFromCart(cartId, orderDto.getItemCards());
+        orderRepository.save(order);
         log.info("Add new order: userId={}, pointId={}, countItems={}",
                 user.getId(), point.getId(), cards.size());
     }

@@ -99,6 +99,7 @@ class OrderUnitTest {
         when(itemCardService.get(ITEM_CARD_ID_1)).thenReturn(itemCard1);
         when(itemCardService.get(ITEM_CARD_ID_2)).thenReturn(itemCard2);
         when(pickupPointService.get(POINT_ID)).thenReturn(pickupPoint);
+        when(orderRepository.findByCode(anyInt())).thenReturn(null);
         doNothing().when(cartService).deleteCardsFromCart(CART_ID, orderDto.getItemCards());
 
         assertDoesNotThrow(() -> orderService.add(orderDto, user, CART_ID));
@@ -126,6 +127,19 @@ class OrderUnitTest {
         assertThrows(ResourceNotFoundException.class, () -> orderService.add(orderDto, user, CART_ID));
         verify(orderRepository, never()).save(any());
         verify(cartService, never()).deleteCardsFromCart(any(), any());
+    }
+
+    @Test
+    void add_CartNotFound_ThrowsException() {
+        when(itemCardService.get(ITEM_CARD_ID_1)).thenReturn(itemCard1);
+        when(itemCardService.get(ITEM_CARD_ID_2)).thenReturn(itemCard2);
+        when(pickupPointService.get(POINT_ID)).thenReturn(pickupPoint);
+        when(orderRepository.findByCode(anyInt())).thenReturn(null);
+        doThrow(new ResourceNotFoundException(Cart.class, CART_ID))
+                .when(cartService).deleteCardsFromCart(CART_ID, orderDto.getItemCards());
+
+        assertThrows(ResourceNotFoundException.class, () -> orderService.add(orderDto, user, CART_ID));
+        verify(orderRepository, never()).save(any());
     }
 
     @Test
