@@ -20,7 +20,7 @@ public class AdminFunctionalTest {
     private WebDriver driver;
     private WebDriverWait wait;
     private static final String BASE_URL = "http://localhost:8080";
-    private static final String ADMIN_NUMBER = "89538921200";
+    private static final String ADMIN_NUMBER = "89538921211";
     private static final String ADMIN_PASSWORD = "0000";
 
     @BeforeAll
