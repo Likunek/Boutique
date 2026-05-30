@@ -483,6 +483,10 @@
         .items-table td:last-child {
             text-align: right;
         }
+        .items-table th:last-child {
+            text-align: right;
+            padding-right: 40px;
+        }
         .no-orders, .no-items {
             background: #fff3e0;
             border-radius: 24px;
@@ -631,7 +635,7 @@
                         <div>
                             <span class="balance-amount"
                                   th:text="${#numbers.formatDecimal(user.balance, 1, 2)}">0.00</span>
-                            <span class="balance-currency">USD</span>
+                            <span class="balance-currency">RUB</span>
                         </div>
                     </div>
                 </div>

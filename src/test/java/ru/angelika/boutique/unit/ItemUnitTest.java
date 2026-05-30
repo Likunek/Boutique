@@ -1,5 +1,6 @@
 package ru.angelika.boutique.unit;
 
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -168,7 +169,7 @@ class ItemUnitTest {
         item.setItemCard(itemCard);
         when(itemRepository.findBySellerIdAndName(SELLER_ID, ITEM_NAME)).thenReturn(null);
         when(itemRepository.findById(ITEM_ID)).thenReturn(Optional.of(item));
-        when(itemCardRepository.findById(ITEM_ID)).thenReturn(Optional.of(itemCard));
+        when(itemCardRepository.findById(CARD_ID)).thenReturn(Optional.of(itemCard));
 
         assertDoesNotThrow(() -> itemService.update(itemDto, ITEM_ID, SELLER_ID));
 
@@ -194,7 +195,7 @@ class ItemUnitTest {
         item.setItemCard(itemCard);
         when(itemRepository.findBySellerIdAndName(SELLER_ID, ITEM_NAME)).thenReturn(null);
         when(itemRepository.findById(ITEM_ID)).thenReturn(Optional.of(item));
-        when(itemCardRepository.findById(ITEM_ID)).thenReturn(Optional.empty());
+        when(itemCardRepository.findById(CARD_ID)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> itemService.update(itemDto, ITEM_ID, SELLER_ID));
 

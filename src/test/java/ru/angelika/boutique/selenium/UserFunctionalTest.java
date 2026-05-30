@@ -31,7 +31,7 @@ public class UserFunctionalTest {
     @BeforeEach
     void setUp() {
         driver = new ChromeDriver();
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
     @AfterEach

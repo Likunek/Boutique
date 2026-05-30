@@ -91,7 +91,7 @@ public class ItemService {
                 });
         ItemMapper.toItemUpdate(itemDto, item);
         if (item.getItemCard() != null) {
-            ItemCard itemCard = itemCardRepository.findById(id)
+            ItemCard itemCard = itemCardRepository.findById(item.getItemCard().getId())
                     .orElseThrow(() -> {
                         log.error("ItemCard not found for update price, id={}", id);
                         return new ResourceNotFoundException(Item.class, id);
