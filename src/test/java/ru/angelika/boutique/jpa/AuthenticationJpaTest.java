@@ -43,7 +43,7 @@ public class AuthenticationJpaTest {
 
     @Test
     void findByNumber_ShouldReturnNull_WhenNotExists() {
-        String nonExistentNumber = "9999999999";
+        String nonExistentNumber = "99999999999";
         Authentication found = authenticationRepository.findByNumber(nonExistentNumber);
         assertNull(found);
     }
