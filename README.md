@@ -97,6 +97,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 }
 
 Перезапустите приложение и перейдите по адресу:
+
 http://localhost:8080/swagger-ui/index.html
 
 В Swagger UI найдите контроллер authentication-entity-controller, метод POST.
@@ -109,6 +110,7 @@ http://localhost:8080/swagger-ui/index.html
   "password": "ваш пароль",
   "role": "ADMIN"
 }
+
 Нажмите Execute. Сервер должен вернуть код 201 – запись создана.
 
 Верните исходный код метода filterChain (с ограничениями доступа), перезапустите приложение и авторизуйтесь под новой учётной записью администратора.
@@ -116,8 +118,8 @@ http://localhost:8080/swagger-ui/index.html
 ### Тестирование
 Используется H2. Конфигурация – application-test.properties.
 Запуск тестов:
-mvn test -Dtest='!ru.angelika.boutique.selenium'
-(отключаю тесты для GUI, потому что там используются данные пользователей из моей локальной бд)
+mvn test
+(отключаю тесты selenium в pom, потому что там используются данные пользователей из моей локальной бд)
 
 📚 Документация и мониторинг (доступно администратору)
 
@@ -128,11 +130,6 @@ OpenAPI JSON: http://localhost:8080/v3/api-docs
 JavaMelody: http://localhost:8080/monitoring
 
 Actuator health: http://localhost:8080/actuator/health
-
-📖 Javadoc
-Весь код снабжён Javadoc-комментариями. Генерация HTML:
-mvn javadoc:javadoc
-Результат в target/site/apidocs.
 
 💡 Возможные улучшения
 
