@@ -16,6 +16,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,7 +64,7 @@ class SupplyTransactionalUnitTest {
     void checkCountOnStorage_Success() {
         when(itemService.getByCardId(ITEM_CARD_ID)).thenReturn(item);
         when(itemsAtStorageService.getByItemAndStorage(ITEM_ID, STORAGE_ID)).thenReturn(itemsAtStorage);
-        doNothing().when(itemsAtStorageService).updateCount(any(ItemsAtStorage.class), 1);
+        doNothing().when(itemsAtStorageService).updateCount(any(ItemsAtStorage.class), eq(1));
 
         List<Item> result = supplyTransactionalService.checkCountOnStorage(order, STORAGE_ID);
 
@@ -88,7 +89,7 @@ class SupplyTransactionalUnitTest {
         when(itemsAtStorageService.getByItemAndStorage(ITEM_ID, STORAGE_ID)).thenThrow(new ResourceNotFoundException(ItemsAtStorage.class, ITEM_ID + " " + STORAGE_ID));
 
         assertThrows(ResourceNotFoundException.class, () -> supplyTransactionalService.checkCountOnStorage(order, STORAGE_ID));
-        verify(itemsAtStorageService, never()).updateCount(any(), 1);
+        verify(itemsAtStorageService, never()).updateCount(any(), eq(1));
     }
 
     @Test
@@ -100,7 +101,7 @@ class SupplyTransactionalUnitTest {
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                 () -> supplyTransactionalService.checkCountOnStorage(order, STORAGE_ID));
         assertEquals("class ru.angelika.boutique.model.ItemsAtStorage not found with data: items count = 0", exception.getMessage());
-        verify(itemsAtStorageService, never()).updateCount(any(), 1);
+        verify(itemsAtStorageService, never()).updateCount(any(), eq(1));
     }
 
     @Test
@@ -122,7 +123,7 @@ class SupplyTransactionalUnitTest {
         List<Item> result = supplyTransactionalService.checkCountOnStorage(order, STORAGE_ID);
 
         assertEquals(2, result.size());
-        verify(itemsAtStorageService, times(2)).updateCount(any(), 1);
+        verify(itemsAtStorageService, times(2)).updateCount(any(), eq(1));
         assertEquals(COUNT - 1, itemsAtStorage.getCount());
         assertEquals(2L, itemsAtStorage2.getCount());
     }
