@@ -15,6 +15,11 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис для автоматического формирования поставок.
+ * По расписанию (каждый день в 23:00) собирает новые заказы (статус NEW),
+ * группирует их по пунктам выдачи и создаёт поставки на склады.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -25,10 +30,23 @@ public class SupplyService {
     private final PickupPointService pickupPointService;
     private final SupplyTransactionalService service;
 
+    /**
+     * Возвращает все поставки.
+     *
+     * @return список всех поставок
+     */
     public List<Supply> getAll() {
         return supplyRepository.findAll();
     }
 
+    /**
+     * Плановое формирование поставок (запускается каждый день в 23:00).
+     * Для каждого пункта выдачи асинхронно формирует поставку:
+     * – проверяет наличие товаров на складе,
+     * – списывает остатки,
+     * – меняет статус заказов на WAY,
+     * – создаёт Supply.
+     */
     @Scheduled(cron = "0 0 23 * * ?")
     @Transactional
     public void addSupply() {
@@ -40,7 +58,12 @@ public class SupplyService {
         points.forEach(point -> handlerPoint(point.getId(), ordersId));
     }
 
-
+    /**
+     * Обрабатывает один пункт выдачи: формирует поставку из заказов, привязанных к этому ПВЗ.
+     *
+     * @param pointId  ID пункта выдачи
+     * @param ordersId список ID всех новых заказов (фильтруется внутри)
+     */
     private void handlerPoint(Long pointId, List<Long> ordersId) {
         CompletableFuture.runAsync(() -> {
             try {
@@ -73,6 +96,12 @@ public class SupplyService {
         });
     }
 
+    /**
+     * Сохраняет сформированную поставку в БД.
+     *
+     * @param supply поставка (уже заполнена товарами и весом)
+     * @param point  пункт выдачи, к которому привязана поставка
+     */
     @Transactional
     private void saveSupply(Supply supply, PickupPoint point) {
         supply.setStorage(point.getStorage());

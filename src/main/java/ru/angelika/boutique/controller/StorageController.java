@@ -1,4 +1,4 @@
-package ru.angelika.boutique.controller.view;
+package ru.angelika.boutique.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +13,10 @@ import ru.angelika.boutique.service.StorageService;
 
 import java.util.stream.Collectors;
 
+/**
+ * Контроллер для управления складами (доступен только администратору).
+ * Позволяет добавлять, редактировать, удалять склады и просматривать их список.
+ */
 @Slf4j
 @Controller
 @RequestMapping("/admin/storages")
@@ -20,6 +24,14 @@ import java.util.stream.Collectors;
 public class StorageController {
     private final StorageService storageService;
 
+    /**
+     * Добавляет новый склад.
+     *
+     * @param storageDto DTO с данными склада
+     * @param result     результаты валидации
+     * @param model      модель
+     * @return "admin-add-storage"
+     */
     @PostMapping("/add")
     public String addStorage(@Valid StorageDto storageDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
@@ -39,21 +51,48 @@ public class StorageController {
         }
         return "admin-add-storage";
     }
+
+    /**
+     * Показывает форму добавления нового склада.
+     *
+     * @return "admin-add-storage"
+     */
     @GetMapping("/add")
     public String getFormNewStorage() {
         return "admin-add-storage";
     }
 
+    /**
+     * Отображает список всех складов.
+     *
+     * @param model модель
+     * @return "admin-storages"
+     */
     @GetMapping
     public String getAllStorage(Model model) {
         model.addAttribute("storages", storageService.getAll());
         return "admin-storages";
     }
+
+    /**
+     * Обновляет данные склада.
+     *
+     * @param storageDto DTO с новыми данными
+     * @param id         ID склада
+     * @return редирект на список складов
+     */
     @PutMapping("{id}")
     public String updateStorage(StorageDto storageDto, @PathVariable Long id) {
         storageService.update(storageDto, id);
         return "redirect:/admin/storages";
     }
+
+    /**
+     * Удаляет склад.
+     *
+     * @param id ID склада
+     * @return редирект на список складов
+     */
     @DeleteMapping("{id}")
     public String deleteStorage(@PathVariable Long id) {
         storageService.delete(id);

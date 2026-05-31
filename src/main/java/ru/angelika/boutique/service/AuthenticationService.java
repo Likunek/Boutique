@@ -20,6 +20,11 @@ import ru.angelika.boutique.repository.AuthenticationRepository;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Сервис для управления учётными записями аутентификации.
+ * <p>Реализует интерфейс {@link UserDetailsService} для интеграции со Spring Security.
+ * Отвечает за регистрацию, поиск, обновление и удаление {@link Authentication}.</p>
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -28,8 +33,15 @@ public class AuthenticationService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationRepository authenticationRepository;
 
+    /**
+     * Сохраняет новую запись аутентификации после кодирования пароля.
+     *
+     * @param authentication объект {@link Authentication} с незашифрованным паролем и ролью
+     * @throws ru.angelika.boutique.exception.ResourceExistsException если номер телефона уже существует (на уровне БД)
+     */
     public void add(Authentication authentication) {
         if (authenticationRepository.findByNumber(authentication.getNumber()) != null) {
+            log.error("Authentication with number={} already exists", authentication.getNumber());
             throw new ResourceExistsException(Authentication.class, authentication.getNumber());
         }
         authentication.setPassword(passwordEncoder.encode(authentication.getPassword()));
@@ -38,6 +50,13 @@ public class AuthenticationService implements UserDetailsService {
                 authentication.getNumber(), authentication.getRole());
     }
 
+    /**
+     * Ищет аутентификацию по номеру телефона.
+     *
+     * @param number номер телефона (логин), не может быть {@code null}
+     * @return найденный объект {@link Authentication}
+     * @throws ru.angelika.boutique.exception.ResourceNotFoundException если запись с таким номером не найдена
+     */
     public Authentication findByNumber(String number) {
         Authentication authentication = authenticationRepository.findByNumber(number);
         if (authentication == null) {
@@ -47,6 +66,15 @@ public class AuthenticationService implements UserDetailsService {
         return authentication;
     }
 
+    /**
+     * Обновляет номер телефона и/или пароль существующей аутентификации.
+     * <p>Перед обновлением проверяется соответствие старого пароля.</p>
+     *
+     * @param dto данные для обновления (старый пароль, новый пароль, новый номер)
+     * @param authentication существующий объект, который нужно изменить)
+     * @throws ru.angelika.boutique.exception.PasswordInvalidException если {@code dto.oldPassword} не совпадает с текущим паролем
+     * @throws ru.angelika.boutique.exception.ResourceExistsException  если новый номер телефона уже занят другой записью
+     */
     public void update(AuthenticationDto dto, Authentication authentication) {
         if (passwordEncoder.matches(dto.getOldPassword(), authentication.getPassword())) {
             if (!dto.getNewPassword().isBlank()) {
@@ -68,12 +96,26 @@ public class AuthenticationService implements UserDetailsService {
         }
     }
 
+    /**
+     * Удаляет запись аутентификации по номеру телефона.
+     *
+     * @param number номер телефона (логин)
+     * @throws ru.angelika.boutique.exception.ResourceNotFoundException если запись с таким номером не найдена
+     */
     public void delete(String number) {
         Authentication authentication = findByNumber(number);
         authenticationRepository.deleteById(authentication.getId());
         log.info("Delete authentication by id={}, number={}", authentication.getId(), number);
     }
 
+    /**
+     * Загружает пользователя Spring Security по номеру телефона.
+     * <p>Используется фреймворком при аутентификации.</p>
+     *
+     * @param number номер телефона пользователя (логин)
+     * @return {@link UserDetails} с правами на основе роли
+     * @throws UsernameNotFoundException если запись не найдена
+     */
     @Override
     public UserDetails loadUserByUsername(String number) throws UsernameNotFoundException {
         Authentication authentication = findByNumber(number);
@@ -81,6 +123,13 @@ public class AuthenticationService implements UserDetailsService {
         return new User(authentication.getNumber(), authentication.getPassword(), extractRoles(authentication));
     }
 
+    /**
+     * Преобразует роль сущности в коллекцию GrantedAuthority для Spring Security.
+     * <p>Добавляет префикс "ROLE_" к имени роли.</p>
+     *
+     * @param authentication объект аутентификации
+     * @return список с одним элементом {@link SimpleGrantedAuthority}
+     */
     private Collection<? extends GrantedAuthority> extractRoles(Authentication authentication) {
         return List.of(new SimpleGrantedAuthority("ROLE_" + authentication.getRole()));
     }

@@ -367,7 +367,20 @@ class SellerRestAssuredTest {
                 .delete("/sellers/{id}", SELLER_ID)
                 .then()
                 .statusCode(302)
-                .header("Location", "/registration");
+                .header("Location", "/logout");
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void delete_Admin_Success() {
+        doNothing().when(sellerService).delete(SELLER_ID);
+
+        given()
+                .when()
+                .delete("/sellers/{id}", SELLER_ID)
+                .then()
+                .statusCode(302)
+                .header("Location", "/admin/sellers");
     }
 
     @Test

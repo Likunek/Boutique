@@ -6,10 +6,20 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-
+/**
+ * Глобальный обработчик исключений для MVC-контроллеров (возвращает HTML-страницу error).
+ * Перехватывает различные типы исключений и добавляет в модель атрибуты для отображения на странице ошибки.
+ */
 @ControllerAdvice
 public class HtmlExceptionControllerAdvice {
 
+    /**
+     * Обрабатывает исключение {@link ResourceNotFoundException} (ресурс не найден).
+     *
+     * @param model модель для передачи атрибутов в представление
+     * @param e     перехваченное исключение
+     * @return имя представления "error"
+     */
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNotFound(Model model, ResourceNotFoundException e) {
@@ -19,6 +29,13 @@ public class HtmlExceptionControllerAdvice {
         return "error";
     }
 
+    /**
+     * Обрабатывает исключение {@link PasswordInvalidException} (неверный пароль).
+     *
+     * @param model модель
+     * @param e     перехваченное исключение
+     * @return "error"
+     */
     @ExceptionHandler(PasswordInvalidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handlePasswordInvalid(Model model, PasswordInvalidException e) {
@@ -28,6 +45,13 @@ public class HtmlExceptionControllerAdvice {
         return "error";
     }
 
+    /**
+     * Обрабатывает исключение {@link ResourceExistsException} (ресурс уже существует).
+     *
+     * @param model модель
+     * @param e     перехваченное исключение
+     * @return "error"
+     */
     @ExceptionHandler(ResourceExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public String handleResourceExists(Model model, ResourceExistsException e) {
@@ -37,6 +61,13 @@ public class HtmlExceptionControllerAdvice {
         return "error";
     }
 
+    /**
+     * Обрабатывает исключение {@link SupplyException} (ошибка при формировании поставки).
+     *
+     * @param model модель
+     * @param e     перехваченное исключение
+     * @return "error"
+     */
     @ExceptionHandler(SupplyException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleSupplyError(Model model, SupplyException e) {
@@ -46,6 +77,13 @@ public class HtmlExceptionControllerAdvice {
         return "error";
     }
 
+    /**
+     * Обрабатывает все остальные непредвиденные исключения.
+     *
+     * @param model модель
+     * @param e     перехваченное исключение
+     * @return "error"
+     */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleGenericException(Model model, Exception e) {

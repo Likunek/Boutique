@@ -182,7 +182,7 @@ class ItemsAtStorageUnitTest {
 
     @Test
     void updateCount_Success() {
-        assertDoesNotThrow(() -> itemsAtStorageService.updateCount(itemsAtStorage));
+        assertDoesNotThrow(() -> itemsAtStorageService.updateCount(itemsAtStorage , 1));
         verify(itemsAtStorageRepository).save(itemsAtStorage);
     }
 

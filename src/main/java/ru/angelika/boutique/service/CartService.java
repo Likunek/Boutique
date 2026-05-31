@@ -3,6 +3,7 @@ package ru.angelika.boutique.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.model.Cart;
 import ru.angelika.boutique.model.ItemCard;
@@ -10,14 +11,24 @@ import ru.angelika.boutique.repository.CartRepository;
 
 import java.util.List;
 
+/**
+ * Сервис для работы с корзиной покупок.
+ * Позволяет добавлять/удалять товары, получать корзину по ID.
+ */
 @Slf4j
-@Controller
+@Service
 @RequiredArgsConstructor
 public class CartService {
     private final CartRepository cartRepository;
     private final ItemCardService itemCardService;
 
-
+    /**
+     * Находит корзину по идентификатору.
+     *
+     * @param id ID корзины
+     * @return корзина (Cart)
+     * @throws ResourceNotFoundException если корзина не найдена
+     */
     public Cart getById(Long id) {
         log.debug("Cart get By id={}", id);
         return cartRepository.findById(id).orElseThrow(() -> {
@@ -26,6 +37,14 @@ public class CartService {
         });
     }
 
+    /**
+     * Добавляет товарную карточку в корзину.
+     * Если товар уже есть в корзине, ничего не делает.
+     *
+     * @param cartId      ID корзины
+     * @param itemCardId  ID товарной карточки
+     * @throws ResourceNotFoundException если корзина или карточка не найдены
+     */
     public void addCardInCart(Long cartId, Long itemCardId) {
         ItemCard itemCard = itemCardService.get(itemCardId);
         Cart cart = getById(cartId);
@@ -40,6 +59,13 @@ public class CartService {
         log.debug("Add itemCard in cart. itemCardId={}, cartId={}", itemCardId, cartId);
     }
 
+    /**
+     * Удаляет несколько товарных карточек из корзины по списку их ID.
+     *
+     * @param cartId      ID корзины
+     * @param itemCardId  список ID карточек для удаления
+     * @throws ResourceNotFoundException если корзина не найдена
+     */
     public void deleteCardsFromCart(Long cartId, List<Long> itemCardId) {
         Cart cart = getById(cartId);
         cart.getItemCards().removeIf(card -> itemCardId.contains(card.getId()));
@@ -49,6 +75,13 @@ public class CartService {
         log.info("Delete itemCard from cart. itemCardId={}, cartId={}", itemCardId, cartId);
     }
 
+    /**
+     * Удаляет одну товарную карточку из корзины.
+     *
+     * @param cartId      ID корзины
+     * @param itemCardId  ID карточки для удаления
+     * @throws ResourceNotFoundException если корзина не найдена
+     */
     public void deleteCardFromCart(Long cartId, Long itemCardId) {
         Cart cart = getById(cartId);
         cart.getItemCards().removeIf(card -> card.getId().equals(itemCardId));

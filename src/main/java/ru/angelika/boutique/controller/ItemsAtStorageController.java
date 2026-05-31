@@ -1,4 +1,4 @@
-package ru.angelika.boutique.controller.view;
+package ru.angelika.boutique.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -21,6 +21,10 @@ import ru.angelika.boutique.service.StorageService;
 
 import java.util.List;
 
+/**
+ * Контроллер для управления остатками товаров на складах (ItemsAtStorage).
+ * Продавец может отправлять свои товары на склад, администратор – просматривать все остатки.
+ */
 @Slf4j
 @Controller
 @RequestMapping
@@ -31,6 +35,14 @@ public class ItemsAtStorageController {
     private final StorageService storageService;
     private final ItemsAtStorageService itemsAtStorageService;
 
+    /**
+     * Обрабатывает отправку товара на склад (создание записи ItemsAtStorage).
+     *
+     * @param itemsAtStorageDto DTO с данными (itemId, storageId, count)
+     * @param model             модель для сообщений и данных формы
+     * @return "send-to-storage" с обновлённым списком товаров и складов
+     * или на /welcome если товар другого продавца
+     */
     @PostMapping("/seller/send-to-storage")
     public String add(@Valid ItemsAtStorageDto itemsAtStorageDto, Model model) {
         Seller seller = getAuthSeller();
@@ -55,6 +67,12 @@ public class ItemsAtStorageController {
         return "send-to-storage";
     }
 
+    /**
+     * Показывает форму отправки товара на склад.
+     *
+     * @param model модель
+     * @return "send-to-storage"
+     */
     @GetMapping("/seller/send-to-storage")
     public String getFormItemsAtStorage(Model model) {
         Seller seller = getAuthSeller();
@@ -66,15 +84,31 @@ public class ItemsAtStorageController {
         model.addAttribute("id", seller.getId());
         return "send-to-storage";
     }
+
+    /**
+     * Отображает все остатки товаров на складах (для администратора).
+     *
+     * @param model модель
+     * @return "admin-items-at-storage"
+     */
     @GetMapping("admin/item-at-storage")
     public String getAll(Model model) {
         model.addAttribute("itemsAtStorages", itemsAtStorageService.getAll());
         return "admin-items-at-storage";
     }
 
+    /**
+     * Обновляет количество товара в записи ItemsAtStorage (доступно продавцу-владельцу и администратору).
+     *
+     * @param id                 ID записи ItemsAtStorage
+     * @param itemId             ID товара
+     * @param count              новое количество
+     * @param redirectAttributes атрибуты для flash-сообщений
+     * @return редирект на страницу товара /items/{itemId} или на /welcome если товар другого продавца
+     */
     @PutMapping("/send-to-storage/{id}")
     public String updateForm(@PathVariable Long id, @RequestParam Long itemId,
-                                           @Min(0) Long count, RedirectAttributes redirectAttributes) {
+                             @Min(0) Long count, RedirectAttributes redirectAttributes) {
         Item item = itemService.getById(itemId);
         Long sellerId = item.getSeller().getId();
         if (security(sellerId)) {

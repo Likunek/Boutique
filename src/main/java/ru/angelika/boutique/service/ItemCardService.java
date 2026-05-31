@@ -18,9 +18,12 @@ import ru.angelika.boutique.model.ItemCard;
 import ru.angelika.boutique.model.User;
 import ru.angelika.boutique.repository.ItemCardRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Сервис для управления товарными карточками (ItemCard).
+ * Обеспечивает создание, поиск, обновление, удаление, добавление отзывов.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -29,6 +32,14 @@ public class ItemCardService {
     private final UserService userService;
     private final ItemService itemService;
 
+    /**
+     * Создаёт новую товарную карточку на основе DTO и имени продавца.
+     *
+     * @param itemCardDto DTO с данными карточки (itemId, name, description)
+     * @param seller      имя продавца (будет сохранено в поле seller карточки)
+     * @throws ResourceExistsException если карточка с таким названием/описанием уже существует у данного продавца,
+     *                                 или если для указанного Item уже есть карточка
+     */
     public void add(ItemCardDto itemCardDto, String seller) {
         checkDuplicate(seller, itemCardDto.getName(), itemCardDto.getDescription(), null);
         Item item = itemService.getById(itemCardDto.getItemId());
@@ -43,6 +54,13 @@ public class ItemCardService {
                 itemCardDto.getName(), itemCardDto.getDescription(), itemCardDto.getItemId());
     }
 
+    /**
+     * Добавляет отзыв к товарной карточке и пересчитывает её рейтинг.
+     *
+     * @param feedbackDto DTO с данными отзыва (userId, rating, text)
+     * @param id          ID товарной карточки
+     * @throws ResourceNotFoundException если карточка или пользователь не найдены
+     */
     public void addFeedback(FeedbackDto feedbackDto, Long id) {
         ItemCard itemCard = get(id);
         User user = userService.getById(feedbackDto.getUserId());
@@ -53,6 +71,13 @@ public class ItemCardService {
         log.info("Added new feedback, update rating={} itemCard by id={}", rating, id);
     }
 
+    /**
+     * Находит товарную карточку по ID.
+     *
+     * @param id ID карточки
+     * @return найденная карточка
+     * @throws ResourceNotFoundException если карточка не найдена
+     */
     public ItemCard get(Long id) {
         log.debug("Get itemCard by id={}", id);
         return itemCardRepository.findById(id).orElseThrow(() -> {
@@ -61,18 +86,47 @@ public class ItemCardService {
         });
     }
 
+    /**
+     * Возвращает страницу всех товарных карточек с поддержкой пагинации.
+     *
+     * @param pageable параметры пагинации
+     * @return страница карточек
+     */
     public Page<ItemCard> getAll(Pageable pageable) {
         return itemCardRepository.findAll(pageable);
     }
 
+    /**
+     * Поиск карточек по подстроке в названии или описании (без учёта регистра).
+     *
+     * @param pageable параметры пагинации
+     * @param text     искомая подстрока
+     * @return страница найденных карточек
+     */
     public Page<ItemCard> getAllBySearch(Pageable pageable, String text) {
         return itemCardRepository.findByNameOrDescription(text.toLowerCase(), pageable);
     }
 
+    /**
+     * Возвращает страницу карточек, принадлежащих указанному продавцу.
+     *
+     * @param pageable параметры пагинации
+     * @param seller   имя продавца
+     * @return страница карточек
+     */
     public Page<ItemCard> getAllBySeller(Pageable pageable, String seller) {
         return itemCardRepository.findBySeller(seller, pageable);
     }
 
+    /**
+     * Обновляет название и описание товарной карточки.
+     *
+     * @param itemCardDto DTO с новыми данными
+     * @param id          ID карточки
+     * @param seller      имя продавца (для проверки дубликатов)
+     * @throws ResourceExistsException   если новое имя+описание уже заняты этим продавцом
+     * @throws ResourceNotFoundException если карточка не найдена
+     */
     public void update(ItemCardUpdateDto itemCardDto, Long id, String seller) {
         ItemCard itemCard = get(id);
         checkDuplicate(seller, itemCardDto.getName(), itemCardDto.getDescription(), id);
@@ -81,6 +135,12 @@ public class ItemCardService {
         log.info("Update itemCard by id={}", id);
     }
 
+    /**
+     * Удаляет товарную карточку.
+     *
+     * @param id ID карточки
+     * @throws ResourceNotFoundException если карточка не найдена
+     */
     public void delete(Long id) {
         get(id);
         itemService.deleteItemCard(id);
@@ -88,6 +148,15 @@ public class ItemCardService {
         log.info("Delete itemCard by id={}", id);
     }
 
+    /**
+     * Проверяет, не существует ли уже карточки с такими же названием и описанием у того же продавца.
+     *
+     * @param seller      имя продавца
+     * @param name        название
+     * @param description описание
+     * @param id          ID карточки (при обновлении – исключить саму себя, может быть null)
+     * @throws ResourceExistsException если дубликат найден
+     */
     private void checkDuplicate(String seller, String name, String description, Long id) {
         List<ItemCard> nameDuplicate = itemCardRepository.findByNameAndSeller(name, seller);
         nameDuplicate.removeIf(itemCard -> itemCard.getId().equals(id));
@@ -98,5 +167,4 @@ public class ItemCardService {
             throw new ResourceExistsException(ItemCard.class, name + " : " + description);
         }
     }
-
 }

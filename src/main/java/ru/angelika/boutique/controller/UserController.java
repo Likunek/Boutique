@@ -1,4 +1,4 @@
-package ru.angelika.boutique.controller.view;
+package ru.angelika.boutique.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,11 @@ import ru.angelika.boutique.service.UserService;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Контроллер для управления профилями пользователей.
+ * Пользователь может просматривать и редактировать и удалять свой профиль,
+ * администратор – просматривать список всех пользователей и удалять их.
+ */
 @Slf4j
 @Controller
 @RequestMapping
@@ -28,6 +33,14 @@ public class UserController {
 
     private final UserService userService;
 
+    /**
+     * Отображает страницу профиля пользователя.
+     * Проверяет, что текущий пользователь имеет доступ (только к своему профилю).
+     *
+     * @param id    ID пользователя
+     * @param model модель
+     * @return "user" или редирект на "/welcome"
+     */
     @GetMapping("/user/profile/{id}")
     public String userPage(@PathVariable Long id, Model model) {
         if (security(id)) {
@@ -42,12 +55,28 @@ public class UserController {
         return "user";
     }
 
+    /**
+     * Отображает список всех пользователей для администратора.
+     *
+     * @param model модель
+     * @return "admin-users"
+     */
     @GetMapping("/admin/users")
     public String getAll(Model model) {
         model.addAttribute("users", userService.getAll());
         return "admin-users";
     }
 
+    /**
+     * Обновляет профиль пользователя (имя, номер, email, пароль).
+     * При успешном обновлении выполняется выход (редирект на /logout).
+     *
+     * @param id                 ID пользователя
+     * @param updateEntityDto    DTO с новыми данными
+     * @param result             результаты валидации
+     * @param redirectAttributes атрибуты для flash-сообщений
+     * @return редирект на страницу профиля при ошибке, или на /logout при успехе
+     */
     @PutMapping("/user/profile/{id}")
     public String update(@PathVariable Long id, @Valid UpdateEntityDto updateEntityDto,
                          BindingResult result, RedirectAttributes redirectAttributes) {
@@ -72,7 +101,14 @@ public class UserController {
         return "redirect:/logout";
     }
 
-
+    /**
+     * Удаляет пользователя. Для обычного пользователя – только свой аккаунт,
+     * для администратора – любого.
+     *
+     * @param id    ID пользователя
+     * @param model модель (не используется)
+     * @return редирект на /logout (если пользователь удаляет себя) или на /admin/users, чужой на /welcome
+     */
     @DeleteMapping("/users/{id}")
     public String delete(@PathVariable Long id, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -89,6 +125,12 @@ public class UserController {
         return "redirect:/admin/users";
     }
 
+    /**
+     * Проверяет, имеет ли пользователь доступ к аккаунту.
+     *
+     * @param id ID пользователя владельца страницы
+     * @return false, если пользователь владелец страницы
+     */
     private boolean security(Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String roleName = auth.getAuthorities().iterator().next().getAuthority();
