@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.angelika.boutique.dto.ItemsAtStorageDto;
+import ru.angelika.boutique.exception.NotEnoughSpaceException;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.model.Item;
@@ -42,11 +43,17 @@ public class ItemsAtStorageService {
                     log.error("Storage not found for adding itemsAtStorage, id={}", itemsAtStorageDto.getStorageId());
                     return new ResourceNotFoundException(Storage.class, itemsAtStorageDto.getStorageId());
                 });
+        double capacity = storage.getCurrentCapacity() - item.getSquare() * itemsAtStorageDto.getCount();
+        if (capacity < 0) {
+            throw new NotEnoughSpaceException("There is not enough space in warehouse at moment.");
+        }
+        storage.setCurrentCapacity(capacity);
         ItemsAtStorage itemsAtStorage = new ItemsAtStorage();
         itemsAtStorage.setItem(item);
         itemsAtStorage.setStorage(storage);
         itemsAtStorage.setCount(itemsAtStorageDto.getCount());
         itemsAtStorageRepository.save(itemsAtStorage);
+        storageRepository.save(storage);
         log.info("Add new itemsAtStorage: itemId={}, storageId={}, count={}",
                 itemsAtStorageDto.getItemId(), itemsAtStorageDto.getStorageId(), itemsAtStorageDto.getCount());
     }

@@ -17,4 +17,6 @@ public class Storage {
     private String city;
     @Column(name = "max_capacity")
     private Long maxCapacity;
+    @Column(name = "current_capacity")
+    private Double currentCapacity;
 }

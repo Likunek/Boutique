@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.angelika.boutique.dto.ItemsAtStorageDto;
+import ru.angelika.boutique.exception.NotEnoughSpaceException;
 import ru.angelika.boutique.exception.ResourceExistsException;
 import ru.angelika.boutique.exception.ResourceNotFoundException;
 import ru.angelika.boutique.model.Item;
@@ -61,11 +62,13 @@ class ItemsAtStorageUnitTest {
         item = new Item();
         item.setId(ITEM_ID);
         item.setName("Test Item");
+        item.setSquare(100.0);
 
         storage = new Storage();
         storage.setId(STORAGE_ID);
         storage.setAddress("Test Address");
         storage.setCity("Test City");
+        storage.setCurrentCapacity(2000.0);
 
         itemsAtStorage = new ItemsAtStorage();
         itemsAtStorage.setId(ITEMS_AT_STORAGE_ID);
@@ -79,11 +82,11 @@ class ItemsAtStorageUnitTest {
         when(itemsAtStorageRepository.findByItemIdAndStorageId(ITEM_ID, STORAGE_ID)).thenReturn(null);
         when(itemRepository.findById(ITEM_ID)).thenReturn(Optional.of(item));
         when(storageRepository.findById(STORAGE_ID)).thenReturn(Optional.of(storage));
-        when(itemsAtStorageRepository.save(any(ItemsAtStorage.class))).thenReturn(itemsAtStorage);
 
         assertDoesNotThrow(() -> itemsAtStorageService.add(dto));
 
         verify(itemsAtStorageRepository).save(any(ItemsAtStorage.class));
+        verify(storageRepository).save(any(Storage.class));
     }
 
     @Test
@@ -93,6 +96,7 @@ class ItemsAtStorageUnitTest {
 
         assertThrows(ResourceExistsException.class, () -> itemsAtStorageService.add(dto));
         verify(itemsAtStorageRepository, never()).save(any());
+        verify(storageRepository, never()).save(any(Storage.class));
     }
 
     @Test
@@ -102,10 +106,24 @@ class ItemsAtStorageUnitTest {
 
         assertThrows(ResourceNotFoundException.class, () -> itemsAtStorageService.add(dto));
         verify(itemsAtStorageRepository, never()).save(any());
+        verify(storageRepository, never()).save(any(Storage.class));
     }
 
     @Test
     void add_StorageNotFound_ThrowsException() {
+        storage.setCurrentCapacity(0.0);
+        when(itemsAtStorageRepository.findByItemIdAndStorageId(ITEM_ID, STORAGE_ID)).thenReturn(null);
+        when(itemRepository.findById(ITEM_ID)).thenReturn(Optional.of(item));
+        when(storageRepository.findById(STORAGE_ID)).thenReturn(Optional.of(storage));
+
+
+        assertThrows(NotEnoughSpaceException.class, () -> itemsAtStorageService.add(dto));
+        verify(itemsAtStorageRepository, never()).save(any());
+        verify(storageRepository, never()).save(any(Storage.class));
+    }
+
+    @Test
+    void add_NotEnoughSpaceAtStorage_ThrowsException() {
         when(itemsAtStorageRepository.findByItemIdAndStorageId(ITEM_ID, STORAGE_ID)).thenReturn(null);
         when(itemRepository.findById(ITEM_ID)).thenReturn(Optional.of(item));
 
@@ -114,8 +132,8 @@ class ItemsAtStorageUnitTest {
 
         assertThrows(ResourceNotFoundException.class, () -> itemsAtStorageService.add(dto));
         verify(itemsAtStorageRepository, never()).save(any());
+        verify(storageRepository, never()).save(any(Storage.class));
     }
-
     @Test
     void getByStorageId_Success() {
         List<ItemsAtStorage> list = List.of(itemsAtStorage);

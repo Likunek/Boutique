@@ -9,6 +9,7 @@ public class StorageMapper {
         storage.setAddress(storageDto.getAddress());
         storage.setCity(storageDto.getCity());
         storage.setMaxCapacity(storageDto.getMaxCapacity());
+        storage.setCurrentCapacity(storageDto.getMaxCapacity().doubleValue());
         return storage;
     }
 
