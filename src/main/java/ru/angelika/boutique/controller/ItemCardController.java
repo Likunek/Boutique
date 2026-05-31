@@ -1,4 +1,4 @@
-package ru.angelika.boutique.controller.view;
+package ru.angelika.boutique.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +25,11 @@ import ru.angelika.boutique.service.UserService;
 
 import java.util.List;
 
+/**
+ * Контроллер для управления товарными карточками (ItemCard).
+ * Включает создание, редактирование, удаление, добавление отзывов,
+ * а также поиск и отображение карточек для разных ролей.
+ */
 @Slf4j
 @Controller
 @RequestMapping
@@ -35,7 +40,12 @@ public class ItemCardController {
     private final SellerService sellerService;
     private final ItemCardService itemCardService;
 
-
+    /**
+     * Показывает форму создания новой товарной карточки для продавца.
+     * Передаёт список товаров продавца, у которых ещё нет карточки.
+     *
+     * @return "add-card"
+     */
     @GetMapping("/seller/add-card")
     public String getFormNewCard(Model model) {
         Seller seller = getAuthSeller();
@@ -45,6 +55,13 @@ public class ItemCardController {
         return "add-card";
     }
 
+    /**
+     * Обрабатывает создание новой товарной карточки.
+     *
+     * @param itemCardDto DTO с данными карточки
+     * @param model       модель для сообщений об успехе/ошибке
+     * @return "add-card" с обновлённым списком товаров
+     */
     @PostMapping("/seller/add-card")
     public String add(@Valid ItemCardDto itemCardDto, Model model) {
         Seller seller = getAuthSeller();
@@ -61,6 +78,16 @@ public class ItemCardController {
         return "add-card";
     }
 
+    /**
+     * Обновляет название и описание товарной карточки.
+     * Доступно только для владельца-продавца или администратора.
+     *
+     * @param id                  ID карточки
+     * @param itemId              ID связанного товара (для редиректа)
+     * @param itemCardUpdateDto   DTO с новыми данными
+     * @param redirectAttributes  атрибуты для flash-сообщений
+     * @return редирект на страницу товара /items/{itemId}
+     */
     @PutMapping("/cards/{id}")
     public String update(@PathVariable Long id, @RequestParam Long itemId,
                          @Valid ItemCardUpdateDto itemCardUpdateDto, RedirectAttributes redirectAttributes) {
@@ -82,12 +109,36 @@ public class ItemCardController {
         return "redirect:/items/" + itemId;
     }
 
+    /**
+     * Добавляет отзыв к товарной карточке.
+     *
+     * @param id          ID карточки
+     * @param feedbackDto DTO отзыва (оценка, текст, userId)
+     * @param userId      ID пользователя (для редиректа на его профиль)
+     * @return редирект на страницу профиля пользователя
+     */
     @PostMapping("/user/item-card/feedback/{id}")
     public String addFeedback(@PathVariable Long id, @Valid FeedbackDto feedbackDto, @RequestParam Long userId) {
         itemCardService.addFeedback(feedbackDto, id);
         return "redirect:/user/profile/" + userId;
     }
 
+    /**
+     * Отображает список товарных карточек с фильтрацией и пагинацией.
+     * Поддерживает поиск по названию/описанию, фильтр по продавцу,
+     * а также передаёт список ID карточек в корзине для роли USER.
+     *
+     * @param page     номер страницы (по умолчанию 0)
+     * @param size     размер страницы (по умолчанию 12)
+     * @param role     роль текущего пользователя (ROLE_USER, ROLE_SELLER, ROLE_ADMIN)
+     * @param seller   флаг – показывать товары определённого продавца
+     * @param sellerId ID продавца (если seller=true)
+     * @param search   поисковая строка
+     * @param sortBy   поле для сортировки (по умолчанию "id")
+     * @param sort     направление сортировки (asc/desc)
+     * @param model    модель
+     * @return "all-cards"
+     */
     @GetMapping("/item-card")
     public String getAll(@RequestParam(defaultValue = "0") int page,
                          @RequestParam(defaultValue = "12") int size, @RequestParam String role,
@@ -121,6 +172,15 @@ public class ItemCardController {
         return "all-cards";
     }
 
+    /**
+     * Отображает детальную страницу товарной карточки.
+     * В зависимости от роли добавляет флаг "isOwner" (для продавца/админа) (нужен для отображения кнопки удаления)
+     * или список ID карточек в корзине (для пользователя).
+     *
+     * @param id    ID карточки
+     * @param role  роль текущего пользователя
+     * @return "item-card"
+     */
     @GetMapping("/item-card/{id}")
     public String getById(@PathVariable Long id, @RequestParam String role, Model model) {
         boolean isOwner = false;
@@ -141,6 +201,13 @@ public class ItemCardController {
         return "item-card";
     }
 
+    /**
+     * Удаляет товарную карточку. Доступно администратору или продавцу-владельцу.
+     *
+     * @param id   ID карточки
+     * @param role роль текущего пользователя
+     * @return редирект на "/welcome"
+     */
     @DeleteMapping("/cards/{id}")
     public String delete(@PathVariable Long id, @RequestParam String role, Model model) {
         ItemCard itemCard = itemCardService.get(id);
@@ -150,11 +217,22 @@ public class ItemCardController {
         return "redirect:/welcome";
     }
 
+    /**
+     * Вспомогательный метод – возвращает продавца.
+     *
+     * @return текущий аутентифицированный продавец
+     */
     private Seller getAuthSeller() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return sellerService.getByNumber(auth.getName());
     }
 
+    /**
+     * Проверяет, имеет ли продавец доступ к карточке.
+     *
+     * @param name продавца-владельца товара
+     * @return false, если текущий продавец не является владельцем
+     */
     private boolean security(String name) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String roleName = auth.getAuthorities().iterator().next().getAuthority();
@@ -163,5 +241,4 @@ public class ItemCardController {
         }
         return false;
     }
-
 }

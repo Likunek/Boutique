@@ -17,6 +17,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис для управления пользователями (покупателями).
+ * Регистрация, обновление профиля, удаление, получение корзины, заказов,
+ * проверка отзывов на собственные покупки.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -28,6 +33,14 @@ public class UserService {
     private final FeedbackRepository feedbackRepository;
     private final AuthenticationService authenticationService;
 
+    /**
+     * Регистрирует нового пользователя.
+     * Создаёт пустую корзину, проверяет уникальность имени, номера, email,
+     * связывает с аутентификацией.
+     *
+     * @param userDto DTO с данными пользователя
+     * @throws ResourceExistsException если имя, номер или email уже заняты
+     */
     public void add(UserDto userDto) {
         if (userRepository.findByName(userDto.getName()) != null) {
             log.error("User with name={} already exists", userDto.getName());
@@ -49,6 +62,13 @@ public class UserService {
                 user.getName(), user.getNumber(), user.getEmail(), cart.getId());
     }
 
+    /**
+     * Находит пользователя по ID.
+     *
+     * @param id ID пользователя
+     * @return найденный пользователь
+     * @throws ResourceNotFoundException если пользователь не найден
+     */
     public User getById(Long id) {
         log.debug("Get user by id={}", id);
         return userRepository.findById(id).orElseThrow(() -> {
@@ -57,6 +77,13 @@ public class UserService {
         });
     }
 
+    /**
+     * Возвращает ID товарных карточек, на которые пользователь уже оставил отзыв.
+     *
+     * @param id ID пользователя
+     * @return множество ID товарных карточек, по которым у пользователя уже есть отзывы
+     * @throws ResourceNotFoundException если пользователь не найден
+     */
     public Set<Long> checkItemIdWithOwnFeedbacks(Long id) {
         User user = userRepository.findByIdWithItemsAndFeedbacks(id);
         if (user == null) {
@@ -69,6 +96,13 @@ public class UserService {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Находит пользователя по номеру телефона.
+     *
+     * @param number номер телефона
+     * @return найденный пользователь
+     * @throws ResourceNotFoundException если пользователь не найден
+     */
     public User getByNumber(String number) {
         log.debug("Get user by number={}", number);
         User user = userRepository.findByNumber(number);
@@ -79,15 +113,33 @@ public class UserService {
         return user;
     }
 
+    /**
+     * Возвращает список заказов пользователя, исключая уже полученные (RECEIVED).
+     *
+     * @param userId ID пользователя
+     * @return список активных заказов
+     */
     public List<Order> getOrders(Long userId) {
         log.debug("Get orders by userId={}", userId);
         return orderRepository.findByUserIdAndStatusNot(userId, Status.RECEIVED);
     }
 
+    /**
+     * Возвращает всех пользователей.
+     *
+     * @return список всех пользователей
+     */
     public List<User> getAll() {
         return userRepository.findAll();
     }
 
+    /**
+     * Возвращает список ID товарных карточек, находящихся в корзине пользователя.
+     *
+     * @param number номер телефона пользователя
+     * @return список ID карточек
+     * @throws ResourceNotFoundException если пользователь не найден
+     */
     public List<Long> getCardsId(String number) {
         User user = getByNumber(number);
         return user.getCart().getItemCards()
@@ -96,6 +148,14 @@ public class UserService {
                 .toList();
     }
 
+    /**
+     * Обновляет профиль пользователя (имя, номер, email, пароль).
+     *
+     * @param userDto DTO с новыми данными
+     * @param id      ID пользователя
+     * @throws ResourceExistsException   если новое имя/номер/email уже заняты другим пользователем
+     * @throws ResourceNotFoundException если пользователь не найден
+     */
     @Transactional
     public void update(UpdateEntityDto userDto, Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> {
@@ -132,6 +192,13 @@ public class UserService {
         log.info("Update user by id={}", id);
     }
 
+    /**
+     * Удаляет пользователя.
+     * Удаляет аутентификацию, заказы, отзывы (и отвязывает их от товарных карточек), затем самого пользователя.
+     *
+     * @param id ID пользователя
+     * @throws ResourceNotFoundException если пользователь не найден
+     */
     public void delete(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> {
             log.error("User not found for delete, id={}", id);
@@ -151,5 +218,4 @@ public class UserService {
         userRepository.deleteById(id);
         log.info("Delete user by id={}", id);
     }
-
 }

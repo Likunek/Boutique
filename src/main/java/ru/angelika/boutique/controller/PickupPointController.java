@@ -1,4 +1,4 @@
-package ru.angelika.boutique.controller.view;
+package ru.angelika.boutique.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -9,12 +9,16 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.angelika.boutique.dto.PickupPointDto;
-
 import ru.angelika.boutique.service.PickupPointService;
 import ru.angelika.boutique.service.StorageService;
 
 import java.util.stream.Collectors;
 
+/**
+ * Контроллер для управления пунктами выдачи заказов (ПВЗ).
+ * Доступен только для администратора.
+ * Позволяет добавлять, редактировать, удалять ПВЗ, просматривать список.
+ */
 @Slf4j
 @Controller
 @RequestMapping("/admin/points")
@@ -23,6 +27,14 @@ public class PickupPointController {
     private final PickupPointService pickupPointService;
     private final StorageService storageService;
 
+    /**
+     * Добавляет новый пункт выдачи.
+     *
+     * @param pointDto DTO с данными ПВЗ
+     * @param result   результаты валидации
+     * @param model    модель
+     * @return редирект на форму добавления
+     */
     @PostMapping("/add")
     public String addPoint(@Valid PickupPointDto pointDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
@@ -43,12 +55,24 @@ public class PickupPointController {
         return "redirect:/admin/points/add";
     }
 
+    /**
+     * Показывает форму добавления нового ПВЗ (со списком складов).
+     *
+     * @param model модель
+     * @return "admin-add-point"
+     */
     @GetMapping("/add")
     public String getFormNewPoint(Model model) {
         model.addAttribute("storages", storageService.getAll());
         return "admin-add-point";
     }
 
+    /**
+     * Отображает список всех ПВЗ со складами.
+     *
+     * @param model модель
+     * @return "admin-points"
+     */
     @GetMapping
     public String getAllPoints(Model model) {
         model.addAttribute("points", pickupPointService.getAll());
@@ -56,12 +80,25 @@ public class PickupPointController {
         return "admin-points";
     }
 
+    /**
+     * Обновляет данные ПВЗ.
+     *
+     * @param pickupPointDto DTO с новыми данными
+     * @param id             ID ПВЗ
+     * @return редирект на список ПВЗ
+     */
     @PutMapping("{id}")
     public String updatePoint(PickupPointDto pickupPointDto, @PathVariable Long id) {
         pickupPointService.update(id, pickupPointDto);
         return "redirect:/admin/points";
     }
 
+    /**
+     * Удаляет ПВЗ.
+     *
+     * @param id ID ПВЗ
+     * @return редирект на список ПВЗ
+     */
     @DeleteMapping("{id}")
     public String deletePoint(@PathVariable Long id) {
         pickupPointService.delete(id);

@@ -13,6 +13,10 @@ import ru.angelika.boutique.repository.SellerRepository;
 
 import java.util.List;
 
+/**
+ * Сервис для управления продавцами.
+ * Регистрация, поиск, обновление профиля, удаление продавца и связанных данных.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -21,7 +25,13 @@ public class SellerService {
     private final SellerRepository sellerRepository;
     private final AuthenticationService authenticationService;
 
-
+    /**
+     * Добавляет нового продавца.
+     * Проверяет уникальность имени, номера телефона и email.
+     *
+     * @param seller сущность продавца (без привязки к Authentication)
+     * @throws ResourceExistsException если имя, номер или email уже заняты
+     */
     public void add(Seller seller) {
         if (sellerRepository.findByName(seller.getName()) != null) {
             log.error("Seller with name={} already exists", seller.getName());
@@ -41,6 +51,13 @@ public class SellerService {
                 seller.getName(), seller.getNumber(), seller.getEmail());
     }
 
+    /**
+     * Находит продавца по ID.
+     *
+     * @param id ID продавца
+     * @return найденный продавец
+     * @throws ResourceNotFoundException если продавец не найден
+     */
     public Seller getById(Long id) {
         log.debug("Get seller by id={}", id);
         return sellerRepository.findById(id).orElseThrow(() -> {
@@ -49,6 +66,13 @@ public class SellerService {
         });
     }
 
+    /**
+     * Находит продавца по номеру телефона.
+     *
+     * @param number номер телефона
+     * @return найденный продавец
+     * @throws ResourceNotFoundException если продавец не найден
+     */
     public Seller getByNumber(String number) {
         log.debug("Get seller by number={}", number);
         Seller seller = sellerRepository.findByNumber(number);
@@ -59,6 +83,13 @@ public class SellerService {
         return seller;
     }
 
+    /**
+     * Находит продавца по имени.
+     *
+     * @param name имя продавца
+     * @return найденный продавец
+     * @throws ResourceNotFoundException если продавец не найден
+     */
     public Seller getByName(String name) {
         log.debug("Get seller by name={}", name);
         Seller seller = sellerRepository.findByName(name);
@@ -69,10 +100,23 @@ public class SellerService {
         return seller;
     }
 
+    /**
+     * Возвращает всех продавцов.
+     *
+     * @return список всех продавцов
+     */
     public List<Seller> getAll() {
         return sellerRepository.findAll();
     }
 
+    /**
+     * Обновляет профиль продавца (имя, номер, email, пароль).
+     *
+     * @param sellerDto DTO с новыми данными
+     * @param id        ID продавца
+     * @throws ResourceExistsException   если новое имя/номер/email уже заняты другим продавцом
+     * @throws ResourceNotFoundException если продавец не найден
+     */
     @Transactional
     public void update(UpdateEntityDto sellerDto, Long id) {
         Seller seller = sellerRepository.findById(id).orElseThrow(() -> {
@@ -109,6 +153,12 @@ public class SellerService {
         log.info("Update seller by id={}", id);
     }
 
+    /**
+     * Удаляет продавца вместе с его аутентификацией, товарами и связанными данными.
+     *
+     * @param id ID продавца
+     * @throws ResourceNotFoundException если продавец не найден
+     */
     public void delete(Long id) {
         Seller seller = sellerRepository.findById(id).orElseThrow(() -> {
             log.error("Seller not found for delete, id={}", id);
@@ -119,5 +169,4 @@ public class SellerService {
         sellerRepository.deleteById(id);
         log.info("Delete seller by id={}", id);
     }
-
 }

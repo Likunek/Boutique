@@ -13,6 +13,10 @@ import ru.angelika.boutique.repository.StorageRepository;
 
 import java.util.List;
 
+/**
+ * Сервис для управления складами.
+ * Создание, обновление, удаление склада, а также автоматическое переназначение ПВЗ при удалении склада.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -21,7 +25,12 @@ public class StorageService {
     private final ItemsAtStorageService itemsAtStorageService;
     private final PickupPointService pickupPointService;
 
-
+    /**
+     * Добавляет новый склад.
+     *
+     * @param storageDto DTO с адресом, городом и максимальной вместимостью
+     * @throws ResourceExistsException если склад с таким же адресом и городом уже существует
+     */
     public void add(StorageDto storageDto) {
         checkDuplicate(storageDto.getAddress(), storageDto.getCity(), null);
         storageRepository.save(StorageMapper.toStorage(storageDto));
@@ -29,6 +38,13 @@ public class StorageService {
                 storageDto.getAddress(), storageDto.getCity(), storageDto.getMaxCapacity());
     }
 
+    /**
+     * Находит склад по ID.
+     *
+     * @param id ID склада
+     * @return найденный склад
+     * @throws ResourceNotFoundException если склад не найден
+     */
     public Storage get(Long id) {
         return storageRepository.findById(id).orElseThrow(() -> {
             log.error("Storage not found for get, id={}", id);
@@ -36,10 +52,23 @@ public class StorageService {
         });
     }
 
+    /**
+     * Возвращает все склады.
+     *
+     * @return список всех складов
+     */
     public List<Storage> getAll() {
         return storageRepository.findAll();
     }
 
+    /**
+     * Обновляет данные склада.
+     *
+     * @param storageDto DTO с новыми данными
+     * @param id         ID склада
+     * @throws ResourceExistsException   если другой склад с таким же адресом+городом уже существует
+     * @throws ResourceNotFoundException если склад не найден
+     */
     public void update(StorageDto storageDto, Long id) {
         Storage storage = storageRepository.findById(id).orElseThrow(() -> {
             log.error("Storage not found for update, id={}", id);
@@ -50,6 +79,14 @@ public class StorageService {
         log.info("Update storage by id={}", id);
     }
 
+    /**
+     * Удаляет склад.
+     * Перед удалением все остатки (ItemsAtStorage) на этом складе удаляются,
+     * а привязанные ПВЗ либо переназначаются на другой склад в том же городе, либо удаляются.
+     *
+     * @param id ID склада
+     * @throws ResourceNotFoundException если склад не найден
+     */
     public void delete(Long id) {
         storageRepository.findById(id).orElseThrow(() -> {
             log.error("Storage not found for delete, id={}", id);
@@ -62,6 +99,11 @@ public class StorageService {
         log.info("Delete storage by id={}", id);
     }
 
+    /**
+     * Переназначает или удаляет ПВЗ, которые были привязаны к удаляемому складу.
+     *
+     * @param id ID удаляемого склада
+     */
     private void replaceStorage(Long id) {
         List<PickupPoint> points = pickupPointService.getAllByStorage(id);
         for (PickupPoint point : points) {
@@ -83,6 +125,14 @@ public class StorageService {
         }
     }
 
+    /**
+     * Проверяет, существует ли уже склад с таким же адресом и городом.
+     *
+     * @param address адрес
+     * @param city    город
+     * @param id      ID склада (при обновлении – исключить себя)
+     * @throws ResourceExistsException если дубликат найден
+     */
     private void checkDuplicate(String address, String city, Long id) {
         List<Storage> storagesByAddress = storageRepository.findByAddress(address);
         storagesByAddress.removeIf(storage -> storage.getId().equals(id));

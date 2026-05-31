@@ -65,6 +65,7 @@ class AuthenticationUnitTest {
         Authentication newAuth = new Authentication();
         newAuth.setNumber(NUMBER);
         newAuth.setPassword(RAW_PASSWORD);
+        when(authenticationRepository.findByNumber(NUMBER)).thenReturn(null);
         when(passwordEncoder.encode(RAW_PASSWORD)).thenReturn(ENCODED_PASSWORD);
 
         authenticationService.add(newAuth);
@@ -72,6 +73,20 @@ class AuthenticationUnitTest {
         assertEquals(ENCODED_PASSWORD, newAuth.getPassword());
         verify(passwordEncoder).encode(RAW_PASSWORD);
         verify(authenticationRepository).save(newAuth);
+    }
+
+    @Test
+    void add_NumberExists_ThrowsException() {
+        Authentication newAuth = new Authentication();
+        newAuth.setNumber(NUMBER);
+        newAuth.setPassword(RAW_PASSWORD);
+        when(authenticationRepository.findByNumber(NUMBER)).thenReturn(authentication);
+
+        assertThrows(ResourceExistsException.class,
+                () -> authenticationService.add(newAuth));
+
+        verify(passwordEncoder, never()).encode(RAW_PASSWORD);
+        verify(authenticationRepository, never()).save(newAuth);
     }
 
     @Test

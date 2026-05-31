@@ -63,14 +63,14 @@ class SupplyTransactionalUnitTest {
     void checkCountOnStorage_Success() {
         when(itemService.getByCardId(ITEM_CARD_ID)).thenReturn(item);
         when(itemsAtStorageService.getByItemAndStorage(ITEM_ID, STORAGE_ID)).thenReturn(itemsAtStorage);
-        doNothing().when(itemsAtStorageService).updateCount(any(ItemsAtStorage.class));
+        doNothing().when(itemsAtStorageService).updateCount(any(ItemsAtStorage.class), 1);
 
         List<Item> result = supplyTransactionalService.checkCountOnStorage(order, STORAGE_ID);
 
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(ITEM_ID, result.get(0).getId());
-        verify(itemsAtStorageService).updateCount(itemsAtStorage);
+        verify(itemsAtStorageService).updateCount(itemsAtStorage, 1);
         assertEquals(COUNT - 1, itemsAtStorage.getCount());
     }
 
@@ -88,7 +88,7 @@ class SupplyTransactionalUnitTest {
         when(itemsAtStorageService.getByItemAndStorage(ITEM_ID, STORAGE_ID)).thenThrow(new ResourceNotFoundException(ItemsAtStorage.class, ITEM_ID + " " + STORAGE_ID));
 
         assertThrows(ResourceNotFoundException.class, () -> supplyTransactionalService.checkCountOnStorage(order, STORAGE_ID));
-        verify(itemsAtStorageService, never()).updateCount(any());
+        verify(itemsAtStorageService, never()).updateCount(any(), 1);
     }
 
     @Test
@@ -100,7 +100,7 @@ class SupplyTransactionalUnitTest {
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                 () -> supplyTransactionalService.checkCountOnStorage(order, STORAGE_ID));
         assertEquals("class ru.angelika.boutique.model.ItemsAtStorage not found with data: items count = 0", exception.getMessage());
-        verify(itemsAtStorageService, never()).updateCount(any());
+        verify(itemsAtStorageService, never()).updateCount(any(), 1);
     }
 
     @Test
@@ -122,7 +122,7 @@ class SupplyTransactionalUnitTest {
         List<Item> result = supplyTransactionalService.checkCountOnStorage(order, STORAGE_ID);
 
         assertEquals(2, result.size());
-        verify(itemsAtStorageService, times(2)).updateCount(any());
+        verify(itemsAtStorageService, times(2)).updateCount(any(), 1);
         assertEquals(COUNT - 1, itemsAtStorage.getCount());
         assertEquals(2L, itemsAtStorage2.getCount());
     }

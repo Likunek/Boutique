@@ -117,7 +117,6 @@ public class AdminFunctionalTest {
         wait.until(ExpectedConditions.elementToBeClickable(By.partialLinkText("Storages"))).click();
         wait.until(ExpectedConditions.urlContains("/admin/storages"));
         WebElement table = wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("table")));
-        System.out.println(table.getText());
         assertTrue(table.getText().contains(uniqueAddress));
 
         WebElement row = wait.until(d -> {

@@ -1,4 +1,4 @@
-package ru.angelika.boutique.controller.view;
+package ru.angelika.boutique.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +16,11 @@ import ru.angelika.boutique.service.CartService;
 import ru.angelika.boutique.service.OrderService;
 import ru.angelika.boutique.service.PickupPointService;
 import ru.angelika.boutique.service.UserService;
+
+/**
+ * Контроллер для оформления заказов.
+ * Пользователь может оформить заказ на основе корзины, администратор – просматривать все заказы.
+ */
 @Slf4j
 @Controller
 @RequestMapping
@@ -27,6 +32,15 @@ public class OrderController {
     private final UserService userService;
     private final PickupPointService pickupPointService;
 
+    /**
+     * Оформляет новый заказ.
+     * Проверяет, что корзина принадлежит пользователю, и достаточно ли средств.
+     *
+     * @param orderDto           DTO заказа (список ID карточек, ID пункта выдачи)
+     * @param cartId             ID корзины (из запроса)
+     * @param redirectAttributes атрибуты для flash-сообщений
+     * @return при ошибке – редирект на форму заказа, иначе – на страницу корзины
+     */
     @PostMapping("/user/order")
     public String add(@Valid OrderDto orderDto, @RequestParam Long cartId, RedirectAttributes redirectAttributes) {
         User user = security();
@@ -43,12 +57,25 @@ public class OrderController {
         return "redirect:/user/cart/" + cartId;
     }
 
+    /**
+     * Отображает список всех заказов для администратора.
+     *
+     * @param model модель
+     * @return "admin-orders"
+     */
     @GetMapping("/admin/orders")
     public String getAll(Model model) {
         model.addAttribute("orders", orderService.getAll());
         return "admin-orders";
     }
 
+    /**
+     * Показывает форму оформления заказа: содержимое корзины, баланс пользователя, доступные пункты выдачи.
+     *
+     * @param cartId ID корзины
+     * @param model  модель
+     * @return "user-order" или редирект /welcome, если корзина не принадлежит пользователю
+     */
     @GetMapping("/user/order/{cartId}")
     public String getFormNewOrder(@PathVariable Long cartId, Model model) {
         User user = security();

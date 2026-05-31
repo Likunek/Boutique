@@ -1,4 +1,4 @@
-package ru.angelika.boutique.controller.view;
+package ru.angelika.boutique.controller;
 
 
 import jakarta.validation.Valid;
@@ -21,6 +21,10 @@ import ru.angelika.boutique.service.UserService;
 
 import java.util.stream.Collectors;
 
+/**
+ * Контроллер для регистрации, входа (login), приветственной страницы и обработки ошибок доступа.
+ * Все маршруты обрабатывают запросы от веб-интерфейса.
+ */
 @Slf4j
 @Controller
 @RequestMapping
@@ -31,16 +35,31 @@ public class RegistrationController {
     private final SellerService sellerService;
     private final AuthenticationService authenticationService;
 
+    /**
+     * Показывает страницу входа.
+     */
     @GetMapping("/login")
     public String login() {
         return "login";
     }
 
+    /**
+     * Показывает форму регистрации.
+     */
     @GetMapping("/registration")
     public String registration() {
         return "registration";
     }
 
+    /**
+     * Обрабатывает отправку формы регистрации.
+     *
+     * @param user   DTO с данными пользователя (имя, номер, пароль, почта, роль)
+     * @param result результаты валидации (аннотации {@code @Valid})
+     * @param model  модель для передачи сообщений об ошибках или успехе
+     * @return "registration" при ошибках валидации или исключении,
+     *         "redirect:/login" при успешной регистрации
+     */
     @PostMapping("/registration")
     public String adduser(@Valid UserDto user, BindingResult result, Model model) {
         if (result.hasErrors()) {
@@ -65,6 +84,14 @@ public class RegistrationController {
         }
     }
 
+    /**
+     * Страница приветствия после входа.
+     * <p>Извлекает из контекста Security аутентифицированного пользователя и
+     * в зависимости от роли загружает соответствующий идентификатор (userId).</p>
+     *
+     * @param model модель для передачи атрибутов "role", "userId", "userRole"
+     * @return имя представления "welcome"
+     */
     @GetMapping("/welcome")
     public String welcome(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -89,11 +116,17 @@ public class RegistrationController {
         return "welcome";
     }
 
+    /**
+     * Страница отказа в доступе (403).
+     */
     @GetMapping("/access-denied")
     public String accessDenied() {
         return "access-denied";
     }
 
+    /**
+     * Страница администратора (доступна только с ролью ADMIN).
+     */
     @GetMapping("/admin/profile/1")
     public String adminPage() {
         return "admin";
