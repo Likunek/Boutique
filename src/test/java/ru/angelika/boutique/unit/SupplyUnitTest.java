@@ -16,7 +16,6 @@ import ru.angelika.boutique.service.SupplyTransactionalService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -47,8 +46,10 @@ class SupplyUnitTest {
     private Storage storage;
     private Order order1;
     private Order order2;
+    private Order order3;
     private Item item1;
     private Item item2;
+    private Item item3;
 
     @BeforeEach
     void setUp() {
@@ -61,24 +62,31 @@ class SupplyUnitTest {
 
         ItemCard itemCard1 = new ItemCard();
         itemCard1.setId(4L);
-        itemCard1.setPrice(100.0);
 
         ItemCard itemCard2 = new ItemCard();
         itemCard2.setId(5L);
-        itemCard2.setPrice(150.0);
+
+        ItemCard itemCard3 = new ItemCard();
+        itemCard3.setId(6L);
 
         item1 = new Item();
         item1.setId(2L);
-        item1.setWeight(1.0);
+        item1.setWeight(600.0);
 
         item2 = new Item();
         item2.setId(3L);
-        item2.setWeight(2.0);
+        item2.setWeight(400.0);
+
+        item3 = new Item();
+        item3.setId(4L);
+        item3.setWeight(500.0);
 
         List<ItemCard> itemsCard1 = new ArrayList<>();
         itemsCard1.add(itemCard1);
         List<ItemCard> itemsCard2 = new ArrayList<>();
         itemsCard2.add(itemCard2);
+        List<ItemCard> itemsCard3 = new ArrayList<>();
+        itemsCard3.add(itemCard3);
 
         order1 = new Order();
         order1.setId(7L);
@@ -91,6 +99,12 @@ class SupplyUnitTest {
         order2.setPoint(point);
         order2.setStatus(Status.NEW);
         order2.setItems(itemsCard2);
+
+        order3 = new Order();
+        order3.setId(9L);
+        order3.setPoint(point);
+        order3.setStatus(Status.NEW);
+        order3.setItems(itemsCard3);
     }
 
     @Test
@@ -149,5 +163,70 @@ class SupplyUnitTest {
         verify(orderService, times(1)).updateStatus(order1, Status.WAY);
         verify(orderService, never()).updateStatus(order2, Status.WAY);
         verify(supplyRepository, times(1)).save(any(Supply.class));
+    }
+
+    @Test
+    void addSupply_WeightLimitExceeded_FirstTwoFit_ThirdExceeds() throws InterruptedException {
+        List<Order> orders = List.of(order1, order2, order3);
+        when(orderService.getAllByStatus(Status.NEW)).thenReturn(orders);
+        when(pickupPointService.getWithStorage(POINT_ID)).thenReturn(point);
+        when(orderService.getWithPoint(order1.getId())).thenReturn(order1);
+        when(orderService.getWithPoint(order2.getId())).thenReturn(order2);
+        when(orderService.getWithPoint(order3.getId())).thenReturn(order3);
+        when(supplyTransactionalService.checkCountOnStorage(order1, STORAGE_ID)).thenReturn(List.of(item1)); // 600
+        when(supplyTransactionalService.checkCountOnStorage(order2, STORAGE_ID)).thenReturn(List.of(item2)); // 400 -> total 1000
+        when(supplyTransactionalService.checkCountOnStorage(order3, STORAGE_ID)).thenReturn(List.of(item3)); // 500 -> would exceed
+        doNothing().when(orderService).updateStatus(order1, Status.WAY);
+        doNothing().when(orderService).updateStatus(order2, Status.WAY);
+
+        supplyService.addSupply();
+        Thread.sleep(300);
+
+        verify(orderService, times(1)).updateStatus(order1, Status.WAY);
+        verify(orderService, times(1)).updateStatus(order2, Status.WAY);
+        verify(orderService, never()).updateStatus(order3, Status.WAY);
+        verify(supplyRepository, times(1)).save(any(Supply.class));
+    }
+
+    @Test
+    void addSupply_FirstOrderExceedsWeightLimit_Skipped() throws InterruptedException {
+        Item heavyItem = new Item();
+        heavyItem.setId(99L);
+        heavyItem.setWeight(1500.0);
+
+        List<Order> orders = List.of(order1, order2);
+        when(orderService.getAllByStatus(Status.NEW)).thenReturn(orders);
+        when(pickupPointService.getWithStorage(POINT_ID)).thenReturn(point);
+        when(orderService.getWithPoint(order1.getId())).thenReturn(order1);
+        when(orderService.getWithPoint(order2.getId())).thenReturn(order2);
+        when(supplyTransactionalService.checkCountOnStorage(order1, STORAGE_ID)).thenReturn(List.of(heavyItem));
+        when(supplyTransactionalService.checkCountOnStorage(order2, STORAGE_ID)).thenReturn(List.of(item2));
+        doNothing().when(orderService).updateStatus(order2, Status.WAY);
+
+        supplyService.addSupply();
+        Thread.sleep(300);
+
+        verify(orderService, never()).updateStatus(order1, Status.WAY);
+        verify(orderService, times(1)).updateStatus(order2, Status.WAY);
+        verify(supplyRepository, times(1)).save(any(Supply.class));
+    }
+
+    @Test
+    void addSupply_NoItemsFit_DontCreateSupply() throws InterruptedException {
+        Item heavyItem = new Item();
+        heavyItem.setId(99L);
+        heavyItem.setWeight(1500.0);
+
+        List<Order> orders = List.of(order1);
+        when(orderService.getAllByStatus(Status.NEW)).thenReturn(orders);
+        when(pickupPointService.getWithStorage(POINT_ID)).thenReturn(point);
+        when(orderService.getWithPoint(order1.getId())).thenReturn(order1);
+        when(supplyTransactionalService.checkCountOnStorage(order1, STORAGE_ID)).thenReturn(List.of(heavyItem));
+
+        supplyService.addSupply();
+        Thread.sleep(300);
+
+        verify(orderService, never()).updateStatus(any(), any());
+        verify(supplyRepository, never()).save(any());
     }
 }

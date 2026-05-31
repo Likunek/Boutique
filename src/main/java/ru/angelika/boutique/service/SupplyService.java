@@ -52,7 +52,12 @@ public class SupplyService {
                 for (Order order : ordersForPoint) {
                     try {
                         List<Item> items = service.checkCountOnStorage(order, point.getStorage().getId());
+                        double sumWeight = items.stream().mapToDouble(Item::getWeight).sum();
+                        if (supply.getWeight() + sumWeight > 1000) {
+                            throw new ResourceNotFoundException("There is not enough space in truck at moment.");
+                        }
                         supply.getItems().addAll(items);
+                        supply.setWeight(supply.getWeight() + sumWeight);
                         orderService.updateStatus(order, Status.WAY);
                     } catch (ResourceNotFoundException e) {
                         log.warn("Order {} skipped for supply: {}", order.getId(), e.getMessage());
@@ -70,7 +75,6 @@ public class SupplyService {
 
     @Transactional
     private void saveSupply(Supply supply, PickupPoint point) {
-        supply.setWeight(supply.getItems().stream().mapToDouble(Item::getWeight).sum());
         supply.setStorage(point.getStorage());
         supply.setPoint(point);
         supplyRepository.save(supply);

@@ -20,7 +20,7 @@ public class Supply {
             inverseJoinColumns = @JoinColumn(name = "item_id"))
     private List<Item> items = new ArrayList<>();
     @Column(name = "weight")
-    private Double weight;
+    private Double weight = 0.0;
     @Enumerated(EnumType.STRING)
     private Status status = Status.WAY;
     @Column(name = "date")
