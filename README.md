@@ -64,32 +64,85 @@
 Выполнить команду в git Bash:  
  git clone https://github.com/Likunek/Boutique.git
  перейти в корень проекта 
-# В корне проекта выполните:
-        docker compose up --build
-#Приложение будет доступно на http://localhost:8080.
-#Остановка:
-             docker compose down
-#Удаление тома с БД:
-             docker compose down -v
-#Чтобы зайти в приложение, необходимо зарегистрироваться (роль USER И SELLER) и позже войти по своему логину и паролю 
-Для роли ADMIN, необходимо снять ограничения в файле ru.angelika.boutique.config.SpringSecurityConfig, изменив метод filterChain. 
-Замените метода на : 
+## 🐳 Запуск через Docker Compose
+
+В корне проекта выполните:        docker compose up --build
+
+Приложение будет доступно по адресу http://localhost:8080.
+
+Остановка:         docker compose down
+
+Удаление тома с базой данных (все данные пропадут):       docker compose down -v
+
+🔑 Первичная настройка пользователей
+👥 Покупатель и продавец
+
+Чтобы войти как USER или SELLER, зарегистрируйтесь через интерфейс (/registration) и затем авторизуйтесь под своими логином и паролем.
+
+🔧 Администратор
+
+Роль ADMIN по умолчанию создать через веб-интерфейс нельзя. Временно отключите ограничения безопасности, чтобы добавить учётную запись администратора через Swagger.
+
+Откройте файл ru.angelika.boutique.config.SpringSecurityConfig.
+
+Замените метод filterChain на следующий (полностью разрешает любой доступ):
+
+```java
 @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((authz) -> authz
-                        .anyRequest().permitAll())
-                .csrf(AbstractHttpConfigurer::disable);
-        return http.build();
-    }
-запустите приложение и перейдите по пути: http://localhost:8080/swagger-ui/index.html
-Отправьте данные на post authentication-entity-controller
-нажмите Try it out
-вставьте данные без id: 
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http.authorizeHttpRequests((authz) -> authz
+                    .anyRequest().permitAll())
+            .csrf(AbstractHttpConfigurer::disable);
+    return http.build();
+}
+
+Перезапустите приложение и перейдите по адресу:
+http://localhost:8080/swagger-ui/index.html
+
+В Swagger UI найдите контроллер authentication-entity-controller, метод POST.
+
+Нажмите Try it out и вставьте в тело запроса данные без поля id:
+
+'''json
 {
-  "number": "ваш номер",
+  "number": "ваш номер телефона",
   "password": "ваш пароль",
   "role": "ADMIN"
 }
-Нажмите Execute 
-Вам должен прийти код 201, значит данные успешно сохранились.
-Поменяйте обратно метод filterChain, запускайте приложение и авторизируйтесь под ролью администратора.
+Нажмите Execute. Сервер должен вернуть код 201 – запись создана.
+
+Верните исходный код метода filterChain (с ограничениями доступа), перезапустите приложение и авторизуйтесь под новой учётной записью администратора.
+
+### Тестирование
+Используется H2. Конфигурация – application-test.properties.
+Запуск тестов:
+mvn test -Dtest='!ru.angelika.boutique.selenium'
+(отключаю тесты для GUI, потому что там используются данные пользователей из моей локальной бд)
+
+📚 Документация и мониторинг (доступно администратору)
+
+Swagger UI: http://localhost:8080/swagger-ui.html
+
+OpenAPI JSON: http://localhost:8080/v3/api-docs
+
+JavaMelody: http://localhost:8080/monitoring
+
+Actuator health: http://localhost:8080/actuator/health
+
+📖 Javadoc
+Весь код снабжён Javadoc-комментариями. Генерация HTML:
+mvn javadoc:javadoc
+Результат в target/site/apidocs.
+
+💡 Возможные улучшения
+
+Реализовать систему пополения счета пользователя, сумма купленных товаров переводилась на счет продавцу
+
+Добавление картинок и категорий для карточек товара 
+
+Бот в телеграмм для оповещаний о статусах заказа
+
+Добавить роль для человека, работающего на пвз, чтобы он менял статус заказа 
+
+👩‍💻 Автор
+Грибова Анжелика
