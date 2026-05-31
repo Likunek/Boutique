@@ -64,7 +64,6 @@
 Выполнить команду в git Bash:  
  git clone https://github.com/Likunek/Boutique.git
  перейти в корень проекта 
-## 🐳 Запуск через Docker Compose
 
 В корне проекта выполните:        docker compose up --build
 
