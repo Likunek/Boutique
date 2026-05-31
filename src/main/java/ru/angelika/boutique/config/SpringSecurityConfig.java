@@ -34,7 +34,7 @@ public class SpringSecurityConfig {
      * Определяет:
      * <ul>
      *   <li>Публичные страницы: /login, /registration</li>
-     *   <li>Доступ только для ADMIN: /admin/**, /swagger-ui/**, /v3/api-docs/**, /monitoring/**</li>
+     *   <li>Доступ только для ADMIN: /admin/**, /swagger-ui/**, /v3/api-docs/**, /monitoring/**, /actuator/**</li>
      *   <li>Доступ для SELLER и ADMIN: /sellers/**, /items/**, /cards/**, /send-to-storage/**</li>
      *   <li>Доступ только для SELLER: /seller/**</li>
      *   <li>Доступ для USER и ADMIN: /users/**</li>
@@ -53,7 +53,7 @@ public class SpringSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/login", "/registration").permitAll()
-                        .requestMatchers("/admin/**", "/swagger-ui/**", "/v3/api-docs/**", "/monitoring/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**", "/swagger-ui/**", "/v3/api-docs/**", "/monitoring/**", "/actuator/**").hasRole("ADMIN")
                         .requestMatchers("/sellers/**", "/items/**", "/cards/**", "/send-to-storage/**")
                         .hasAnyRole("SELLER", "ADMIN")
                         .requestMatchers("/seller/**").hasRole("SELLER")
