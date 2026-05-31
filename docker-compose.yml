@@ -1,0 +1,37 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: boutique-app:latest
+    ports:
+      - '8080:8080'
+    depends_on:
+      - db
+    environment:
+      - DB_USERNAME=angelika
+      - DB_PASSWORD=lika1234
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/boutique
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME:-angelika}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-lika1234}
+    networks:
+      - boutique-net
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: boutique
+      POSTGRES_USER: angelika
+      POSTGRES_PASSWORD: lika1234
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - boutique-net
+
+volumes:
+  postgres-data:
+
+networks:
+  boutique-net:
+    driver: bridge
